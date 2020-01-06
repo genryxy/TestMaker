@@ -33,14 +33,30 @@ import java.util.concurrent.CountDownLatch;
 
 public class NewTestFragment extends Fragment implements FireBaseConnections
 {
-    private Integer tests_number;
-    private NewTestViewModel newTestViewModel;
+    private volatile Integer testsNumber;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        CountDownLatch downLatch = new CountDownLatch(1);
+        new CountTests(downLatch);
+        try
+        {
+            // Ждём, пока не произойдёт событие.
+            downLatch.await();
+        } catch (InterruptedException e)
+        {
+            Log.w("FAILURE", "Error CountDownLatch", e);
+        }
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState)
     {
-        newTestViewModel = ViewModelProviders.of(this).get(NewTestViewModel.class);
+        NewTestViewModel newTestViewModel = ViewModelProviders
+                .of(this).get(NewTestViewModel.class);
         View root = inflater.inflate(R.layout.fragment_name_test, container, false);
         final TextView nameTestTxt = root.findViewById(R.id.nameTestTxt);
         newTestViewModel.getText().observe(this, new Observer<String>()
@@ -51,9 +67,14 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                 nameTestTxt.setText(s);
             }
         });
-        final EditText nameTestEdt = root.findViewById(R.id.nameTestEdt);
-        Button saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
 
+        final EditText nameTestEdt = root.findViewById(R.id.nameTestEdt);
+        final Button saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
+
+        /**
+         * Обработчик события нажатие на кнопку. Если пользователь ввёл уникальное
+         * название теста, то добавляет название в БД, иначе просит повторить ввод.
+         */
         saveNameTestBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -63,6 +84,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                 new CountTests(downLatch);
                 try
                 {
+                    // Ждём, пока не произойдёт событие.
                     downLatch.await();
                 } catch (InterruptedException e)
                 {
@@ -79,42 +101,29 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                             {
                                 if (task.isSuccessful())
                                 {
-                                    if (task.getResult().getDocuments().get(0).getData().values().contains(nameTestEdt.getText().toString()))
+                                    if (task.getResult().getDocuments().get(0).getData().values()
+                                            .contains(nameTestEdt.getText().toString()))
                                     {
                                         nameTestEdt.setError("Тест с таким названием уже существует");
                                         nameTestEdt.requestFocus();
                                     } else
                                     {
-                                        Map<String, String> data = new HashMap<>();
-                                        data.put("name" + tests_number, nameTestEdt.getText().toString());
-                                        db.collection("tests_names").document("names").set(
-                                                data, SetOptions.merge())
-                                                .addOnSuccessListener(new OnSuccessListener<Void>()
-                                                {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid)
-                                                    {
-                                                        Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
-                                                        Map<String, Object> dataNumb = new HashMap<>();
-                                                        dataNumb.put("tests_number", tests_number + 1);
-                                                        db.collection("tests").document("tests")
-                                                                .update(dataNumb);
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener()
-                                                {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e)
-                                                    {
-                                                        Log.w("FAILURE", "Error adding document", e);
-                                                        //Toast.makeText(getContext(), "FAILURE", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                        CountDownLatch downLatch2 = new CountDownLatch(1);
+                                        new UpdateDataBase(downLatch2, nameTestEdt);
+                                        try
+                                        {
+                                            // Ждём, пока не произойдёт событие.
+                                            downLatch2.await();
+                                        } catch (InterruptedException e)
+                                        {
+                                            Log.w("FAILURE", "Error CountDownLatch", e);
+                                            return;
+                                        }
                                     }
                                 } else
                                 {
                                     Log.w("FAILURE", "Error adding document", task.getException());
-                                    Toast.makeText(getContext(), "FAILURE", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -123,10 +132,23 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
         return root;
     }
 
+    //
+
+    /**
+     * Класс для обращения к FireBase в другом потоке.
+     * Нужен, чтобы можно было отправить в режим ожидания основной
+     * поток до тех пор, пока не произойдёт одно (или больше) событие.
+     */
     class CountTests implements Runnable
     {
         CountDownLatch latch;
 
+        /**
+         * Конструктор класса.
+         *
+         * @param downLatch Экземпляр класса для снятия самоблокировки
+         *                  пссле определенного числа событий.
+         */
         CountTests(CountDownLatch downLatch)
         {
             latch = downLatch;
@@ -144,9 +166,9 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                         {
                             if (task.isSuccessful())
                             {
-                                tests_number = Integer.valueOf(task.getResult().getDocuments()
+                                testsNumber = Integer.valueOf(task.getResult().getDocuments()
                                         .get(0).getData().get("tests_number").toString());
-                                //Toast.makeText(getContext(), "SUCCESS", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), testsNumber.toString(), Toast.LENGTH_SHORT).show();
 
                             } else
                             {
@@ -155,8 +177,73 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                             }
                         }
                     });
+            // Изещаем о том, что произошло событие.
+            latch.countDown();
+        }
+    }
+
+    /**
+     * Класс для обращения к FireBase в другом потоке.
+     * Нужен, чтобы можно было отправить в режим ожидания основной
+     * поток до тех пор, пока не произойдёт одно (или больше) событие.
+     */
+    class UpdateDataBase implements Runnable
+    {
+        CountDownLatch latch;
+        private EditText nameTestEdt;
+
+        /**
+         * Конструктор класса.
+         *
+         * @param downLatch Экземпляр класса для снятия самоблокировки
+         *                  пссле определенного числа событий.
+         */
+        UpdateDataBase(CountDownLatch downLatch, EditText nameTestEdt)
+        {
+            latch = downLatch;
+            this.nameTestEdt = nameTestEdt;
+            new Thread(this).start();
+        }
+
+        public void run()
+        {
+            Map<String, String> data = new HashMap<>();
+            data.put("name" + testsNumber, nameTestEdt.getText().toString());
+            db.collection("tests_names").document("names")
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener(new OnSuccessListener<Void>()
+                    {
+                        @Override
+                        public void onSuccess(Void aVoid)
+                        {
+                            Toast.makeText(getActivity(), "Название добавлено", Toast.LENGTH_SHORT).show();
+                            Map<String, Object> dataNumb = new HashMap<>();
+                            dataNumb.put("tests_number", testsNumber + 1);
+                            db.collection("tests").document("tests")
+                                    .update(dataNumb)
+                                    .addOnFailureListener(new OnFailureListener()
+                                    {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e)
+                                        {
+                                            Log.w("FAILURE", "Error updating testsNumber", e);
+                                        }
+                                    });
+                            //db.collection("tests")
+                            //        .add()
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener()
+                    {
+                        @Override
+                        public void onFailure(@NonNull Exception e)
+                        {
+                            Log.w("FAILURE", "Error adding testName", e);
+                            Toast.makeText(getActivity(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            // Изещаем о том, что произошло событие.
             latch.countDown();
         }
     }
 }
-
