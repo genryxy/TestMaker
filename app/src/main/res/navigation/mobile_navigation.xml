@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.testcreator.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="com.example.testcreator.ui.newTest.NewTestFragment"
+        android:label="@string/menu_add_test"
+        tools:layout="@layout/fragment_name_test" />
 
     <fragment
         android:id="@+id/nav_slideshow"
