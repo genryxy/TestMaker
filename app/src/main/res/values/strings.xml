@@ -19,5 +19,14 @@
     <string name="signIn">Войти</string>
     <string name="menu_logout">Выход</string>
     <string name="nameTest">Название теста</string>
-    <string name="saveNameTest">Продолжить создание</string>
+    <string name="continueCreating">Продолжить создание</string>
+    <string name="questionsNumber">Количество вопросов</string>
+    <string name="questionText">Формулировка вопроса</string>
+    <string name="selectTypeAnswer">Выберите тип ответа на вопрос</string>
+    <string name="typeOneAnswer">Один правильный ответ</string>
+    <string name="typeManyAnswers">Несколько правильных ответов</string>
+    <string name="typeOwnAnswer">Ответ в свободной форме</string>
+    <string name="answersNumber">Количество вариантов ответов</string>
+    <string name="startCreatingAnswers">Перейти к созданию ответов</string>
+    <string name="exampleAnswersNumber">4</string>
 </resources>
