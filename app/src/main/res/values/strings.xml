@@ -29,4 +29,5 @@
     <string name="answersNumber">Количество вариантов ответов</string>
     <string name="startCreatingAnswers">Перейти к созданию ответов</string>
     <string name="exampleAnswersNumber">4</string>
+    <string name="addNewVariant">Добавить вариант ответа</string>
 </resources>

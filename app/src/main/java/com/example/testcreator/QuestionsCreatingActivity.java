@@ -2,6 +2,7 @@ package com.example.testcreator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         setContentView(R.layout.activity_questions_creating);
         findElementsViewById();
         setRadioGroupCheckedChangeListener();
+        setCreatingAnswersBtnClickListener();
     }
 
     /**
@@ -58,6 +60,30 @@ public class QuestionsCreatingActivity extends AppCompatActivity
                         answersNumberEdt.setText("1");
                         break;
                 }
+            }
+        });
+    }
+
+    private void setCreatingAnswersBtnClickListener()
+    {
+        startCreatingAnswersBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent prevIntent = getIntent();
+                String nameTest = prevIntent.getStringExtra("nameTestEdt");
+                // ????
+                String questionsNumber = prevIntent.getStringExtra("questionsNumberEdt");
+                Intent newIntent = new Intent(QuestionsCreatingActivity.this, AnswersCreatingActivity.class);
+                newIntent.putExtra("nameTestEdt", nameTest);
+                // ????
+                newIntent.putExtra("questionsNumberEdt", questionsNumber);
+                newIntent.putExtra("typeAnswer", typeAnsRadioGroup.getCheckedRadioButtonId());
+                newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
+                newIntent.putExtra("answersNumberEdt", answersNumberEdt.getText().toString());
+                startActivity(newIntent);
+
             }
         });
     }
