@@ -17,13 +17,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity
+public class LoginActivity extends AppCompatActivity implements  FireBaseConnections
 {
     private EditText emailIdEdt;
     private EditText passwordEdt;
     private Button signInBtn;
     private TextView signUpTxt;
-    private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
@@ -32,7 +31,6 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        firebaseAuth = FirebaseAuth.getInstance();
         emailIdEdt = findViewById(R.id.emailEdt);
         passwordEdt = findViewById(R.id.pswdEdt);
         signInBtn = findViewById(R.id.signInBtn);
@@ -77,7 +75,7 @@ public class LoginActivity extends AppCompatActivity
                     passwordEdt.requestFocus();
                 } else
                 {
-                    firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(
+                    authFrbs.signInWithEmailAndPassword(email, password).addOnCompleteListener(
                             LoginActivity.this, new OnCompleteListener<AuthResult>()
                             {
                                 @Override
@@ -118,8 +116,6 @@ public class LoginActivity extends AppCompatActivity
     protected void onStart()
     {
         super.onStart();
-        firebaseAuth.addAuthStateListener(authStateListener);
+        authFrbs.addAuthStateListener(authStateListener);
     }
 }
-
-

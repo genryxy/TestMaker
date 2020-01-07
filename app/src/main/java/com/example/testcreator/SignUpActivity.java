@@ -16,20 +16,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class SignUpActivity extends AppCompatActivity
+public class SignUpActivity extends AppCompatActivity implements FireBaseConnections
 {
     private EditText emailIdEdt;
     private EditText passwordEdt;
     private Button signUpBtn;
     private TextView signInTxt;
-    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        firebaseAuth = FirebaseAuth.getInstance();
         emailIdEdt = findViewById(R.id.emailEdt);
         passwordEdt = findViewById(R.id.pswdEdt);
         signUpBtn = findViewById(R.id.signUpBtn);
@@ -57,7 +55,7 @@ public class SignUpActivity extends AppCompatActivity
                     passwordEdt.requestFocus();
                 } else
                 {
-                    firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(
+                    authFrbs.createUserWithEmailAndPassword(email, password).addOnCompleteListener(
                             SignUpActivity.this, new OnCompleteListener<AuthResult>()
                             {
                                 @Override

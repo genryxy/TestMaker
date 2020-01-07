@@ -38,6 +38,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,12 +87,43 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
             @SuppressWarnings("unchecked")
             public void onClick(View v)
             {
-                Map<String, Object> result = new HashMap<>();
-                result.put("название теста 1", 1);
-                result.put("название теста 2", 3);
-                result.put("название теста 3", 2);
+//                Map<String, Object> result = new HashMap<>();
+//                result.put("название теста 1", 1);
+//                result.put("название теста 2", 3);
+//                result.put("название теста 3", 2);
+//
+//                db.collection("users").document(authFrbs.getUid()).set(result)
+//                        //dbRef.child("users").push().setValue(user)
+//                        .addOnSuccessListener(new OnSuccessListener<Void>()
+//                        {
+//                            @Override
+//                            public void onSuccess(Void aVoid)
+//                            {
+//                                Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener()
+//                        {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e)
+//                            {
+//                                Log.w("FAILURE", "Error adding document", e);
+//                                Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
 
-                db.collection("users").document(authFrbs.getUid()).set(result)
+                List<String> answers = new ArrayList<>();
+                answers.add("неверный 1");
+                answers.add("неверный 2");
+                answers.add("верный ответ");
+                answers.add("неверный 3");
+                Question question = new Question("формулировка вопроса", TypeAnswer.OneAnswer, 4,
+                        answers, 1, "3");
+                List<Question> questions = new ArrayList<>();
+                questions.add(question);
+                TestInfo testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(), "название х", 1, questions);
+                db.collection("tests").document("hereTestsName")
+                        .set(testInfo)
                         //dbRef.child("users").push().setValue(user)
                         .addOnSuccessListener(new OnSuccessListener<Void>()
                         {
