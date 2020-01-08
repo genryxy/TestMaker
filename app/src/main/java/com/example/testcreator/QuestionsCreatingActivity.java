@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class QuestionsCreatingActivity extends AppCompatActivity
 {
@@ -81,8 +82,19 @@ public class QuestionsCreatingActivity extends AppCompatActivity
                 newIntent.putExtra("questionsNumberEdt", questionsNumber);
                 newIntent.putExtra("typeAnswer", typeAnsRadioGroup.getCheckedRadioButtonId());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
-                newIntent.putExtra("answersNumberEdt", answersNumberEdt.getText().toString());
-                startActivity(newIntent);
+                if (answersNumberEdt.getText().toString().length() == 0)
+                {
+                    newIntent.putExtra("answersNumberEdt", "4");
+                    startActivity(newIntent);
+                } else if (Integer.valueOf(answersNumberEdt.getText().toString()) > 10)
+                {
+                    answersNumberEdt.requestFocus();
+                    answersNumberEdt.setError("Не более 10 ответов");
+                } else
+                {
+                    newIntent.putExtra("answersNumberEdt", answersNumberEdt.getText().toString());
+                    startActivity(newIntent);
+                }
 
             }
         });

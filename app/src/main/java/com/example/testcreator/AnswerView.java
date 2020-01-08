@@ -9,7 +9,6 @@ public class AnswerView
     {
         this.answerText = answerText;
         this.isSelected = isSelected;
-        //this.isCorrect = isCorrect;
     }
 
     public String getAnswerText()

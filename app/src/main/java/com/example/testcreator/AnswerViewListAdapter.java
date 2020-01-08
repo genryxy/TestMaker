@@ -36,21 +36,15 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
     {
         String answerText = getItem(position).getAnswerText();
         Boolean isSelected = getItem(position).getSelected();
-        //String isCorrect = getItem(position).getIsCorrect();
-
-        //AnswerView answerView = new AnswerView(answerText, choiceLetter, isCorrect);
 
         LayoutInflater inflater = LayoutInflater.from(context);
         convertView = inflater.inflate(resource, parent, false);
 
-        EditText txtAnswer = convertView.findViewById(R.id.txtView2);
-        //TextView txtChoice = convertView.findViewById(R.id.txtView1);
-        final CheckedTextView txtChoice = convertView.findViewById(R.id.txtView1);
-        //TextView txtIsCorrect = convertView.findViewById(R.id.txtView3);
-
+        EditText txtAnswer = convertView.findViewById(R.id.answerTextEdt);
+        final CheckedTextView txtChoice = convertView.findViewById(R.id.checkTxt);
         txtAnswer.setText(answerText);
         txtChoice.setChecked(isSelected);
-        //txtIsCorrect.setText(isCorrect);
+
 
         txtChoice.setOnClickListener(new View.OnClickListener()
         {
@@ -61,14 +55,10 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
                 {
                     txtChoice.setChecked(false);
                     getItem(position).setSelected(false);
-//                    txtChoice.setText("not");
-                }
-                else
+                } else
                 {
                     txtChoice.setChecked(true);
                     getItem(position).setSelected(true);
-//                    txtChoice.setText("isChecked");
-
                 }
             }
         });
@@ -84,7 +74,6 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
-
                 getItem(position).setAnswerText(s.toString());
                 Toast.makeText(getContext(), getItem(position).getAnswerText(), Toast.LENGTH_SHORT).show();
             }
@@ -94,7 +83,6 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
             {
             }
         });
-
         return convertView;
     }
 }

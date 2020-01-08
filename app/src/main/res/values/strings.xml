@@ -26,8 +26,11 @@
     <string name="typeOneAnswer">Один правильный ответ</string>
     <string name="typeManyAnswers">Несколько правильных ответов</string>
     <string name="typeOwnAnswer">Ответ в свободной форме</string>
-    <string name="answersNumber">Количество вариантов ответов</string>
+    <string name="answersNumber">Количество вариантов ответов (не более 10)</string>
     <string name="startCreatingAnswers">Перейти к созданию ответов</string>
     <string name="exampleAnswersNumber">4</string>
     <string name="addNewVariant">Добавить вариант ответа</string>
+    <string name="createNextQuestion">Перейти к созданию следующего вопроса</string>
+    <string name="endCreatingTest">Завершить создание теста</string>
+    <string name="answerText">Текст ответа</string>
 </resources>

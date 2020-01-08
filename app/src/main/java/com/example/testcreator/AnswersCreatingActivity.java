@@ -2,6 +2,7 @@ package com.example.testcreator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,12 +10,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.annotations.NotNull;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AnswersCreatingActivity extends AppCompatActivity
 {
     private static final String TAG = "AnswersCreatingActivity";
+    private final String answerText = "Текст ответа";
+    private Button addNewVariantBtn;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -23,24 +30,26 @@ public class AnswersCreatingActivity extends AppCompatActivity
         setContentView(R.layout.activity_answers_creating);
 
         Log.d(TAG, "onCreate: Started.");
-        final ListView lstView = findViewById(R.id.answersLstView);
-        Button addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
+        ListView lstView = findViewById(R.id.answersLstView);
+        addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
 
-        AnswerView ans1 = new AnswerView("текст ответа 1", false);
-        AnswerView ans2 = new AnswerView("текст ответа 2", false);
-        AnswerView ans3 = new AnswerView("текст ответа 3 ", false);
-        AnswerView ans4 = new AnswerView("текст ответа 4", false);
+        Intent prevIntent = getIntent();
+        Integer answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
 
         final List<AnswerView> lstAnswers = new ArrayList<>();
-        lstAnswers.add(ans1);
-        lstAnswers.add(ans2);
-        lstAnswers.add(ans3);
-        lstAnswers.add(ans4);
-
-        final AnswerViewListAdapter adapter = new AnswerViewListAdapter(this, R.layout.adapter_view_answers_layout, lstAnswers);
+        for (int i = 0; i < answersNumber; i++)
+        {
+            lstAnswers.add(new AnswerView(answerText, false));
+        }
+        final AnswerViewListAdapter adapter = new AnswerViewListAdapter(this,
+                R.layout.adapter_view_answers_layout, lstAnswers);
         lstView.setAdapter(adapter);
+        addNewVariantBtnClickListen(lstAnswers, adapter);
+    }
 
-
+    private void addNewVariantBtnClickListen(final List<AnswerView> lstAnswers,
+                                             final AnswerViewListAdapter adapter)
+    {
         addNewVariantBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -53,7 +62,7 @@ public class AnswersCreatingActivity extends AppCompatActivity
 
                 } else
                 {
-                    lstAnswers.add(new AnswerView("новый ответ", false));
+                    lstAnswers.add(new AnswerView(answerText, false));
                     adapter.notifyDataSetChanged();
                 }
             }
