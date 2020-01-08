@@ -11,24 +11,11 @@ public class AnswerView
         this.isSelected = isSelected;
     }
 
-    public String getAnswerText()
-    {
-        return answerText;
-    }
+    public String getAnswerText() { return answerText; }
 
-    public void setAnswerText(String answerText)
-    {
-        this.answerText = answerText;
-    }
+    public void setAnswerText(String answerText) { this.answerText = answerText; }
 
-    public Boolean getSelected()
-    {
-        return isSelected;
-    }
+    public Boolean getSelected() { return isSelected; }
 
-    public void setSelected(Boolean selected)
-    {
-        isSelected = selected;
-    }
-
+    public void setSelected(Boolean selected) { isSelected = selected; }
 }

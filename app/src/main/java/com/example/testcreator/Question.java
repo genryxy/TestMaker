@@ -15,16 +15,14 @@ public class Question
     private String correctAnswer;
 
 
-    public Question()
-    {
-    }
+    public Question() { }
 
     /**
      * Конструктор класса-обёртки для вопроса.
      *
      * @param questionText         Формулировка вопроса (текст вопроса).
      * @param typeAnswer           Тип ответа (один, много, собственный).
-     * @param allAnswersNumber        Количество всех ответов.
+     * @param allAnswersNumber     Количество всех ответов.
      * @param answersLst           Список с формулировкой ответов (если typeAnswer
      *                             - OwnAnswer, то пустой список).
      * @param correctAnswersNumber Количество правильных ответов.
@@ -43,33 +41,15 @@ public class Question
         this.correctAnswer = correctAnswer;
     }
 
-    public String getQuestionText()
-    {
-        return questionText;
-    }
+    public String getQuestionText() { return questionText; }
 
-    public TypeAnswer getTypeAnswer()
-    {
-        return typeAnswer;
-    }
+    public TypeAnswer getTypeAnswer() { return typeAnswer; }
 
-    public Integer getAllAnswersNumber()
-    {
-        return allAnswersNumber;
-    }
+    public Integer getAllAnswersNumber() { return allAnswersNumber; }
 
-    public List<String> getAnswersLst()
-    {
-        return answersLst;
-    }
+    public List<String> getAnswersLst() { return answersLst; }
 
-    public Integer getCorrectAnswersNumber()
-    {
-        return correctAnswersNumber;
-    }
+    public Integer getCorrectAnswersNumber() { return correctAnswersNumber; }
 
-    public String getCorrectAnswer()
-    {
-        return correctAnswer;
-    }
+    public String getCorrectAnswer() { return correctAnswer; }
 }

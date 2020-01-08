@@ -12,9 +12,7 @@ public class TestInfo
     private List<Question> questionsLst;
 
 
-    public TestInfo()
-    {
-    }
+    public TestInfo() { }
 
     public TestInfo(String testCreator, Date testCreationDate, String testName, Integer questionsNumber, List<Question> questionsLst)
     {
@@ -25,28 +23,13 @@ public class TestInfo
         this.questionsLst = questionsLst;
     }
 
-    public String getTestCreator()
-    {
-        return testCreator;
-    }
+    public String getTestCreator() { return testCreator; }
 
-    public Date getTestCreationDate()
-    {
-        return testCreationDate;
-    }
+    public Date getTestCreationDate() { return testCreationDate; }
 
-    public String getTestName()
-    {
-        return testName;
-    }
+    public String getTestName() { return testName; }
 
-    public Integer getQuestionsNumber()
-    {
-        return questionsNumber;
-    }
+    public Integer getQuestionsNumber() { return questionsNumber; }
 
-    public List<Question> getQuestionsLst()
-    {
-        return questionsLst;
-    }
+    public List<Question> getQuestionsLst() { return questionsLst; }
 }

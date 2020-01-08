@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_gravity="center"
-        android:layout_weight="85"
+        android:layout_weight="43"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:text="" />
 
@@ -18,10 +18,16 @@
         android:id="@+id/answerTextEdt"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_weight="20"
+        android:layout_weight="13"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
-        android:text="@string/answerText"/>
+        android:text="@string/answerText" />
 
+    <ImageButton
+        android:id="@+id/deleteItemBtn"
+        android:background="@drawable/ic_delete_forever"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="44" />
 </LinearLayout>

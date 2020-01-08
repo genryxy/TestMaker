@@ -114,6 +114,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     {
         nameTestEdt.setEnabled(false);
         nameTestEdt.setFocusable(false);
+        questionsNumberEdt.requestFocus();
         saveNameTestBtn.setVisibility(View.GONE);
         saveQuestionsNumberBtn.setVisibility(View.VISIBLE);
         questionsNumberEdt.setVisibility(View.VISIBLE);

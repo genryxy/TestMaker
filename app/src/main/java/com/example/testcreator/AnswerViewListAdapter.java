@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +44,33 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
 
         EditText txtAnswer = convertView.findViewById(R.id.answerTextEdt);
         final CheckedTextView txtChoice = convertView.findViewById(R.id.checkTxt);
+        final ImageButton deleteItemBtn = convertView.findViewById(R.id.deleteItemBtn);
         txtAnswer.setText(answerText);
         txtChoice.setChecked(isSelected);
 
+        txtChoiceClickListen(position, txtChoice);
+        deleteItemBtnClickListen(position, deleteItemBtn);
+        txtAnswer.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                getItem(position).setAnswerText(s.toString());
+                Toast.makeText(getContext(), getItem(position).getAnswerText(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        return convertView;
+    }
+
+    private void txtChoiceClickListen(final int position,
+                                      final CheckedTextView txtChoice)
+    {
         txtChoice.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -62,27 +87,20 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
                 }
             }
         });
+    }
 
-        txtAnswer.addTextChangedListener(new TextWatcher()
+    private void deleteItemBtnClickListen(final int position,
+                                          final ImageButton deleteItemBtn)
+    {
+        deleteItemBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after)
+            public void onClick(View v)
             {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                getItem(position).setAnswerText(s.toString());
-                Toast.makeText(getContext(), getItem(position).getAnswerText(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
+                AnswerView answer = getItem(position);
+                remove(answer);
+                notifyDataSetChanged();
             }
         });
-        return convertView;
     }
 }

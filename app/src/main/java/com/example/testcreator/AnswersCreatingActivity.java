@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,7 +24,6 @@ public class AnswersCreatingActivity extends AppCompatActivity
     private final String answerText = "Текст ответа";
     private Button addNewVariantBtn;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -33,16 +34,16 @@ public class AnswersCreatingActivity extends AppCompatActivity
         ListView lstView = findViewById(R.id.answersLstView);
         addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
 
+
         Intent prevIntent = getIntent();
         Integer answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
 
         final List<AnswerView> lstAnswers = new ArrayList<>();
         for (int i = 0; i < answersNumber; i++)
-        {
             lstAnswers.add(new AnswerView(answerText, false));
-        }
-        final AnswerViewListAdapter adapter = new AnswerViewListAdapter(this,
-                R.layout.adapter_view_answers_layout, lstAnswers);
+
+        final AnswerViewListAdapter adapter = new AnswerViewListAdapter
+                (this, R.layout.adapter_view_answers_layout, lstAnswers);
         lstView.setAdapter(adapter);
         addNewVariantBtnClickListen(lstAnswers, adapter);
     }
