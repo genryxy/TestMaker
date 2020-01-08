@@ -1,7 +1,9 @@
 package com.example.testcreator;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +25,7 @@ public class AnswersCreatingActivity extends AppCompatActivity
     private static final String TAG = "AnswersCreatingActivity";
     private final String answerText = "Текст ответа";
     private Button addNewVariantBtn;
+    private String typeAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,9 +38,12 @@ public class AnswersCreatingActivity extends AppCompatActivity
         addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
 
 
+        // Получаем данные с прошлой activity.
         Intent prevIntent = getIntent();
         Integer answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
+        typeAnswer = prevIntent.getStringExtra("typeAnswer");
 
+        // Создаём список с ответами.
         final List<AnswerView> lstAnswers = new ArrayList<>();
         for (int i = 0; i < answersNumber; i++)
             lstAnswers.add(new AnswerView(answerText, false));
@@ -56,7 +62,12 @@ public class AnswersCreatingActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if (lstAnswers.size() >= 10)
+
+                if (typeAnswer.equals(TypeAnswer.OwnAnswer.name()) && lstAnswers.size() != 0)
+                {
+                    Toast.makeText(AnswersCreatingActivity.this,
+                            "Вы выбрали ответ в свободной форме!", Toast.LENGTH_SHORT).show();
+                } else if (lstAnswers.size() >= 10)
                 {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Не может быть больше 10 ответов", Toast.LENGTH_SHORT).show();
@@ -68,5 +79,25 @@ public class AnswersCreatingActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Внимание");
+        builder.setMessage("Изменения не будут сохранены ");
+        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //saveResult();
+                AnswersCreatingActivity.super.onBackPressed();
+            }
+        });
+        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //AnswersCreatingActivity.super.onBackPressed();
+            }
+        });
+        builder.show();
     }
 }

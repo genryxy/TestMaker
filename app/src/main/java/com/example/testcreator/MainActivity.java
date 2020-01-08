@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
                 answers.add("неверный 2");
                 answers.add("верный ответ");
                 answers.add("неверный 3");
-                Question question = new Question("формулировка вопроса", TypeAnswer.OneAnswer, 4,
+                Question question = new Question("формулировка вопроса", TypeAnswer.OneOrManyAnswers, 4,
                         answers, 1, "3");
                 List<Question> questions = new ArrayList<>();
                 questions.add(question);

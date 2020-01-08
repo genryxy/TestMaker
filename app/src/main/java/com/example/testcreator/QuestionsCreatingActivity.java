@@ -18,6 +18,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
     private EditText questionTextEdt;
     private EditText answersNumberEdt;
     private Button startCreatingAnswersBtn;
+    private TypeAnswer typeAnswer = TypeAnswer.OneOrManyAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,11 +53,12 @@ public class QuestionsCreatingActivity extends AppCompatActivity
                 answersNumberEdt.setText("4");
                 switch (checkedId)
                 {
-                    case R.id.oneAnsRadioBtn:
-                    case R.id.manyAnsRadioBtn:
+                    case R.id.oneOrManyAnsRadioBtn:
+                        typeAnswer = TypeAnswer.OneOrManyAnswers;
                         answersNumberEdt.setEnabled(true);
                         break;
                     case R.id.ownAnsRadioBtn:
+                        typeAnswer = TypeAnswer.OwnAnswer;
                         answersNumberEdt.setEnabled(false);
                         answersNumberEdt.setText("1");
                         break;
@@ -80,7 +82,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
                 newIntent.putExtra("nameTestEdt", nameTest);
                 // ????
                 newIntent.putExtra("questionsNumberEdt", questionsNumber);
-                newIntent.putExtra("typeAnswer", typeAnsRadioGroup.getCheckedRadioButtonId());
+                newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
                 if (answersNumberEdt.getText().toString().length() == 0)
                 {

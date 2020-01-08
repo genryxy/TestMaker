@@ -62,24 +62,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:checkedButton="@id/oneAnsRadioBtn"
+            android:checkedButton="@id/oneOrManyAnsRadioBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.22"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/selectTypeAnswerTxt">
 
             <RadioButton
-                android:id="@+id/oneAnsRadioBtn"
+                android:id="@+id/oneOrManyAnsRadioBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="@string/typeOneAnswer" />
-
-            <RadioButton
-                android:id="@+id/manyAnsRadioBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/typeManyAnswers" />
+                android:text="@string/typeOneOrManyAnswer" />
 
             <RadioButton
                 android:id="@+id/ownAnsRadioBtn"
