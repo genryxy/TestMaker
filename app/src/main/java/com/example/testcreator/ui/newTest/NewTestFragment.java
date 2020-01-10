@@ -144,7 +144,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                     return;
                 }
 
-                db.collection("tests_names")
+                db.collection("tests")
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
                         {
@@ -155,27 +155,33 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                                 {
                                     nameTestEdt.setError("Небходимо заполнить это поле");
                                     nameTestEdt.requestFocus();
-                                }
-                                else if (task.isSuccessful())
+                                } else if (task.isSuccessful())
                                 {
-                                    if (task.getResult().getDocuments().get(0).getData().values()
-                                            .contains(nameTestEdt.getText().toString()))
+                                    for (DocumentSnapshot docSnapshot : task.getResult().getDocuments())
                                     {
-                                        nameTestEdt.setError("Тест с таким названием уже существует");
-                                        nameTestEdt.requestFocus();
-                                    } else if (testsNumber != null)
-                                    {
-                                        CountDownLatch downLatch2 = new CountDownLatch(1);
-                                        new UpdateDataBase(downLatch2, nameTestEdt);
-                                        try
+                                        if (docSnapshot.getId().equals("tests_names"))
                                         {
-                                            // Ждём, пока не произойдёт событие.
-                                            downLatch2.await();
-                                            changeElementsVisibility();
-                                        } catch (InterruptedException e)
-                                        {
-                                            Log.w("FAILURE", "Error CountDownLatch", e);
-                                            return;
+                                            if (docSnapshot.getData().values()
+                                                    .contains(nameTestEdt.getText().toString()))
+                                            {
+                                                nameTestEdt.setError("Тест с таким названием уже существует");
+                                                nameTestEdt.requestFocus();
+                                            } else if (testsNumber != null)
+                                            {
+                                                CountDownLatch downLatch2 = new CountDownLatch(1);
+                                                new UpdateDataBase(downLatch2, nameTestEdt);
+                                                try
+                                                {
+                                                    // Ждём, пока не произойдёт событие.
+                                                    downLatch2.await();
+                                                    changeElementsVisibility();
+                                                } catch (InterruptedException e)
+                                                {
+                                                    Log.w("FAILURE", "Error CountDownLatch", e);
+                                                    return;
+                                                }
+                                            }
+                                            break;
                                         }
                                     }
                                 } else
@@ -296,7 +302,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
         {
             Map<String, String> data = new HashMap<>();
             data.put("name" + testsNumber, nameTestEdt.getText().toString());
-            db.collection("tests_names").document("names")
+            db.collection("tests").document("tests_names")
                     .set(data, SetOptions.merge())
                     .addOnSuccessListener(new OnSuccessListener<Void>()
                     {

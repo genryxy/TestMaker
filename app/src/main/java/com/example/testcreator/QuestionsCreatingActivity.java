@@ -1,7 +1,9 @@
 package com.example.testcreator;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +21,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
     private EditText answersNumberEdt;
     private Button startCreatingAnswersBtn;
     private TypeAnswer typeAnswer = TypeAnswer.OneOrManyAnswers;
+    private int questionNumber = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -28,6 +31,13 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         findElementsViewById();
         setRadioGroupCheckedChangeListener();
         setCreatingAnswersBtnClickListener();
+
+        Intent prevIntent = getIntent();
+        if (prevIntent.hasExtra("questionNumber"))
+            questionNumber = prevIntent.getIntExtra("questionNumber", 1);
+
+        String tmp = questionNumber + " вопрос";
+        numberQuestionTxt.setText(tmp);
     }
 
     /**
@@ -84,6 +94,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
                 newIntent.putExtra("questionsNumberEdt", questionsNumber);
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
+                newIntent.putExtra("questionNumber", questionNumber);
                 if (answersNumberEdt.getText().toString().length() == 0)
                 {
                     newIntent.putExtra("answersNumberEdt", "4");
@@ -100,5 +111,24 @@ public class QuestionsCreatingActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Внимание");
+        builder.setMessage("Изменения не будут сохранены ");
+        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //saveResult();
+                QuestionsCreatingActivity.super.onBackPressed();
+            }
+        });
+        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.show();
     }
 }

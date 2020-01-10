@@ -25,7 +25,10 @@ public class AnswersCreatingActivity extends AppCompatActivity
     private static final String TAG = "AnswersCreatingActivity";
     private final String answerText = "Текст ответа";
     private Button addNewVariantBtn;
+    private Button createNextQuestionBtn;
+    private Button endCreatingTest;
     private String typeAnswer;
+    private int questionNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,13 +38,15 @@ public class AnswersCreatingActivity extends AppCompatActivity
 
         Log.d(TAG, "onCreate: Started.");
         ListView lstView = findViewById(R.id.answersLstView);
-        addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
+        findElementsViewById();
 
 
         // Получаем данные с прошлой activity.
         Intent prevIntent = getIntent();
-        Integer answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
+        questionNumber = prevIntent.getIntExtra("questionNumber", 1);
+        int answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
         typeAnswer = prevIntent.getStringExtra("typeAnswer");
+
 
         // Создаём список с ответами.
         final List<AnswerView> lstAnswers = new ArrayList<>();
@@ -52,6 +57,18 @@ public class AnswersCreatingActivity extends AppCompatActivity
                 (this, R.layout.adapter_view_answers_layout, lstAnswers);
         lstView.setAdapter(adapter);
         addNewVariantBtnClickListen(lstAnswers, adapter);
+
+        createNextQuestionBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
+                newIntent.putExtra("questionNumber", questionNumber + 1);
+                startActivity(newIntent);
+
+            }
+        });
     }
 
     private void addNewVariantBtnClickListen(final List<AnswerView> lstAnswers,
@@ -87,17 +104,31 @@ public class AnswersCreatingActivity extends AppCompatActivity
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Внимание");
         builder.setMessage("Изменения не будут сохранены ");
-        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 //saveResult();
                 AnswersCreatingActivity.super.onBackPressed();
             }
         });
-        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
                 //AnswersCreatingActivity.super.onBackPressed();
             }
         });
         builder.show();
+    }
+
+    /**
+     * Связывает элементы из разметки XML с полями класса.
+     */
+    private void findElementsViewById()
+    {
+        addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
+        createNextQuestionBtn = findViewById(R.id.createNextQuestionBtn);
+        endCreatingTest = findViewById(R.id.endCreatingTest);
     }
 }
