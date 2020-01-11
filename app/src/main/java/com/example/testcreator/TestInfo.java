@@ -34,4 +34,6 @@ public class TestInfo
     public List<Question> getQuestionsLst() { return questionsLst; }
 
     public void setQuestionsLst(List<Question> questionsLst) { this.questionsLst = questionsLst; }
+
+    public void setQuestionsNumber(Integer questionsNumber) { this.questionsNumber = questionsNumber; }
 }

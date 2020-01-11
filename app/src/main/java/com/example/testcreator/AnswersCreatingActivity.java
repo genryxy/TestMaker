@@ -54,7 +54,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answers_creating);
-        Log.d(TAG, "onCreate: Started.");
         ListView lstView = findViewById(R.id.answersLstView);
         findElementsViewById();
         getInfoFromPreviousIntent();
@@ -83,7 +82,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         {
             public void onClick(DialogInterface dialog, int id)
             {
-                //saveResult();
                 AnswersCreatingActivity.super.onBackPressed();
             }
         });
@@ -182,6 +180,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             @Override
             public void onClick(View v)
             {
+                // Если создаётся не первый вопрос, то вызвать нажатие
+                // на кнопку для создания следующего вопроса.
                 if (questionNumber > 1)
                 {
                     isFromEndCreatingBtn = true;
@@ -191,38 +191,34 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     Pair<Integer, StringBuilder> rightAns = countRightAnswers(lstAnswers);
                     if (rightAns.first == 0)
                     {
-                        Toast.makeText(AnswersCreatingActivity.this, "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        List<Question> questions = createQuestion(lstAnswers, rightAns.second, rightAns.first);
-                        testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(), nameTest, questions.size(), questions);
-                        db.collection("tests").document(nameTest)
-                                .set(testInfo)
-                                .addOnSuccessListener(new OnSuccessListener<Void>()
-                                {
-                                    @Override
-                                    public void onSuccess(Void aVoid)
-                                    {
-                                        Toast.makeText(AnswersCreatingActivity.this, "endCreatingTest", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener()
-                                {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e)
-                                    {
-                                        Log.w(TAG, "Error adding document", e);
-                                    }
-                                });
+                        Toast.makeText(AnswersCreatingActivity.this,
+                                "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
+                        return;
                     }
 
+                    List<Question> questions = createQuestion(lstAnswers, rightAns.second, rightAns.first);
+                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(), nameTest, 1, questions);
+                    db.collection("tests").document(nameTest)
+                            .set(testInfo)
+                            .addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Log.w(TAG, "Error adding document", e);
+                                    Toast.makeText(AnswersCreatingActivity.this,
+                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
+                // Если нажимал пользователь, то открыть новый intent.
+                // Если вызов был искусственным, то ничего не делать.
                 if (!isFromNextQuestionBtn)
                 {
-                    isFromNextQuestionBtn = false;
                     Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
                 }
+                isFromNextQuestionBtn = false;
             }
         });
     }
@@ -239,66 +235,65 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Если создаётся первый вопрос, то вызвать нажатие
+                // на кнопку для завершения создания теста.
+                if (questionNumber == 1)
+                {
+                    isFromNextQuestionBtn = true;
+                    endCreatingTestBtn.callOnClick();
                 } else
                 {
-                    if (questionNumber == 1)
+                    DocumentReference docRef = db.collection("tests").document(nameTest);
+                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
                     {
-                        isFromNextQuestionBtn = true;
-                        endCreatingTestBtn.callOnClick();
-                    } else
-                    {
-                        DocumentReference docRef = db.collection("tests").document(nameTest);
-                        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot)
                         {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot)
-                            {
-                                testInfo = documentSnapshot.toObject(TestInfo.class);
-                                List<Question> lstQuestions = testInfo.getQuestionsLst();
-                                List<Question> questions = createQuestion(lstAnswers, rightAns.second, rightAns.first);
-                                lstQuestions.add(questions.get(0));
-                                testInfo.setQuestionsLst(lstQuestions);
+                            testInfo = documentSnapshot.toObject(TestInfo.class);
+                            List<Question> lstQuestions = testInfo.getQuestionsLst();
+                            List<Question> question = createQuestion(lstAnswers, rightAns.second, rightAns.first);
+                            lstQuestions.add(question.get(0));
+                            testInfo.setQuestionsNumber(lstQuestions.size());
+                            testInfo.setQuestionsLst(lstQuestions);
 
-                                db.collection("tests").document(nameTest)
-                                        .set(testInfo)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>()
-                                        {
-                                            @Override
-                                            public void onSuccess(Void aVoid)
-                                            {
-                                                Toast.makeText(AnswersCreatingActivity.this, "createNextQuestion", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener()
-                                        {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e)
-                                            {
-                                                Log.w(TAG, "Error adding document", e);
-                                                Toast.makeText(AnswersCreatingActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener()
-                                {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e)
+                            db.collection("tests").document(nameTest)
+                                    .set(testInfo)
+                                    .addOnFailureListener(new OnFailureListener()
                                     {
-                                        Log.w(TAG, "Error getting document", e);
-                                    }
-                                });
-                    }
-                    if (!isFromEndCreatingBtn)
-                    {
-                        isFromEndCreatingBtn = false;
-                        Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
-                        newIntent.putExtra("questionNumber", questionNumber + 1);
-                        newIntent.putExtra("nameTestEdt", nameTest);
-                        newIntent.putExtra("keyNameTestEdt", keyNameTest);
-                        startActivity(newIntent);
-                    }
+                                        @Override
+                                        public void onFailure(@NonNull Exception e)
+                                        {
+                                            Log.w(TAG, "Error adding document", e);
+                                            Toast.makeText(AnswersCreatingActivity.this,
+                                                    "Возникла ошибка", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    })
+                            .addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Log.w(TAG, "Error getting document", e);
+                                    Toast.makeText(AnswersCreatingActivity.this,
+                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
+                // Если нажимал пользователь, то открыть новый intent.
+                // Если вызов был искусственным, то ничего не делать.
+                if (!isFromEndCreatingBtn)
+                {
+                    Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
+                    newIntent.putExtra("questionNumber", questionNumber + 1);
+                    newIntent.putExtra("nameTestEdt", nameTest);
+                    newIntent.putExtra("keyNameTestEdt", keyNameTest);
+                    startActivity(newIntent);
+                }
+                isFromEndCreatingBtn = false;
             }
         });
     }
