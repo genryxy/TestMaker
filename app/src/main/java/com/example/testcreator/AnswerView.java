@@ -5,6 +5,8 @@ public class AnswerView
     private String answerText;
     private Boolean isSelected;
 
+    public AnswerView() {}
+
     public AnswerView(String answerText, Boolean isSelected)
     {
         this.answerText = answerText;

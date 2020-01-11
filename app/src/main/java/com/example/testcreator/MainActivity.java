@@ -9,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,26 +24,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements FireBaseConnections
 {
+    private final String TAG = "FAILURE MainActivity";
+
     private AppBarConfiguration mAppBarConfiguration;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -78,72 +69,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        Button addQuestionBtn = findViewById(R.id.addQuestionBtn);
         Button readDataBtn = findViewById(R.id.readDataBtn);
         final TextView readDataTxt = findViewById(R.id.readDataTxt);
-        addQuestionBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            @SuppressWarnings("unchecked")
-            public void onClick(View v)
-            {
-//                Map<String, Object> result = new HashMap<>();
-//                result.put("название теста 1", 1);
-//                result.put("название теста 2", 3);
-//                result.put("название теста 3", 2);
-//
-//                db.collection("users").document(authFrbs.getUid()).set(result)
-//                        //dbRef.child("users").push().setValue(user)
-//                        .addOnSuccessListener(new OnSuccessListener<Void>()
-//                        {
-//                            @Override
-//                            public void onSuccess(Void aVoid)
-//                            {
-//                                Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
-//                            }
-//                        })
-//                        .addOnFailureListener(new OnFailureListener()
-//                        {
-//                            @Override
-//                            public void onFailure(@NonNull Exception e)
-//                            {
-//                                Log.w("FAILURE", "Error adding document", e);
-//                                Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-
-                List<String> answers = new ArrayList<>();
-                answers.add("неверный 1");
-                answers.add("неверный 2");
-                answers.add("верный ответ");
-                answers.add("неверный 3");
-                Question question = new Question("формулировка вопроса", TypeAnswer.OneOrManyAnswers, 4,
-                        answers, 1, "3");
-                List<Question> questions = new ArrayList<>();
-                questions.add(question);
-                TestInfo testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(), "название х", 1, questions);
-                db.collection("tests").document("hereTestsName")
-                        .set(testInfo)
-                        //dbRef.child("users").push().setValue(user)
-                        .addOnSuccessListener(new OnSuccessListener<Void>()
-                        {
-                            @Override
-                            public void onSuccess(Void aVoid)
-                            {
-                                Toast.makeText(MainActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener()
-                        {
-                            @Override
-                            public void onFailure(@NonNull Exception e)
-                            {
-                                Log.w("FAILURE", "Error adding document", e);
-                                Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        });
 
         readDataBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -173,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
                                     }
                                 } else
                                 {
-                                    Log.w("FAILURE", "Error adding document", task.getException());
+                                    Log.w(TAG, "Error adding document", task.getException());
                                     //Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
                                 }
                             }

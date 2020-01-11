@@ -20,7 +20,6 @@
     <string name="menu_logout">Выход</string>
     <string name="nameTest">Название теста</string>
     <string name="continueCreating">Продолжить создание</string>
-    <string name="questionsNumber">Количество вопросов</string>
     <string name="questionText">Формулировка вопроса</string>
     <string name="selectTypeAnswer">Выберите тип ответа на вопрос</string>
     <string name="typeOneOrManyAnswer">Один или несколько правильных ответов</string>

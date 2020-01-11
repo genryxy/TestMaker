@@ -43,12 +43,12 @@ import java.util.concurrent.CountDownLatch;
 
 public class NewTestFragment extends Fragment implements FireBaseConnections
 {
+    private final String TAG = "FAILURE NewTestFragment";
+
     private volatile Integer testsNumber;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button saveNameTestBtn;
-    private Button saveQuestionsNumberBtn;
     private EditText nameTestEdt;
-    private EditText questionsNumberEdt;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -90,7 +90,6 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     {
         super.onStart();
         saveNameTestBtnOnClickListen();
-        saveQuestionsNumberBtnOnClickListen();
     }
 
     /**
@@ -101,23 +100,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     private void findElementsViewById(View root)
     {
         nameTestEdt = root.findViewById(R.id.nameTestEdt);
-        questionsNumberEdt = root.findViewById(R.id.questionsNumberEdt);
         saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
-        saveQuestionsNumberBtn = root.findViewById(R.id.saveQuestionsNumberBtn);
-    }
-
-    /**
-     * Меняет Visibility элементов на экране.
-     * Деактивирует поле ввода для названия теста.
-     */
-    private void changeElementsVisibility()
-    {
-        nameTestEdt.setEnabled(false);
-        nameTestEdt.setFocusable(false);
-        questionsNumberEdt.requestFocus();
-        saveNameTestBtn.setVisibility(View.GONE);
-        saveQuestionsNumberBtn.setVisibility(View.VISIBLE);
-        questionsNumberEdt.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -140,84 +123,61 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                     downLatch.await();
                 } catch (InterruptedException e)
                 {
-                    Log.w("FAILURE", "Error CountDownLatch", e);
+                    Log.w(TAG, "Error CountDownLatch", e);
                     return;
                 }
 
                 db.collection("tests")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task)
+                    {
+                        if (nameTestEdt.getText().toString().length() == 0)
                         {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task)
+                            nameTestEdt.setError("Небходимо заполнить это поле");
+                            nameTestEdt.requestFocus();
+                        } else if (task.isSuccessful())
+                        {
+                            for (DocumentSnapshot docSnapshot : task.getResult().getDocuments())
                             {
-                                if (nameTestEdt.getText().toString().length() == 0)
+                                if (docSnapshot.getId().equals("tests_names"))
                                 {
-                                    nameTestEdt.setError("Небходимо заполнить это поле");
-                                    nameTestEdt.requestFocus();
-                                } else if (task.isSuccessful())
-                                {
-                                    for (DocumentSnapshot docSnapshot : task.getResult().getDocuments())
+                                    if (docSnapshot.getData().values()
+                                            .contains(nameTestEdt.getText().toString()))
                                     {
-                                        if (docSnapshot.getId().equals("tests_names"))
+                                        nameTestEdt.setError("Тест с таким названием уже существует");
+                                        nameTestEdt.requestFocus();
+                                    } else if (testsNumber != null)
+                                    {
+                                        CountDownLatch downLatch2 = new CountDownLatch(1);
+                                        new UpdateDataBase(downLatch2, nameTestEdt);
+                                        try
                                         {
-                                            if (docSnapshot.getData().values()
-                                                    .contains(nameTestEdt.getText().toString()))
-                                            {
-                                                nameTestEdt.setError("Тест с таким названием уже существует");
-                                                nameTestEdt.requestFocus();
-                                            } else if (testsNumber != null)
-                                            {
-                                                CountDownLatch downLatch2 = new CountDownLatch(1);
-                                                new UpdateDataBase(downLatch2, nameTestEdt);
-                                                try
-                                                {
-                                                    // Ждём, пока не произойдёт событие.
-                                                    downLatch2.await();
-                                                    changeElementsVisibility();
-                                                } catch (InterruptedException e)
-                                                {
-                                                    Log.w("FAILURE", "Error CountDownLatch", e);
-                                                    return;
-                                                }
-                                            }
-                                            break;
+                                            // Ждём, пока не произойдёт событие.
+                                            downLatch2.await();
+                                        } catch (InterruptedException e)
+                                        {
+                                            Log.w(TAG, "Error CountDownLatch", e);
+                                            return;
                                         }
+                                        Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
+                                        newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
+                                        newIntent.putExtra("keyNameTestEdt", Integer.valueOf(testsNumber + 1));
+                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();
+
+                                        startActivity(newIntent);
                                     }
-                                } else
-                                {
-                                    Log.w("FAILURE", "Error adding document", task.getException());
-                                    Toast.makeText(getContext(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
+                                    break;
                                 }
                             }
-                        });
-            }
-        });
-    }
-
-    /**
-     * Обработчик события нажатие на кнопку для сохранения количества вопросов в
-     * тесте. Если пользователь ввёл положительное число, то открывает новую страницу.
-     */
-    private void saveQuestionsNumberBtnOnClickListen()
-    {
-        saveQuestionsNumberBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (questionsNumberEdt.getText().toString().length() == 0
-                        || Integer.valueOf(questionsNumberEdt.getText().toString()) < 1)
-                {
-                    questionsNumberEdt.requestFocus();
-                    questionsNumberEdt.setError("Необходимо указать положительное количество вопросов");
-                } else
-                {
-                    Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
-                    newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
-                    newIntent.putExtra("questionsNumberEdt", questionsNumberEdt.getText().toString());
-                    startActivity(newIntent);
-                }
+                        } else
+                        {
+                            Log.w(TAG, "Error adding document", task.getException());
+                            Toast.makeText(getContext(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
     }
@@ -245,31 +205,31 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
 
         public void run()
         {
+            // Считываем количество тестов в БД для создания ключа.
             db.collection("tests")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task)
+                {
+                    if (task.isSuccessful())
                     {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task)
+                        for (DocumentSnapshot docSnapshot : task.getResult().getDocuments())
                         {
-                            if (task.isSuccessful())
+                            if (docSnapshot.getId().equals("tests"))
                             {
-                                for (DocumentSnapshot docSnapshot : task.getResult().getDocuments())
-                                {
-                                    if (docSnapshot.getId().equals("tests"))
-                                    {
-                                        testsNumber = Integer.valueOf(docSnapshot.getData().get("testsNumber").toString());
-                                        //Toast.makeText(getActivity(), testsNumber.toString(), Toast.LENGTH_SHORT).show();
-                                        break;
-                                    }
-                                }
-                            } else
-                            {
-                                Log.w("FAILURE", "Error adding document", task.getException());
-                                //Toast.makeText(getContext(), "FAILURE", Toast.LENGTH_SHORT).show();
+                                testsNumber = Integer.valueOf(docSnapshot.getData().get("testsNumber").toString());
+                                //Toast.makeText(getActivity(), testsNumber.toString(), Toast.LENGTH_SHORT).show();
+                                break;
                             }
                         }
-                    });
+                    } else
+                    {
+                        Log.w(TAG, "Error adding document", task.getException());
+                        //Toast.makeText(getContext(), "FAILURE", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
             // Изещаем о том, что произошло событие.
             latch.countDown();
         }
@@ -303,35 +263,32 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
             Map<String, String> data = new HashMap<>();
             data.put("name" + testsNumber, nameTestEdt.getText().toString());
             db.collection("tests").document("tests_names")
-                    .set(data, SetOptions.merge())
-                    .addOnSuccessListener(new OnSuccessListener<Void>()
-                    {
-                        @Override
-                        public void onSuccess(Void aVoid)
-                        {
-                            Toast.makeText(getActivity(), "Название добавлено", Toast.LENGTH_SHORT).show();
-                            Map<String, Object> dataNumb = new HashMap<>();
-                            dataNumb.put("testsNumber", testsNumber + 1);
-                            db.collection("tests").document("tests")
-                                    .update(dataNumb)
-                                    .addOnFailureListener(new OnFailureListener()
-                                    {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e)
-                                        {
-                                            Log.w("FAILURE", "Error updating testsNumber", e);
-                                        }
-                                    });
-                            //db.collection("tests")
-                            //        .add()
-                        }
-                    })
+                    .set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>()
+            {
+                @Override
+                public void onSuccess(Void aVoid)
+                {
+                    Toast.makeText(getActivity(), "Название добавлено", Toast.LENGTH_SHORT).show();
+                    Map<String, Object> dataNumb = new HashMap<>();
+                    dataNumb.put("testsNumber", testsNumber + 1);
+                    db.collection("tests").document("tests")
+                            .update(dataNumb)
+                            .addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Log.w(TAG, "Error updating testsNumber", e);
+                                }
+                            });
+                }
+            })
                     .addOnFailureListener(new OnFailureListener()
                     {
                         @Override
                         public void onFailure(@NonNull Exception e)
                         {
-                            Log.w("FAILURE", "Error adding testName", e);
+                            Log.w(TAG, "Error adding testName", e);
                             Toast.makeText(getActivity(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
                         }
                     });

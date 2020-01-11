@@ -7,7 +7,7 @@ public class Question
     private String questionText;
     private TypeAnswer typeAnswer;
     private Integer allAnswersNumber;
-    private List<String> answersLst;
+    private List<AnswerView> answersLst;
     private Integer correctAnswersNumber;
     // Если OneAnswer, то только индекс.
     // Если ManyAnswers, то только индексы через запятую.
@@ -31,7 +31,7 @@ public class Question
      *                             Если OwnAnswer, то строковый ответ.
      */
     public Question(String questionText, TypeAnswer typeAnswer, Integer allAnswersNumber,
-                    List<String> answersLst, Integer correctAnswersNumber, String correctAnswer)
+                    List<AnswerView> answersLst, Integer correctAnswersNumber, String correctAnswer)
     {
         this.questionText = questionText;
         this.typeAnswer = typeAnswer;
@@ -47,7 +47,7 @@ public class Question
 
     public Integer getAllAnswersNumber() { return allAnswersNumber; }
 
-    public List<String> getAnswersLst() { return answersLst; }
+    public List<AnswerView> getAnswersLst() { return answersLst; }
 
     public Integer getCorrectAnswersNumber() { return correctAnswersNumber; }
 

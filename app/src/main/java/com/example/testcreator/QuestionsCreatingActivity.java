@@ -1,11 +1,15 @@
 package com.example.testcreator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,8 +17,23 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.testcreator.ui.newTest.NewTestFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class QuestionsCreatingActivity extends AppCompatActivity
 {
+    private final String TAG = "FAILUREQuestionActivity";
+
+    private String nameTest;
+    private int keyNameTest;
     private TextView numberQuestionTxt;
     private RadioGroup typeAnsRadioGroup;
     private EditText questionTextEdt;
@@ -28,6 +47,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questions_creating);
+        getInfoFromPreviousIntent();
         findElementsViewById();
         setRadioGroupCheckedChangeListener();
         setCreatingAnswersBtnClickListener();
@@ -35,9 +55,32 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         Intent prevIntent = getIntent();
         if (prevIntent.hasExtra("questionNumber"))
             questionNumber = prevIntent.getIntExtra("questionNumber", 1);
-
         String tmp = questionNumber + " вопрос";
         numberQuestionTxt.setText(tmp);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Внимание");
+        builder.setMessage("Изменения не будут сохранены ");
+        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+                removeNameTestFromDataBase();
+                startActivity(new Intent(QuestionsCreatingActivity.this, MainActivity.class));
+                //QuestionsCreatingActivity.super.onBackPressed();
+            }
+        });
+        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int id)
+            {
+            }
+        });
+        builder.show();
     }
 
     /**
@@ -77,6 +120,16 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * Метод для получения значений, переданных с предыдущей страницы.
+     */
+    private void getInfoFromPreviousIntent()
+    {
+        Intent prevIntent = getIntent();
+        nameTest = prevIntent.getStringExtra("nameTestEdt");
+        keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
+    }
+
     private void setCreatingAnswersBtnClickListener()
     {
         startCreatingAnswersBtn.setOnClickListener(new View.OnClickListener()
@@ -84,14 +137,9 @@ public class QuestionsCreatingActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                Intent prevIntent = getIntent();
-                String nameTest = prevIntent.getStringExtra("nameTestEdt");
-                // ????
-                String questionsNumber = prevIntent.getStringExtra("questionsNumberEdt");
                 Intent newIntent = new Intent(QuestionsCreatingActivity.this, AnswersCreatingActivity.class);
                 newIntent.putExtra("nameTestEdt", nameTest);
-                // ????
-                newIntent.putExtra("questionsNumberEdt", questionsNumber);
+                newIntent.putExtra("keyNameTestEdt", keyNameTest);
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
                 newIntent.putExtra("questionNumber", questionNumber);
@@ -113,22 +161,47 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         });
     }
 
-    @Override
-    public void onBackPressed()
+    /**
+     * Если пользователь решил вернуться назад во время создания вопроса,
+     * то необходимо удалить название из БД и поменять количество тестов,
+     * содержащихся в БД.
+     */
+    private void removeNameTestFromDataBase()
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Внимание");
-        builder.setMessage("Изменения не будут сохранены ");
-        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //saveResult();
-                QuestionsCreatingActivity.super.onBackPressed();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("tests").document("tests_names");
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name" + Integer.valueOf(keyNameTest - 1).toString(), FieldValue.delete());
+        docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                //Toast.makeText(QuestionsCreatingActivity.this, "удалили название", Toast.LENGTH_SHORT).show();
             }
-        });
-        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-            }
-        });
-        builder.show();
+        })
+                .addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        Log.w(TAG, "Error removing nameTest", e);
+                        //Toast.makeText(QuestionsCreatingActivity.this, "не удалось удалить", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        Map<String, Object> dataNumb = new HashMap<>();
+        dataNumb.put("testsNumber", keyNameTest - 1);
+        db.collection("tests").document("tests")
+                .update(dataNumb)
+                .addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        Log.w(TAG, "Error updating testsNumber", e);
+                    }
+                });
     }
 }
