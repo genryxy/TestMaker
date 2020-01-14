@@ -35,17 +35,4 @@
         tools:layout_conversion_absoluteHeight="55dp"
         tools:layout_conversion_absoluteWidth="88dp" />
 
-    <TextView
-        android:id="@+id/readDataTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="316dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.673"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_conversion_absoluteHeight="19dp"
-        tools:layout_conversion_absoluteWidth="59dp" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,6 +38,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private Button endCreatingTestBtn;
     private String typeAnswer;
     private String nameTest;
+    private String nameImage;
     private String questionText;
     private int keyNameTest;
     private int questionNumber;
@@ -95,9 +96,18 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         builder.show();
     }
 
+    /**
+     * Создаёт список вопросов, состоящий из одного вопроса с заданными параметрами.
+     *
+     * @param lstAnswers      Список ответов на создаваемый вопрос.
+     * @param rightAnsBuilder Правильный ответ в строковом представлении.
+     * @param rightAnsNumber  Количество правильных ответов.
+     * @return Список вопросов
+     */
     private List<Question> createQuestion(List<AnswerView> lstAnswers,
                                           StringBuilder rightAnsBuilder, int rightAnsNumber)
     {
+        // (Длина - 1), чтобы не было висячей запятой.
         String correctAnswersStr = rightAnsBuilder.substring(0, rightAnsBuilder.length() - 1);
         Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
                 ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
@@ -143,6 +153,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         questionText = prevIntent.getStringExtra("questionTextEdt");
         typeAnswer = prevIntent.getStringExtra("typeAnswer");
         nameTest = prevIntent.getStringExtra("nameTestEdt");
+        nameImage = prevIntent.getStringExtra("nameImage");
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
@@ -197,7 +208,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     }
 
                     List<Question> questions = createQuestion(lstAnswers, rightAns.second, rightAns.first);
-                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(), nameTest, 1, questions);
+                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(),
+                            nameTest, nameImage, 1, questions);
                     db.collection("tests").document(nameTest)
                             .set(testInfo)
                             .addOnFailureListener(new OnFailureListener()
@@ -246,32 +258,33 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 } else
                 {
                     DocumentReference docRef = db.collection("tests").document(nameTest);
-                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-                    {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot)
-                        {
-                            testInfo = documentSnapshot.toObject(TestInfo.class);
-                            List<Question> lstQuestions = testInfo.getQuestionsLst();
-                            List<Question> question = createQuestion(lstAnswers, rightAns.second, rightAns.first);
-                            lstQuestions.add(question.get(0));
-                            testInfo.setQuestionsNumber(lstQuestions.size());
-                            testInfo.setQuestionsLst(lstQuestions);
+                    docRef.get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
+                            {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot)
+                                {
+                                    testInfo = documentSnapshot.toObject(TestInfo.class);
+                                    List<Question> lstQuestions = testInfo.getQuestionsLst();
+                                    List<Question> question = createQuestion(lstAnswers, rightAns.second, rightAns.first);
+                                    lstQuestions.add(question.get(0));
+                                    testInfo.setQuestionsNumber(lstQuestions.size());
+                                    testInfo.setQuestionsLst(lstQuestions);
 
-                            db.collection("tests").document(nameTest)
-                                    .set(testInfo)
-                                    .addOnFailureListener(new OnFailureListener()
-                                    {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e)
-                                        {
-                                            Log.w(TAG, "Error adding document", e);
-                                            Toast.makeText(AnswersCreatingActivity.this,
-                                                    "Возникла ошибка", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    })
+                                    db.collection("tests").document(nameTest)
+                                            .set(testInfo)
+                                            .addOnFailureListener(new OnFailureListener()
+                                            {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e)
+                                                {
+                                                    Log.w(TAG, "Error adding document", e);
+                                                    Toast.makeText(AnswersCreatingActivity.this,
+                                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            })
                             .addOnFailureListener(new OnFailureListener()
                             {
                                 @Override

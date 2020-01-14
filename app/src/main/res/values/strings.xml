@@ -9,7 +9,7 @@
 
     <string name="menu_home">Home</string>
     <string name="menu_add_test">Добавить тест</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_search_test">Искать тест</string>
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
@@ -31,4 +31,6 @@
     <string name="createNextQuestion">Перейти к созданию следующего вопроса</string>
     <string name="endCreatingTest">Завершить создание теста</string>
     <string name="answerText">Текст ответа</string>
+    <string name="chooseImage">Выбрать картинку</string>
+    <string name="wallpaperTest">Выберите картинку на логотип составляемого теста</string>
 </resources>

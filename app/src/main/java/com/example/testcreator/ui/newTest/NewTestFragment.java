@@ -1,13 +1,17 @@
 package com.example.testcreator.ui.newTest;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +34,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.w3c.dom.Document;
 
@@ -40,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class NewTestFragment extends Fragment implements FireBaseConnections
 {
@@ -49,6 +58,10 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button saveNameTestBtn;
     private EditText nameTestEdt;
+    private Button chooseImageBtn;
+    private ImageView imgView;
+    private StorageReference storageRef = FirebaseStorage.getInstance().getReference("images");
+    private Uri imgUri;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -82,6 +95,15 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
             }
         });
         findElementsViewById(root);
+
+        chooseImageBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                chooseImage();
+            }
+        });
         return root;
     }
 
@@ -90,6 +112,17 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     {
         super.onStart();
         saveNameTestBtnOnClickListen();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null)
+        {
+            imgUri = data.getData();
+            imgView.setImageURI(imgUri);
+        }
     }
 
     /**
@@ -101,6 +134,47 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
     {
         nameTestEdt = root.findViewById(R.id.nameTestEdt);
         saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
+        chooseImageBtn = root.findViewById(R.id.chooseImageBtn);
+        imgView = root.findViewById(R.id.imgView);
+    }
+
+    private void uploadImage(String nameImage)
+    {
+        StorageReference childRef = storageRef.child(nameImage);
+        childRef.putFile(imgUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
+                {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
+                    {
+                        Toast.makeText(getActivity(), "Изображение загружено", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception exception)
+                    {
+                        Log.w(TAG, "Error CountDownLatch", exception);
+                        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    private String getExtension(Uri imgUri)
+    {
+        ContentResolver resolver = getActivity().getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(resolver.getType(imgUri));
+    }
+
+    private void chooseImage()
+    {
+        Intent intent = new Intent();
+        intent.setType("image/'");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 1);
     }
 
     /**
@@ -115,6 +189,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
             @Override
             public void onClick(View v)
             {
+                final String nameImage = System.currentTimeMillis() + "." + getExtension(imgUri);
+                uploadImage(nameImage);
                 CountDownLatch downLatch = new CountDownLatch(1);
                 new CountTests(downLatch);
                 try
@@ -164,8 +240,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections
                                         Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
                                         newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
                                         newIntent.putExtra("keyNameTestEdt", Integer.valueOf(testsNumber + 1));
-                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();
-
+                                        newIntent.putExtra("nameImage", nameImage);
+//                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();
                                         startActivity(newIntent);
                                     }
                                     break;

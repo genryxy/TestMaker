@@ -8,17 +8,20 @@ public class TestInfo
     private String testCreator;
     private Date testCreationDate;
     private String testName;
+    private String nameImage;
     private Integer questionsNumber;
     private List<Question> questionsLst;
 
 
     public TestInfo() { }
 
-    public TestInfo(String testCreator, Date testCreationDate, String testName, Integer questionsNumber, List<Question> questionsLst)
+    public TestInfo(String testCreator, Date testCreationDate, String testName, String nameImage,
+                    Integer questionsNumber, List<Question> questionsLst)
     {
         this.testCreator = testCreator;
         this.testCreationDate = testCreationDate;
         this.testName = testName;
+        this.nameImage = nameImage;
         this.questionsNumber = questionsNumber;
         this.questionsLst = questionsLst;
     }
@@ -28,6 +31,8 @@ public class TestInfo
     public Date getTestCreationDate() { return testCreationDate; }
 
     public String getTestName() { return testName; }
+
+    public String getNameImage() { return nameImage; }
 
     public Integer getQuestionsNumber() { return questionsNumber; }
 

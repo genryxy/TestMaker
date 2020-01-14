@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         NavigationUI.setupWithNavController(navigationView, navController);
 
         Button readDataBtn = findViewById(R.id.readDataBtn);
-        final TextView readDataTxt = findViewById(R.id.readDataTxt);
+        //final TextView readDataTxt = findViewById(R.id.readDataTxt);
 
         readDataBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
                                     for (QueryDocumentSnapshot document : task.getResult())
                                     {
                                         tmp += document.getId() + " ";
-                                        readDataTxt.setText(document.getData().toString() + " " + tmp);
+                                        //readDataTxt.setText(document.getData().toString() + " " + tmp);
                                         if (document.getId().equals("VNVXKvyaXnd3RwxUum8HRLr7FOA3"))
                                         {
                                             break;

@@ -1,4 +1,4 @@
-package com.example.testcreator.ui.slideshow;
+package com.example.testcreator.ui.searchTest;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

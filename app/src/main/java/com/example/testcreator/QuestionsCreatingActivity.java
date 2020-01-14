@@ -33,6 +33,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
     private final String TAG = "FAILUREQuestionActivity";
 
     private String nameTest;
+    private String nameImage;
     private int keyNameTest;
     private TextView numberQuestionTxt;
     private RadioGroup typeAnsRadioGroup;
@@ -96,6 +97,10 @@ public class QuestionsCreatingActivity extends AppCompatActivity
         numberQuestionTxt = findViewById(R.id.numberQuestionTxt);
     }
 
+    /**
+     * Меняет значение в текстовом поле в зависимости от
+     * выбранного варианта.
+     */
     private void setRadioGroupCheckedChangeListener()
     {
         typeAnsRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
@@ -127,6 +132,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
     {
         Intent prevIntent = getIntent();
         nameTest = prevIntent.getStringExtra("nameTestEdt");
+        nameImage = prevIntent.getStringExtra("nameImage");
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
@@ -139,6 +145,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity
             {
                 Intent newIntent = new Intent(QuestionsCreatingActivity.this, AnswersCreatingActivity.class);
                 newIntent.putExtra("nameTestEdt", nameTest);
+                newIntent.putExtra("nameImage", nameImage);
                 newIntent.putExtra("keyNameTestEdt", keyNameTest);
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
