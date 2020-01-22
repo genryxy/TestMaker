@@ -23,6 +23,18 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_conversion_absoluteWidth="411dp" />
 
+
+    <fragment
+        android:id="@+id/select_test_fragment"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:name="com.example.testcreator.SelectingTestFragment"
+        app:layout_constraintBottom_toTopOf="@+id/readDataBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_conversion_absoluteHeight="675dp"
+        tools:layout_conversion_absoluteWidth="411dp" />
+
     <Button
         android:id="@+id/readDataBtn"
         android:layout_width="wrap_content"

@@ -33,4 +33,7 @@
     <string name="answerText">Текст ответа</string>
     <string name="chooseImage">Выбрать картинку</string>
     <string name="wallpaperTest">Выберите картинку на логотип составляемого теста</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
