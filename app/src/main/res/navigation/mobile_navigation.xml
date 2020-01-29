@@ -18,10 +18,10 @@
         tools:layout="@layout/fragment_name_test" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.testcreator.ui.searchTest.SlideshowFragment"
+        android:id="@+id/nav_selecting_test"
+        android:name="com.example.testcreator.ui.searchTest.SelectingTestFragment"
         android:label="@string/menu_search_test"
-        tools:layout="@layout/fragment_search_test" />
+        tools:layout="@layout/fragment_selecting_test" />
 
     <fragment
         android:id="@+id/nav_tools"
@@ -43,6 +43,5 @@
 
     <fragment
         android:id="@+id/nav_logout"
-        android:name="com.example.testcreator.ui.logout.LogoutFragment"
-        tools:layout="@layout/fragment_logout" />
+        android:name="com.example.testcreator.ui.logout.LogoutFragment" />
 </navigation>

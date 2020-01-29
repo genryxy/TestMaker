@@ -1,4 +1,4 @@
-package com.example.testcreator;
+package com.example.testcreator.ui.searchTest;
 
 public class SelectingTestView
 {

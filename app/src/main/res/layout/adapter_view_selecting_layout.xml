@@ -1,44 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:weightSum="100">
-
-    <ImageView
-        android:id="@+id/testAvatarImg"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_weight="80" />
+    android:layout_height="105dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="20"
-        android:orientation="vertical">
+        android:layout_height="100dp"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="horizontal"
+        android:weightSum="100">
 
-        <ScrollView
+        <ImageView
+            android:id="@+id/testAvatarImg"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
+            android:layout_height="100dp"
+            android:layout_weight="40"
+            android:contentDescription="@string/menu_search_test" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="20"
+            android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/nameTestViewTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/nameTestViewTxt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/infoTestTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:textSize="16sp" />
-            </LinearLayout>
-        </ScrollView>
+            <TextView
+                android:id="@+id/infoTestTxt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/creatingDateTxt"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="40"
+            android:text="Creating date"
+            android:textSize="16sp" />
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#EDEDED"
+        android:paddingTop="20dp" />
 </LinearLayout>

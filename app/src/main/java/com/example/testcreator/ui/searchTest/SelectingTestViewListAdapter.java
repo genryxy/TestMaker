@@ -1,4 +1,4 @@
-package com.example.testcreator;
+package com.example.testcreator.ui.searchTest;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.testcreator.R;
+import com.example.testcreator.ui.searchTest.SelectingTestView;
 
 import java.util.List;
 
@@ -36,11 +39,36 @@ public class SelectingTestViewListAdapter extends ArrayAdapter<SelectingTestView
         LayoutInflater inflater = LayoutInflater.from(context);
         convertView = inflater.inflate(resource, parent, false);
 
-        ImageView imgTest = convertView.findViewById(R.id.testAvatarImg);
+        final ImageView imgTest = convertView.findViewById(R.id.testAvatarImg);
         TextView nameTestViewTxt = convertView.findViewById(R.id.nameTestViewTxt);
-        TextView infoTestTxt = convertView.findViewById(R.id.infoTestTxt);
+        final TextView infoTestTxt = convertView.findViewById(R.id.infoTestTxt);
+//        LinearLayout testLayout = convertView.findViewById(R.id.testLayout);
         nameTestViewTxt.setText(name);
+        imgTest.setImageResource(R.drawable.ic_menu_name_test);
         infoTestTxt.setText(creator);
+
+//        testLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                infoTestTxt.setText("clicked from layout!!!!");
+//            }
+//        });
+//        nameTestViewTxt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                infoTestTxt.setText("clicked from test!!!!");
+//            }
+//        });
+//        infoTestTxt.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                infoTestTxt.setText("clicked from info!!!!");
+//            }
+//        });
+
         return convertView;
     }
 }

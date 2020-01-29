@@ -1,17 +1,26 @@
 package com.example.testcreator;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.TaskStackBuilder;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -26,6 +35,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     private final String TAG = "FAILURE MainActivity";
 
     private AppBarConfiguration mAppBarConfiguration;
+    private FragmentTransaction transaction;
+    private Fragment selectingTestFragment;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -63,13 +75,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_new_test, R.id.nav_slideshow,
+                R.id.nav_home, R.id.nav_new_test, R.id.nav_selecting_test,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+//        selectingTestFragment = new SelectingTestFragment();
+//        transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.add(R.id.select_test_fragment, selectingTestFragment);
+//        transaction.commit();
 
         Button readDataBtn = findViewById(R.id.readDataBtn);
         //final TextView readDataTxt = findViewById(R.id.readDataTxt);
@@ -122,6 +139,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     @Override
     public boolean onSupportNavigateUp()
     {
+//        transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.remove(selectingTestFragment);
+//        transaction.commit();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
