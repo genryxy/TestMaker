@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/selectingTestsLstView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/selectingTestsRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollIndicators="right"
-        android:divider="#FFFFFF"
         android:descendantFocusability="blocksDescendants"
+        android:scrollbarSize="8dp"
+        android:divider="#FFFFFF"
         android:dividerHeight="5dp"
-        tools:listitem="@layout/adapter_view_selecting_layout"/>
+        android:scrollbars="vertical"
+        tools:listitem="@layout/adapter_view_selecting_layout" />
 
 </FrameLayout>

@@ -11,21 +11,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SelectingTestFragment extends Fragment
-{
+public class SelectingTestFragment extends Fragment {
 
     private SelectingTestViewModel selectingTestViewModel;
 //    private ListView testsLst;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState)
-    {
+                             ViewGroup container, Bundle savedInstanceState) {
         selectingTestViewModel =
                 ViewModelProviders.of(this).get(SelectingTestViewModel.class);
         View root = inflater.inflate(R.layout.fragment_selecting_test, container, false);
@@ -37,29 +37,32 @@ public class SelectingTestFragment extends Fragment
 //            }
 //        });
 
-        ListView testsLst = root.findViewById(R.id.selectingTestsLstView);
+//        ListView testsLstView = root.findViewById(R.id.selectingTestsRecView);
         // Создаём список с ответами.
-        final List<SelectingTestView> lstAnswers = new ArrayList<>();
-        for (int i = 0; i < 3; i++)
-            lstAnswers.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
+        List<SelectingTestView> lstTests = new ArrayList<>();
+        for (int i = 0; i < 4; i++)
+            lstTests.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
 
-        final SelectingTestViewListAdapter adapter = new SelectingTestViewListAdapter
-                (getContext(), R.layout.adapter_view_selecting_layout, lstAnswers);
-        testsLst.setAdapter(adapter);
+        RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
+        SelectingTestRecyclerView adapter = new SelectingTestRecyclerView(lstTests);
+        testsRecycler.setAdapter(adapter);
+        testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+
+//        testsLstView.setAdapter(adapter);
 
 //        DisplayMetrics metrics = new DisplayMetrics();
 //        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 //        testsLst.setMinimumWidth(metrics.widthPixels);
 
 
-        testsLst.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                Toast.makeText(getContext(), Integer.valueOf(position).toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        testsLstView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+//        {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+//            {
+//                Toast.makeText(getContext(), Integer.valueOf(position).toString(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         return root;
     }

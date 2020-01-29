@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="105dp"
     android:descendantFocusability="blocksDescendants"
+    android:background="?android:selectableItemBackground"
     android:orientation="vertical">
 
     <LinearLayout
