@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.testcreator.Model.Category;
+import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Question;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -47,7 +49,37 @@ public class DBHelper extends SQLiteAssetHelper {
         }
         cursor.close();
         db.close();
-        
+
         return categories;
+    }
+
+    /**
+     * Get 30 questions from DB by category
+     */
+    public List<QuestionModel> getQuestionsByCategory(int category) {
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category) , null);
+        List<QuestionModel> questions = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                QuestionModel question = new QuestionModel(cursor.getInt(cursor.getColumnIndex("ID")),
+                        cursor.getString(cursor.getColumnIndex("QuestionText")),
+                        cursor.getString(cursor.getColumnIndex("QuestionImage")),
+                        cursor.getString(cursor.getColumnIndex("AnswerA")),
+                        cursor.getString(cursor.getColumnIndex("AnswerB")),
+                        cursor.getString(cursor.getColumnIndex("AnswerC")),
+                        cursor.getString(cursor.getColumnIndex("AnswerD")),
+                        cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
+                        cursor.getInt(cursor.getColumnIndex("IsImageQuestion")),
+                        cursor.getInt(cursor.getColumnIndex("CategoryID")));
+                questions.add(question);
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        db.close();
+
+        return questions;
     }
 }
