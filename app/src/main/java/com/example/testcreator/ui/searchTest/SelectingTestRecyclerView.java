@@ -137,6 +137,7 @@ public class SelectingTestRecyclerView extends /*ArrayAdapter<SelectingTestView>
 
         nameTestViewTxt.setText(testView.getName());
         infoTestTxt.setText(testView.getCreator());
+        imgTest.setImageResource(R.drawable.ic_launcher_foreground);
         // TODO: !!!!!!!!! Брать ссылку из клааса.
         //imgTest.setImageResource(R.drawable.ic_menu_name_test);
 
@@ -153,7 +154,7 @@ public class SelectingTestRecyclerView extends /*ArrayAdapter<SelectingTestView>
             @Override
             public void onFailure(@NonNull Exception exception) {
                 // Handle any errors
-                imgTest.setImageResource(R.drawable.ic_launcher_foreground);
+//                imgTest.setImageResource(R.drawable.ic_launcher_foreground);
             }
         });
     }

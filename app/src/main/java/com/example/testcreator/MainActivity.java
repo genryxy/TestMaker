@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -27,7 +28,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Adapter.CategoryAdapter;
+import com.example.testcreator.Common.SpaceDecoration;
+import com.example.testcreator.DBHelper.DBHelper;
+import com.example.testcreator.Model.Category;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,13 +60,17 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     private Fragment selectingTestFragment;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private RecyclerView categoryRecycler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Quiz 2020");
         setSupportActionBar(toolbar);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener()
         {
@@ -126,6 +137,23 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
                         });
             }
         });
+
+        categoryRecycler = findViewById(R.id.categoryRecycler);
+        categoryRecycler.setHasFixedSize(true);
+        categoryRecycler.setLayoutManager(new GridLayoutManager(this, 2));
+
+        // Get screen height
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // Max size of item in category
+        int height = displayMetrics.heightPixels / 8;
+
+        CategoryAdapter adapter = new CategoryAdapter(MainActivity.this,
+                DBHelper.getInstance(MainActivity.this).getAllCategories());
+        int spaceInPixel = 4;
+        categoryRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
+        categoryRecycler.setAdapter(adapter);
+
     }
 
     @Override
