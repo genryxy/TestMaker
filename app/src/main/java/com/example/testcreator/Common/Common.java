@@ -5,9 +5,13 @@ import android.os.CountDownTimer;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.QuestionFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Common {
     public static final int TOTAL_TIME = 20 * 60 * 1000;
@@ -18,6 +22,10 @@ public class Common {
 
     public static int rightAnswerCount = 0;
     public static int wrongAnswerCount = 0;
+    // Список с фрагментами, на которых находятся вопросы.
+    public static List<QuestionFragment> fragmentsLst = new ArrayList<>();
+    // Выбранные варианты ответов.
+    public static TreeSet<String> selectedValues = new TreeSet<>();
 
 
     public enum AnswerType {
