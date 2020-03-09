@@ -1,28 +1,17 @@
 package com.example.testcreator;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.TaskStackBuilder;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -34,22 +23,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.testcreator.Adapter.CategoryAdapter;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.DBHelper.DBHelper;
-import com.example.testcreator.Model.Category;
+import com.example.testcreator.Interface.FireBaseConnections;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FireBaseConnections
 {
@@ -59,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     private FragmentTransaction transaction;
     private Fragment selectingTestFragment;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private RecyclerView categoryRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -137,23 +117,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
                         });
             }
         });
-
-        categoryRecycler = findViewById(R.id.categoryRecycler);
-        categoryRecycler.setHasFixedSize(true);
-        categoryRecycler.setLayoutManager(new GridLayoutManager(this, 2));
-
-        // Get screen height
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        // Max size of item in category
-        int height = displayMetrics.heightPixels / 8;
-
-        CategoryAdapter adapter = new CategoryAdapter(MainActivity.this,
-                DBHelper.getInstance(MainActivity.this).getAllCategories());
-        int spaceInPixel = 4;
-        categoryRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
-        categoryRecycler.setAdapter(adapter);
-
     }
 
     @Override

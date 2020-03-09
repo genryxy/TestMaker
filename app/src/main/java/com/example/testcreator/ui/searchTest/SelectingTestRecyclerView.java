@@ -1,9 +1,7 @@
 package com.example.testcreator.ui.searchTest;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,26 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.Options;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.model.stream.BaseGlideUrlLoader;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.example.testcreator.FireBaseConnections;
+import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SelectingTestRecyclerView extends /*ArrayAdapter<SelectingTestView>*/
@@ -48,7 +34,7 @@ public class SelectingTestRecyclerView extends /*ArrayAdapter<SelectingTestView>
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
-        public ViewHolder(Context context, View itemView) {
+        ViewHolder(Context context, View itemView) {
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
@@ -87,7 +73,7 @@ public class SelectingTestRecyclerView extends /*ArrayAdapter<SelectingTestView>
     private List<SelectingTestView> testsLst;
     private Context context;
 
-    public SelectingTestRecyclerView(@NonNull List<SelectingTestView> testsLst) {
+     SelectingTestRecyclerView(@NonNull List<SelectingTestView> testsLst) {
 //        super(DIFF_CALLBACK);
         this.testsLst = testsLst;
     }

@@ -21,8 +21,8 @@ import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
 
-    Context context;
-    List<Category> categories;
+    private Context context;
+    private List<Category> categories;
 
     public CategoryAdapter(Context context, List<Category> categories) {
         this.context = context;
@@ -47,12 +47,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         return categories.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         CardView cardCategory;
         TextView categoryNameTxt;
 
-        public MyViewHolder(@NonNull View itemView) {
+        MyViewHolder(@NonNull View itemView) {
             super(itemView);
             cardCategory = itemView.findViewById(R.id.cardCategory);
             categoryNameTxt = itemView.findViewById(R.id.categoryNameTxt);
@@ -65,6 +65,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                     Common.selectedCategory = categories.get(getAdapterPosition());
                     Common.fragmentsLst.clear();
                     Common.answerSheetList.clear();
+                    Common.rightAnswerCount = 0;
+                    Common.wrongAnswerCount = 0;
                     Intent intent = new Intent(context, QuestionActivity.class);
                     context.startActivity(intent);
                 }

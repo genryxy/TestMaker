@@ -1,13 +1,9 @@
 package com.example.testcreator.ui.newTest;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +21,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.bumptech.glide.Glide;
-import com.example.testcreator.FireBaseConnections;
-import com.example.testcreator.Question;
+import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.QuestionsCreatingActivity;
 import com.example.testcreator.R;
-import com.example.testcreator.TestInfo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,18 +32,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.w3c.dom.Document;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 

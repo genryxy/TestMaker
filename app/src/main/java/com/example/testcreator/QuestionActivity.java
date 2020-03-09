@@ -46,7 +46,6 @@ public class QuestionActivity extends AppCompatActivity {
 
     RecyclerView answerSheetView;
     AnswerSheetAdapter answerSheetAdapter;
-//    AnswerSheetAdapter answerSheetHelperAdapter;
 
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -128,10 +127,6 @@ public class QuestionActivity extends AppCompatActivity {
 //                            questionFragment.disableAnswers();
 //                        }
                         prevPosition = position;
-                    } else {
-                        questionFragment = Common.fragmentsLst.get(position);
-                        questionFragment.showCorrectAnswers();
-                        questionFragment.disableAnswers();
                     }
                 }
 
