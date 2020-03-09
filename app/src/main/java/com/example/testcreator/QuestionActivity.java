@@ -1,19 +1,24 @@
 package com.example.testcreator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,11 +30,13 @@ import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.Gson;
 
 import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity {
 
+    private static final int CODE_GET_RESULT = 9999;
     int timePlay = Common.TOTAL_TIME;
     boolean isAnswerModeView = false;
 
@@ -39,6 +46,7 @@ public class QuestionActivity extends AppCompatActivity {
 
     RecyclerView answerSheetView;
     AnswerSheetAdapter answerSheetAdapter;
+//    AnswerSheetAdapter answerSheetHelperAdapter;
 
     ViewPager viewPager;
     TabLayout tabLayout;
@@ -87,86 +95,48 @@ public class QuestionActivity extends AppCompatActivity {
             // Add event.
             viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-                int SCROLLING_RIGHT = 0;
-                int SCROLLING_LEFT = 1;
-                int SCROLLING_UNDETERMINED = 2;
-
-                int currentScrollDirection = 2;
-
-                private void setScrollingDirection(float positionOffset) {
-                    if ((1 - positionOffset) >= 0.5) {
-                        currentScrollDirection = SCROLLING_RIGHT;
-                    } else if ((1 - positionOffset) <= 0.5) {
-                        currentScrollDirection = SCROLLING_LEFT;
-                    }
-                }
-
-                private boolean isScrollDirectionUndetermined() {
-                    return currentScrollDirection == SCROLLING_UNDETERMINED;
-                }
-
-                private boolean isScrollingRight() {
-                    return currentScrollDirection == SCROLLING_RIGHT;
-                }
-
-                private boolean isScrollingLeft() {
-                    return currentScrollDirection == SCROLLING_LEFT;
-                }
+                int prevPosition = 0;
 
                 @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                    if (isScrollDirectionUndetermined()) {
-                        setScrollingDirection(positionOffset);
-                    }
-                }
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
                 @Override
                 public void onPageSelected(int position) {
-                    QuestionFragment questionFragment = new QuestionFragment();
-                    int pos = 0;
-
-                    if (position > 0) {
-                        if (isScrollingRight()) {
-                            // Если пользователь промотал вправо, то получаем предыдущий фрагмент
-                            // для проверки ответов.
-                            questionFragment = Common.fragmentsLst.get(position - 1);
-                            pos = position - 1;
-                        } else if (isScrollingLeft()) {
-                            // Если пользователь промотал вправо, то получаем следующий фрагмент
-                            // для проверки ответов.
-                            questionFragment = Common.fragmentsLst.get(position + 1);
-                            pos = position + 1;
-                        } else {
-                            questionFragment = Common.fragmentsLst.get(pos);
-                        }
-                    } else {
-                        questionFragment = Common.fragmentsLst.get(0);
-                        pos = 0;
+                    QuestionFragment questionFragment;
+                    if (Common.fragmentsLst.get(position).isWasAnswered()) {
+                        Common.fragmentsLst.get(position).showCorrectAnswers();
+                        Common.fragmentsLst.get(position).disableAnswers();
                     }
+                    if (!isAnswerModeView) {
+                        questionFragment = Common.fragmentsLst.get(prevPosition);
+                        Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
 
-                    // Call function in order to show correct answer.
-                    CurrentQuestion questionState = questionFragment.getSelectedAnswer();
-                    Common.answerSheetList.set(pos, questionState);
-                    // Notify to change color.
-                    answerSheetAdapter.notifyDataSetChanged();
-
-                    countCorrectAnswer();
-                    questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                            .append("/").append(String.format("%d", Common.questionLst.size())).toString());
-                    questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
-
-                    if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+                        if (Common.selectedValues.size() > 0 && !questionFragment.isWasAnswered()) {
+                            questionFragment.showCorrectAnswers();
+                            Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
+                            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
+                            Common.answerSheetList.set(prevPosition, questionState);
+                            // Notify to change color.
+                            answerSheetAdapter.notifyDataSetChanged();
+                            countCorrectAnswer();
+                            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
+                                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+                            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+                        }
+                        //                        if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+//                            questionFragment.showCorrectAnswers();
+//                            questionFragment.disableAnswers();
+//                        }
+                        prevPosition = position;
+                    } else {
+                        questionFragment = Common.fragmentsLst.get(position);
                         questionFragment.showCorrectAnswers();
                         questionFragment.disableAnswers();
                     }
                 }
 
                 @Override
-                public void onPageScrollStateChanged(int state) {
-                    if (state == ViewPager.SCROLL_STATE_IDLE) {
-                        currentScrollDirection = SCROLLING_UNDETERMINED;
-                    }
-                }
+                public void onPageScrollStateChanged(int state) { }
             });
         }
     }
@@ -184,24 +154,32 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void finishQuiz() {
-        int position = viewPager.getCurrentItem();
-        QuestionFragment questionFragment = Common.fragmentsLst.get(position);
-        CurrentQuestion questionState = questionFragment.getSelectedAnswer();
-        Common.answerSheetList.set(position, questionState);
-        // Notify to change color.
-        answerSheetAdapter.notifyDataSetChanged();
+        if (!isAnswerModeView) {
+            int position = viewPager.getCurrentItem();
+            QuestionFragment questionFragment = Common.fragmentsLst.get(position);
+            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
+            Common.answerSheetList.set(position, questionState);
+            // Notify to change color.
+            answerSheetAdapter.notifyDataSetChanged();
 
-        countCorrectAnswer();
-        questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                .append("/").append(String.format("%d", Common.questionLst.size())).toString());
-        questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+            countCorrectAnswer();
+            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
+                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
 
-        if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
-            questionFragment.showCorrectAnswers();
-            questionFragment.disableAnswers();
+            if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+                questionFragment.showCorrectAnswers();
+                questionFragment.disableAnswers();
+            }
         }
 
         // Navigate to new result activity
+        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
+        Common.timer = Common.TOTAL_TIME - timePlay;
+        Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
+        Common.dataQuestion = new StringBuilder(new Gson().toJson(Common.answerSheetList));
+
+        startActivityForResult(intent, CODE_GET_RESULT);
     }
 
     private void generateFragmentList() {
@@ -230,7 +208,7 @@ public class QuestionActivity extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-
+                    finishQuiz();
                 }
             }.start();
         } else {
@@ -329,9 +307,69 @@ public class QuestionActivity extends AppCompatActivity {
                                 finishQuiz();
                             }
                         }).show();
-            }
+            } else
+                finishQuiz();
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CODE_GET_RESULT) {
+            if (resultCode == Activity.RESULT_OK) {
+                String action = data.getStringExtra("action");
+                if (action == null || TextUtils.isEmpty(action)) {
+                    int questionNum = data.getIntExtra(Common.KEY_BACK_FROM_RESULT, -1);
+                    viewPager.setCurrentItem(questionNum);
+
+                    isAnswerModeView = true;
+                    Common.countDownTimer.cancel();
+                    questionWrongTxt.setVisibility(View.GONE);
+                    questionRightTxt.setVisibility(View.GONE);
+                    timerTxt.setVisibility(View.GONE);
+                } else if (action.equals("doQuizAgain")) {
+                    viewPager.setCurrentItem(0);
+
+                    isAnswerModeView = false;
+                    countTimer();
+
+                    questionWrongTxt.setVisibility(View.VISIBLE);
+                    questionRightTxt.setVisibility(View.VISIBLE);
+                    timerTxt.setVisibility(View.VISIBLE);
+
+                    for (CurrentQuestion question : Common.answerSheetList) {
+                        question.setType(Common.AnswerType.NO_ANSWER);
+                    }
+                    answerSheetAdapter.notifyDataSetChanged();
+//                    answerSheetHelperAdapter.notifyDataSetChanged();
+                    for (QuestionFragment fragment : Common.fragmentsLst) {
+                        fragment.resetQuestion();
+                    }
+                    Common.wrongAnswerCount = 0;
+                    Common.rightAnswerCount = 0;
+                    Common.noAnswerCount = 0;
+                    questionWrongTxt.setText("0");
+                    questionRightTxt.setText(new StringBuilder("0").append("/").append(Common.questionLst.size()));
+                    Toast.makeText(this, "new Quiz", Toast.LENGTH_SHORT).show();
+                }
+//                else if (action.equals("viewQuizAnswer")) {
+//                    viewPager.setCurrentItem(0);
+//
+//                    isAnswerModeView = true;
+//                    Common.countDownTimer.cancel();
+//                    questionWrongTxt.setVisibility(View.GONE);
+//                    questionRightTxt.setVisibility(View.GONE);
+//                    timerTxt.setVisibility(View.GONE);
+//
+//                    for (int i = 0; i < Common.fragmentsLst.size(); i++) {
+//                        Common.fragmentsLst.get(i).showCorrectAnswers();
+//                        Common.fragmentsLst.get(i).disableAnswers();
+//                    }
+//                }
+            }
+        }
     }
 }

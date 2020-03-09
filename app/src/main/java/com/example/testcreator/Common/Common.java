@@ -1,5 +1,6 @@
 package com.example.testcreator.Common;
 
+import android.content.Intent;
 import android.os.CountDownTimer;
 
 import com.example.testcreator.Model.Category;
@@ -15,13 +16,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Common {
     public static final int TOTAL_TIME = 20 * 60 * 1000;
+    public static final String KEY_GO_TO_QUESTION = "GO_TO_QUESTION";
+    public static final String KEY_BACK_FROM_RESULT = "BACK_FROM_RESULT";
     public static List<QuestionModel> questionLst = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
+    public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
     public static Category selectedCategory = new Category();
     public static CountDownTimer countDownTimer;
 
+    public static int timer = 0;
     public static int rightAnswerCount = 0;
     public static int wrongAnswerCount = 0;
+    public static int noAnswerCount = 0;
+
+    public static StringBuilder dataQuestion = new StringBuilder();
     // Список с фрагментами, на которых находятся вопросы.
     public static List<QuestionFragment> fragmentsLst = new ArrayList<>();
     // Выбранные варианты ответов.

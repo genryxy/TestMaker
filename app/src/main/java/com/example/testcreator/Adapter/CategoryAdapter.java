@@ -63,6 +63,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 //                    Toast.makeText(context, "Click at category " + categories.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
                     // Assign selected Category
                     Common.selectedCategory = categories.get(getAdapterPosition());
+                    Common.fragmentsLst.clear();
+                    Common.answerSheetList.clear();
                     Intent intent = new Intent(context, QuestionActivity.class);
                     context.startActivity(intent);
                 }

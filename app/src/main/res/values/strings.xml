@@ -35,6 +35,8 @@
     <string name="wallpaperTest">Выберите картинку на логотип составляемого теста</string>
     <string name="wrongAnswers">Неправильные ответы</string>
     <string name="finishTest">Завершить тест</string>
+    <string name="viewAnswers">Посмотреть ответы</string>
+    <string name="doQuizAgain">Пройти тест снова</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

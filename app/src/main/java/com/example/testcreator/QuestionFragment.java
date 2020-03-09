@@ -43,10 +43,19 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private QuestionModel question;
     private int questionIndex = -1;
 
+    private boolean wasAnswered = false;
+
     public QuestionFragment() {
         // Required empty public constructor
     }
 
+    public boolean isWasAnswered() {
+        return wasAnswered;
+    }
+
+    public void setWasAnswered(boolean wasAnswered) {
+        this.wasAnswered = wasAnswered;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,10 +121,12 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxA.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Common.selectedValues.add(checkBoxA.getText().toString());
-                } else {
-                    Common.selectedValues.remove(checkBoxA.getText().toString());
+                if (!wasAnswered) {
+                    if (isChecked) {
+                        Common.selectedValues.add(checkBoxA.getText().toString());
+                    } else {
+                        Common.selectedValues.remove(checkBoxA.getText().toString());
+                    }
                 }
             }
         });
@@ -123,10 +134,12 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Common.selectedValues.add(checkBoxB.getText().toString());
-                } else {
-                    Common.selectedValues.remove(checkBoxB.getText().toString());
+                if (!wasAnswered) {
+                    if (isChecked) {
+                        Common.selectedValues.add(checkBoxB.getText().toString());
+                    } else {
+                        Common.selectedValues.remove(checkBoxB.getText().toString());
+                    }
                 }
             }
         });
@@ -134,10 +147,12 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxC.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Common.selectedValues.add(checkBoxC.getText().toString());
-                } else {
-                    Common.selectedValues.remove(checkBoxC.getText().toString());
+                if (!wasAnswered) {
+                    if (isChecked) {
+                        Common.selectedValues.add(checkBoxC.getText().toString());
+                    } else {
+                        Common.selectedValues.remove(checkBoxC.getText().toString());
+                    }
                 }
             }
         });
@@ -145,10 +160,12 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    Common.selectedValues.add(checkBoxD.getText().toString());
-                } else {
-                    Common.selectedValues.remove(checkBoxD.getText().toString());
+                if (!wasAnswered) {
+                    if (isChecked) {
+                        Common.selectedValues.add(checkBoxD.getText().toString());
+                    } else {
+                        Common.selectedValues.remove(checkBoxD.getText().toString());
+                    }
                 }
             }
         });
