@@ -34,6 +34,7 @@
     <string name="chooseImage">Выбрать картинку</string>
     <string name="wallpaperTest">Выберите картинку на логотип составляемого теста</string>
     <string name="wrongAnswers">Неправильные ответы</string>
+    <string name="menuSettings">Настройки</string>
     <string name="finishTest">Завершить тест</string>
     <string name="viewAnswers">Посмотреть ответы</string>
     <string name="doQuizAgain">Пройти тест снова</string>

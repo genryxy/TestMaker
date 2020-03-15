@@ -183,9 +183,6 @@ public class ResultActivity extends AppCompatActivity {
             case R.id.menuDoQuizAgain:
                 doQuizAgain();
                 break;
-            case R.id.menuViewAnswer:
-                viewQuizAnswer();
-                break;
             case android.R.id.home:
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 // Удаляем все активити
@@ -194,13 +191,6 @@ public class ResultActivity extends AppCompatActivity {
                 break;
         }
         return true;
-    }
-
-    private void viewQuizAnswer() {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("action", "viewQuizAnswer");
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
     }
 
     private void doQuizAgain() {

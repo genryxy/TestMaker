@@ -52,6 +52,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private Button chooseImageBtn;
     private ImageView imgView;
     private Uri imgUri;
+    private  String nameImage;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                 .of(this).get(NewTestViewModel.class);
         View root = inflater.inflate(R.layout.fragment_name_test, container, false);
         final TextView nameTestTxt = root.findViewById(R.id.nameTestTxt);
-        newTestViewModel.getText().observe(this, new Observer<String>() {
+        newTestViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 nameTestTxt.setText(s);
@@ -191,8 +192,11 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         saveNameTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String nameImage = System.currentTimeMillis() + "." + getExtension(imgUri);
-                uploadImage(nameImage);
+                // Если пользователь выбрал фотографию.
+                if (imgUri != null) {
+                    nameImage = System.currentTimeMillis() + "." + getExtension(imgUri);
+                    uploadImage(nameImage);
+                }
                 CountDownLatch downLatch = new CountDownLatch(1);
                 new CountTests(downLatch);
                 try {

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menuDoQuizAgain"
-        android:title="@string/doQuizAgain"
+        android:id="@+id/menuSettings"
+        android:title="@string/menuSettings"
         app:showAsAction="never" />
+
 </menu>

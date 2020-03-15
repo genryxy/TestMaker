@@ -1,4 +1,4 @@
-package com.example.testcreator;
+package com.example.testcreator.Adapter;
 
 import android.content.Context;
 import android.text.Editable;
@@ -13,6 +13,9 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.testcreator.AnswerView;
+import com.example.testcreator.R;
 
 import java.util.List;
 

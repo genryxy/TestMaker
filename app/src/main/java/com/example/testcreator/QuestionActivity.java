@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -26,15 +27,20 @@ import com.example.testcreator.Adapter.AnswerSheetAdapter;
 import com.example.testcreator.Adapter.QuestionFragmentAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.DBHelper.DBHelper;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
+import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class QuestionActivity extends AppCompatActivity {
+public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
     private static final int CODE_GET_RESULT = 9999;
     int timePlay = Common.TOTAL_TIME;
@@ -58,7 +64,131 @@ public class QuestionActivity extends AppCompatActivity {
 
         // Get questions from DB.
         getQuestions();
+    }
 
+    private void countCorrectAnswer() {
+        // Reset values.
+        Common.rightAnswerCount = Common.wrongAnswerCount = 0;
+        for (CurrentQuestion item : Common.answerSheetList) {
+            if (item.getType() == Common.AnswerType.RIGHT_ANSWER) {
+                Common.rightAnswerCount++;
+            } else if (item.getType() == Common.AnswerType.WRONG_ANSWER) {
+                Common.wrongAnswerCount++;
+            }
+        }
+    }
+
+    private void finishQuiz() {
+        if (!isAnswerModeView) {
+            int position = viewPager.getCurrentItem();
+            QuestionFragment questionFragment = Common.fragmentsLst.get(position);
+            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
+            Common.answerSheetList.set(position, questionState);
+            // Notify to change color.
+            answerSheetAdapter.notifyDataSetChanged();
+
+            countCorrectAnswer();
+            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
+                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+
+            if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+                questionFragment.showCorrectAnswers();
+                questionFragment.disableAnswers();
+                Common.fragmentsLst.get(position).setWasAnswered(true);
+            }
+        }
+
+        // Navigate to new result activity
+        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
+        Common.timer = Common.TOTAL_TIME - timePlay;
+        Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
+        // Common.dataQuestion = new StringBuilder(new Gson().toJson(Common.answerSheetList));
+        startActivityForResult(intent, CODE_GET_RESULT);
+    }
+
+    private void generateFragmentList() {
+        for (int i = 0; i < Common.questionLst.size(); i++) {
+            Bundle bundle = new Bundle();
+            bundle.putInt("index", i);
+            QuestionFragment questionFragment = new QuestionFragment();
+            questionFragment.setArguments(bundle);
+
+            Common.fragmentsLst.add(questionFragment);
+        }
+    }
+
+    private void countTimer() {
+        if (Common.countDownTimer != null) {
+            Common.countDownTimer.cancel();
+        }
+        Common.countDownTimer = new CountDownTimer(Common.TOTAL_TIME, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timerTxt.setText(String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
+                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
+                                TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+                timePlay -= 1000;
+            }
+
+            @Override
+            public void onFinish() {
+                finishQuiz();
+            }
+        }.start();
+    }
+
+    private void getQuestions() {
+
+        if (!Common.isOnlineMode) {
+            Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
+            addQuestionToCommonAnswerSheetAdapter();
+            setupQuestion();
+        } else {
+            new OnlineDBHelper(this, FirebaseFirestore.getInstance())
+                    .readData(new MyCallBack() {
+                        @Override
+                        public void setQuestionList(List<QuestionModel> questionList) {
+
+                            Common.questionLst.clear();
+                            Common.questionLst = questionList;
+                            addQuestionToCommonAnswerSheetAdapter();
+                            setupQuestion();
+                        }
+                    }, Common.selectedCategory.getName()
+                            .replace(" ", "")
+                            .replace("/", "_"));
+        }
+    }
+
+    private void addQuestionToCommonAnswerSheetAdapter() {
+        if (Common.questionLst.size() == 0) {
+            new MaterialStyledDialog.Builder(this)
+                    .setTitle("Opppps!")
+                    .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
+                    .setDescription("We don't have any question in " + Common.selectedCategory.getName())
+                    .setPositiveText("Ok")
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    }).show();
+        } else {
+            if (Common.answerSheetList.size() > 0) {
+                Common.answerSheetList.clear();
+            }
+            // Generate 30 answer sheet items from 30 questions
+            for (int i = 0; i < Common.questionLst.size(); i++) {
+                // Take index of question in List.
+                Common.answerSheetList.add(new CurrentQuestion(i, Common.AnswerType.NO_ANSWER));
+            }
+        }
+    }
+
+    private void setupQuestion() {
         if (Common.questionLst.size() > 0) {
             // Show TextViews with right answer and Timer.
             questionRightTxt = findViewById(R.id.questionRightTxt);
@@ -77,7 +207,10 @@ public class QuestionActivity extends AppCompatActivity {
             answerSheetView.setHasFixedSize(true);
             if (Common.questionLst.size() > 5) {
                 answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size() / 2));
+            } else {
+                answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size()));
             }
+
             answerSheetAdapter = new AnswerSheetAdapter(this, Common.answerSheetList);
             answerSheetView.setAdapter(answerSheetAdapter);
 
@@ -122,10 +255,6 @@ public class QuestionActivity extends AppCompatActivity {
                                     .append("/").append(String.format("%d", Common.questionLst.size())).toString());
                             questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
                         }
-                        //                        if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
-//                            questionFragment.showCorrectAnswers();
-//                            questionFragment.disableAnswers();
-//                        }
                         prevPosition = position;
                     }
                 }
@@ -133,124 +262,6 @@ public class QuestionActivity extends AppCompatActivity {
                 @Override
                 public void onPageScrollStateChanged(int state) { }
             });
-        }
-    }
-
-    private void countCorrectAnswer() {
-        // Reset values.
-        Common.rightAnswerCount = Common.wrongAnswerCount = 0;
-        for (CurrentQuestion item : Common.answerSheetList) {
-            if (item.getType() == Common.AnswerType.RIGHT_ANSWER) {
-                Common.rightAnswerCount++;
-            } else if (item.getType() == Common.AnswerType.WRONG_ANSWER) {
-                Common.wrongAnswerCount++;
-            }
-        }
-    }
-
-    private void finishQuiz() {
-        if (!isAnswerModeView) {
-            int position = viewPager.getCurrentItem();
-            QuestionFragment questionFragment = Common.fragmentsLst.get(position);
-            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
-            Common.answerSheetList.set(position, questionState);
-            // Notify to change color.
-            answerSheetAdapter.notifyDataSetChanged();
-
-            countCorrectAnswer();
-            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
-            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
-
-            if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
-                questionFragment.showCorrectAnswers();
-                questionFragment.disableAnswers();
-            }
-        }
-
-        // Navigate to new result activity
-        Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
-        Common.timer = Common.TOTAL_TIME - timePlay;
-        Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
-        Common.dataQuestion = new StringBuilder(new Gson().toJson(Common.answerSheetList));
-
-        startActivityForResult(intent, CODE_GET_RESULT);
-    }
-
-    private void generateFragmentList() {
-        for (int i = 0; i < Common.questionLst.size(); i++) {
-            Bundle bundle = new Bundle();
-            bundle.putInt("index", i);
-            QuestionFragment questionFragment = new QuestionFragment();
-            questionFragment.setArguments(bundle);
-
-            Common.fragmentsLst.add(questionFragment);
-        }
-    }
-
-    private void countTimer() {
-        if (Common.countDownTimer == null) {
-            Common.countDownTimer = new CountDownTimer(Common.TOTAL_TIME, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timerTxt.setText(String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
-                    timePlay -= 1000;
-
-                }
-
-                @Override
-                public void onFinish() {
-                    finishQuiz();
-                }
-            }.start();
-        } else {
-            Common.countDownTimer.cancel();
-            Common.countDownTimer = new CountDownTimer(Common.TOTAL_TIME, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timerTxt.setText(String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                                    TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
-                    timePlay -= 1000;
-
-                }
-
-                @Override
-                public void onFinish() {
-
-                }
-            }.start();
-        }
-    }
-
-    private void getQuestions() {
-        Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
-        if (Common.questionLst.size() == 0) {
-            new MaterialStyledDialog.Builder(this)
-                    .setTitle("Opppps!")
-                    .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
-                    .setDescription("We don't have any question in " + Common.selectedCategory.getName())
-                    .setPositiveText("Ok")
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).show();
-        } else {
-            if (Common.answerSheetList.size() > 0) {
-                Common.answerSheetList.clear();
-            }
-            // Generate 30 answer sheet items from 30 questions
-            for (int i = 0; i < Common.questionLst.size(); i++) {
-                // Take index of question in List.
-                Common.answerSheetList.add(new CurrentQuestion(i, Common.AnswerType.NO_ANSWER));
-            }
         }
     }
 
@@ -304,7 +315,6 @@ public class QuestionActivity extends AppCompatActivity {
                         }).show();
             } else
                 finishQuiz();
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -350,20 +360,6 @@ public class QuestionActivity extends AppCompatActivity {
                     questionRightTxt.setText(new StringBuilder("0").append("/").append(Common.questionLst.size()));
                     Toast.makeText(this, "new Quiz", Toast.LENGTH_SHORT).show();
                 }
-//                else if (action.equals("viewQuizAnswer")) {
-//                    viewPager.setCurrentItem(0);
-//
-//                    isAnswerModeView = true;
-//                    Common.countDownTimer.cancel();
-//                    questionWrongTxt.setVisibility(View.GONE);
-//                    questionRightTxt.setVisibility(View.GONE);
-//                    timerTxt.setVisibility(View.GONE);
-//
-//                    for (int i = 0; i < Common.fragmentsLst.size(); i++) {
-//                        Common.fragmentsLst.get(i).showCorrectAnswers();
-//                        Common.fragmentsLst.get(i).disableAnswers();
-//                    }
-//                }
             }
         }
     }

@@ -24,10 +24,10 @@
         tools:layout="@layout/fragment_selecting_test" />
 
     <fragment
-        android:id="@+id/nav_tools"
-        android:name="com.example.testcreator.ui.tools.ToolsFragment"
+        android:id="@+id/nav_category"
+        android:name="com.example.testcreator.ui.category.CategoryFragment"
         android:label="@string/menu_pick_theme"
-        tools:layout="@layout/fragment_tools" />
+        tools:layout="@layout/fragment_category" />
 
     <fragment
         android:id="@+id/nav_share"

@@ -18,6 +18,7 @@ public class Common {
     public static final int TOTAL_TIME = 20 * 60 * 1000;
     public static final String KEY_GO_TO_QUESTION = "GO_TO_QUESTION";
     public static final String KEY_BACK_FROM_RESULT = "BACK_FROM_RESULT";
+    public static final String KEY_SAVE_ONLINE_MODE = "ONLINE_MODE";
     public static List<QuestionModel> questionLst = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
@@ -29,11 +30,12 @@ public class Common {
     public static int wrongAnswerCount = 0;
     public static int noAnswerCount = 0;
 
-    public static StringBuilder dataQuestion = new StringBuilder();
+    //public static StringBuilder dataQuestion = new StringBuilder();
     // Список с фрагментами, на которых находятся вопросы.
     public static List<QuestionFragment> fragmentsLst = new ArrayList<>();
     // Выбранные варианты ответов.
     public static TreeSet<String> selectedValues = new TreeSet<>();
+    public static boolean isOnlineMode = false;
 
 
     public enum AnswerType {
