@@ -5,6 +5,7 @@ import com.example.testcreator.Common.Common;
 public class CurrentQuestion {
     private int questionIndex;
     private Common.AnswerType type;
+    private String userAnswer;
 
     public CurrentQuestion(int questionIndex, Common.AnswerType type) {
         this.questionIndex = questionIndex;
@@ -25,5 +26,13 @@ public class CurrentQuestion {
 
     public void setType(Common.AnswerType type) {
         this.type = type;
+    }
+
+    public String getUserAnswer() {
+        return userAnswer;
+    }
+
+    public void setUserAnswer(String userAnswer) {
+        this.userAnswer = userAnswer;
     }
 }

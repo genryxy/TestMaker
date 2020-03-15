@@ -208,6 +208,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
             } else {
                 currentQuestion.setType(Common.AnswerType.NO_ANSWER);
             }
+            currentQuestion.setUserAnswer(resStr.toString());
         } else {
             Toast.makeText(getContext(), "Не удается получить вопрос", Toast.LENGTH_SHORT).show();
             currentQuestion.setType(Common.AnswerType.NO_ANSWER);

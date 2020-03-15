@@ -32,15 +32,26 @@ import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Model.ResultTest;
+import com.example.testcreator.Model.UserResults;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.transform.Result;
+
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static final int CODE_GET_RESULT = 9999;
     int timePlay = Common.TOTAL_TIME;
@@ -97,6 +108,42 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 questionFragment.disableAnswers();
                 Common.fragmentsLst.get(position).setWasAnswered(true);
             }
+
+            List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
+            List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
+            final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
+                    questionLst, answerSheetList);
+            DocumentReference docRef = db.collection("users").document(authFrbs.getCurrentUser().getEmail());
+            docRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserResults userResults = documentSnapshot.toObject(UserResults.class);
+                            if (userResults == null) {
+                                userResults = new UserResults();
+                            }
+                            userResults.getResultTestsLst().add(resultTest);
+
+                            db.collection("users").document(authFrbs.getCurrentUser().getEmail())
+                                    .set(userResults)
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+//                                                Log.w(TAG, "Error adding document", e);
+                                            Toast.makeText(QuestionActivity.this,
+                                                    "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error getting document", e);
+                            Toast.makeText(QuestionActivity.this,
+                                    "Возникла ошибка при получении", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
 
         // Navigate to new result activity
