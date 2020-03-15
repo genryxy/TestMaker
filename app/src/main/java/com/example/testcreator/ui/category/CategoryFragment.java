@@ -55,8 +55,6 @@ public class CategoryFragment extends Fragment {
         categoryRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
         categoryRecycler.setAdapter(adapter);
         categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        //categoryRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
 
         return root;
     }

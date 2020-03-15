@@ -1,4 +1,4 @@
-package com.example.testcreator;
+package com.example.testcreator.ui.signIn;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.MainActivity;
+import com.example.testcreator.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

@@ -15,7 +15,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
+import com.example.testcreator.Enum.TypeAnswer;
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.Model.AnswerView;
+import com.example.testcreator.Model.Question;
+import com.example.testcreator.Model.TestInfo;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,8 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections
-{
+public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections {
     private static final String TAG = "AnswersCreatingActivity";
     private final String answerText = "Текст ответа";
     private Button addNewVariantBtn;
@@ -48,8 +51,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private boolean isFromNextQuestionBtn;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answers_creating);
         ListView lstView = findViewById(R.id.answersLstView);
@@ -71,22 +73,17 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     @Override
-    public void onBackPressed()
-    {
+    public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Внимание");
         builder.setMessage("Изменения не будут сохранены ");
-        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
+        builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
                 AnswersCreatingActivity.super.onBackPressed();
             }
         });
-        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener()
-        {
-            public void onClick(DialogInterface dialog, int id)
-            {
+        builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
                 //AnswersCreatingActivity.super.onBackPressed();
             }
         });
@@ -102,8 +99,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      * @return Список вопросов
      */
     private List<Question> createQuestion(List<AnswerView> lstAnswers,
-                                          StringBuilder rightAnsBuilder, int rightAnsNumber)
-    {
+                                          StringBuilder rightAnsBuilder, int rightAnsNumber) {
         // (Длина - 1), чтобы не было висячей запятой.
         String correctAnswersStr = rightAnsBuilder.substring(0, rightAnsBuilder.length() - 1);
         Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
@@ -122,14 +118,11 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      * @return Возвращается пара (количество верных ответов,
      * строка с номерами верных ответов)
      */
-    private Pair<Integer, StringBuilder> countRightAnswers(List<AnswerView> lstAnswers)
-    {
+    private Pair<Integer, StringBuilder> countRightAnswers(List<AnswerView> lstAnswers) {
         int rightAnsNumber = 0;
         StringBuilder rightAnsBuilder = new StringBuilder();
-        for (int i = 0; i < lstAnswers.size(); i++)
-        {
-            if (lstAnswers.get(i).getSelected())
-            {
+        for (int i = 0; i < lstAnswers.size(); i++) {
+            if (lstAnswers.get(i).getSelected()) {
                 rightAnsNumber++;
                 rightAnsBuilder.append(i);
                 rightAnsBuilder.append(",");
@@ -141,8 +134,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     /**
      * Метод для получения значений, переданных с предыдущей страницы.
      */
-    private void getInfoFromPreviousIntent()
-    {
+    private void getInfoFromPreviousIntent() {
         Intent prevIntent = getIntent();
         questionNumber = prevIntent.getIntExtra("questionNumber", 1);
         answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
@@ -155,25 +147,19 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     private void addNewVariantBtnClickListen(final List<AnswerView> lstAnswers,
-                                             final AnswerViewListAdapter adapter)
-    {
-        addNewVariantBtn.setOnClickListener(new View.OnClickListener()
-        {
+                                             final AnswerViewListAdapter adapter) {
+        addNewVariantBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
 
-                if (typeAnswer.equals(TypeAnswer.OwnAnswer.name()) && lstAnswers.size() != 0)
-                {
+                if (typeAnswer.equals(TypeAnswer.OwnAnswer.name()) && lstAnswers.size() != 0) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Вы выбрали ответ в свободной форме!", Toast.LENGTH_SHORT).show();
-                } else if (lstAnswers.size() >= 10)
-                {
+                } else if (lstAnswers.size() >= 10) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Не может быть больше 10 ответов", Toast.LENGTH_SHORT).show();
 
-                } else
-                {
+                } else {
                     lstAnswers.add(new AnswerView(answerText, false));
                     adapter.notifyDataSetChanged();
                 }
@@ -181,24 +167,18 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         });
     }
 
-    private void endCreatingTestBtnClickListen(final List<AnswerView> lstAnswers)
-    {
-        endCreatingTestBtn.setOnClickListener(new View.OnClickListener()
-        {
+    private void endCreatingTestBtnClickListen(final List<AnswerView> lstAnswers) {
+        endCreatingTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 // Если создаётся не первый вопрос, то вызвать нажатие
                 // на кнопку для создания следующего вопроса.
-                if (questionNumber > 1)
-                {
+                if (questionNumber > 1) {
                     isFromEndCreatingBtn = true;
                     createNextQuestionBtn.callOnClick();
-                } else
-                {
+                } else {
                     Pair<Integer, StringBuilder> rightAns = countRightAnswers(lstAnswers);
-                    if (rightAns.first == 0)
-                    {
+                    if (rightAns.first == 0) {
                         Toast.makeText(AnswersCreatingActivity.this,
                                 "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
                         return;
@@ -209,11 +189,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                             nameTest, nameImage, 1, questions);
                     db.collection("tests").document(nameTest)
                             .set(testInfo)
-                            .addOnFailureListener(new OnFailureListener()
-                            {
+                            .addOnFailureListener(new OnFailureListener() {
                                 @Override
-                                public void onFailure(@NonNull Exception e)
-                                {
+                                public void onFailure(@NonNull Exception e) {
                                     Log.w(TAG, "Error adding document", e);
                                     Toast.makeText(AnswersCreatingActivity.this,
                                             "Возникла ошибка", Toast.LENGTH_SHORT).show();
@@ -222,8 +200,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 }
                 // Если нажимал пользователь, то открыть новый intent.
                 // Если вызов был искусственным, то ничего не делать.
-                if (!isFromNextQuestionBtn)
-                {
+                if (!isFromNextQuestionBtn) {
                     Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
                 }
@@ -232,35 +209,27 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         });
     }
 
-    private void createNextQuestionBtnClickListen(final List<AnswerView> lstAnswers)
-    {
-        createNextQuestionBtn.setOnClickListener(new View.OnClickListener()
-        {
+    private void createNextQuestionBtnClickListen(final List<AnswerView> lstAnswers) {
+        createNextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 final Pair<Integer, StringBuilder> rightAns = countRightAnswers(lstAnswers);
-                if (rightAns.first == 0)
-                {
+                if (rightAns.first == 0) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Если создаётся первый вопрос, то вызвать нажатие
                 // на кнопку для завершения создания теста.
-                if (questionNumber == 1)
-                {
+                if (questionNumber == 1) {
                     isFromNextQuestionBtn = true;
                     endCreatingTestBtn.callOnClick();
-                } else
-                {
+                } else {
                     DocumentReference docRef = db.collection("tests").document(nameTest);
                     docRef.get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>()
-                            {
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot)
-                                {
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     testInfo = documentSnapshot.toObject(TestInfo.class);
                                     List<Question> lstQuestions = testInfo.getQuestionsLst();
                                     List<Question> question = createQuestion(lstAnswers, rightAns.second, rightAns.first);
@@ -270,11 +239,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
 
                                     db.collection("tests").document(nameTest)
                                             .set(testInfo)
-                                            .addOnFailureListener(new OnFailureListener()
-                                            {
+                                            .addOnFailureListener(new OnFailureListener() {
                                                 @Override
-                                                public void onFailure(@NonNull Exception e)
-                                                {
+                                                public void onFailure(@NonNull Exception e) {
                                                     Log.w(TAG, "Error adding document", e);
                                                     Toast.makeText(AnswersCreatingActivity.this,
                                                             "Возникла ошибка", Toast.LENGTH_SHORT).show();
@@ -282,11 +249,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                                             });
                                 }
                             })
-                            .addOnFailureListener(new OnFailureListener()
-                            {
+                            .addOnFailureListener(new OnFailureListener() {
                                 @Override
-                                public void onFailure(@NonNull Exception e)
-                                {
+                                public void onFailure(@NonNull Exception e) {
                                     Log.w(TAG, "Error getting document", e);
                                     Toast.makeText(AnswersCreatingActivity.this,
                                             "Возникла ошибка", Toast.LENGTH_SHORT).show();
@@ -295,8 +260,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 }
                 // Если нажимал пользователь, то открыть новый intent.
                 // Если вызов был искусственным, то ничего не делать.
-                if (!isFromEndCreatingBtn)
-                {
+                if (!isFromEndCreatingBtn) {
                     Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
                     newIntent.putExtra("questionNumber", questionNumber + 1);
                     newIntent.putExtra("nameTestEdt", nameTest);
@@ -311,8 +275,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     /**
      * Связывает элементы из разметки XML с полями класса.
      */
-    private void findElementsViewById()
-    {
+    private void findElementsViewById() {
         addNewVariantBtn = findViewById(R.id.addNewVariantBtn);
         createNextQuestionBtn = findViewById(R.id.createNextQuestionBtn);
         endCreatingTestBtn = findViewById(R.id.endCreatingTestBtn);

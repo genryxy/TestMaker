@@ -15,8 +15,8 @@
         <activity android:name=".QuestionActivity" />
         <activity android:name=".AnswersCreatingActivity" />
         <activity android:name=".QuestionsCreatingActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".ui.signIn.SignUpActivity" />
+        <activity android:name=".ui.signIn.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -23,16 +23,11 @@ import dmax.dialog.SpotsDialog;
 
 public class OnlineDBHelper {
 
-    //    private FirebaseDatabase firebaseDatabase;
     private FirebaseFirestore firebaseFirestore;
     private Context context;
 
-//    private DatabaseReference ref;
-
-    public OnlineDBHelper(Context context, /*FirebaseDatabase firebaseDatabase,*/ FirebaseFirestore firebaseFirestore) {
-//        this.firebaseDatabase = firebaseDatabase;
+    public OnlineDBHelper(Context context, FirebaseFirestore firebaseFirestore) {
         this.context = context;
-//        ref = firebaseDatabase.getReference("themes");
         this.firebaseFirestore = firebaseFirestore;
     }
 

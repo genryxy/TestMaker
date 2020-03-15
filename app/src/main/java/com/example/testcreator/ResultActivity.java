@@ -120,7 +120,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
-                for (CurrentQuestion question:Common.answerSheetList) {
+                for (CurrentQuestion question : Common.answerSheetList) {
                     if (question.getType() == Common.AnswerType.NO_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }
@@ -134,7 +134,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
-                for (CurrentQuestion question:Common.answerSheetList) {
+                for (CurrentQuestion question : Common.answerSheetList) {
                     if (question.getType() == Common.AnswerType.WRONG_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }
@@ -148,7 +148,7 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
-                for (CurrentQuestion question:Common.answerSheetList) {
+                for (CurrentQuestion question : Common.answerSheetList) {
                     if (question.getType() == Common.AnswerType.RIGHT_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }

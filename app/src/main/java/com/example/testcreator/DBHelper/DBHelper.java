@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.QuestionModel;
-import com.example.testcreator.Question;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;

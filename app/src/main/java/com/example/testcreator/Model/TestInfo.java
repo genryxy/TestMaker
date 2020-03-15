@@ -1,10 +1,9 @@
-package com.example.testcreator;
+package com.example.testcreator.Model;
 
 import java.util.Date;
 import java.util.List;
 
-public class TestInfo
-{
+public class TestInfo {
     private String testCreator;
     private Date testCreationDate;
     private String testName;
@@ -16,8 +15,7 @@ public class TestInfo
     public TestInfo() { }
 
     public TestInfo(String testCreator, Date testCreationDate, String testName, String nameImage,
-                    Integer questionsNumber, List<Question> questionsLst)
-    {
+                    Integer questionsNumber, List<Question> questionsLst) {
         this.testCreator = testCreator;
         this.testCreationDate = testCreationDate;
         this.testName = testName;

@@ -52,7 +52,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private Button chooseImageBtn;
     private ImageView imgView;
     private Uri imgUri;
-    private  String nameImage;
+    private String nameImage;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,21 +150,21 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private void uploadImage(String nameImage) {
         StorageReference childRef = storageRef.child(nameImage);
         childRef.putFile(imgUri)
-        //try {
-            //childRef.putFile(getImageUri(getContext(), decodeUri(getContext(), imgUri, 100)))
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Toast.makeText(getActivity(), "Изображение загружено", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            Log.w(TAG, "Error CountDownLatch", exception);
-                            Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                //try {
+                //childRef.putFile(getImageUri(getContext(), decodeUri(getContext(), imgUri, 100)))
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getActivity(), "Изображение загружено", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.w(TAG, "Error CountDownLatch", exception);
+                        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+                    }
+                });
         //} catch (FileNotFoundException e) {
         //    Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
         //}

@@ -33,8 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class MainActivity extends AppCompatActivity implements FireBaseConnections
-{
+public class MainActivity extends AppCompatActivity implements FireBaseConnections {
     private final String TAG = "FAILURE MainActivity";
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -43,8 +42,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -52,11 +50,9 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -82,34 +78,26 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         Button readDataBtn = findViewById(R.id.readDataBtn);
         //final TextView readDataTxt = findViewById(R.id.readDataTxt);
 
-        readDataBtn.setOnClickListener(new View.OnClickListener()
-        {
+        readDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 db.collection("users")
                         .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
-                        {
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task)
-                            {
-                                if (task.isSuccessful())
-                                {
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
                                     String tmp = "";
-                                    for (QueryDocumentSnapshot document : task.getResult())
-                                    {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
                                         tmp += document.getId() + " ";
                                         //readDataTxt.setText(document.getData().toString() + " " + tmp);
-                                        if (document.getId().equals("VNVXKvyaXnd3RwxUum8HRLr7FOA3"))
-                                        {
+                                        if (document.getId().equals("VNVXKvyaXnd3RwxUum8HRLr7FOA3")) {
                                             break;
                                         }
                                         // tmp = readDataTxt.getText().toString() + " " + document.getData().toString();
                                         //readDataTxt.setText(tmp);
                                     }
-                                } else
-                                {
+                                } else {
                                     Log.w(TAG, "Error adding document", task.getException());
                                     //Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
                                 }
@@ -120,16 +108,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
-    public boolean onSupportNavigateUp()
-    {
+    public boolean onSupportNavigateUp() {
 //        transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.remove(selectingTestFragment);
 //        transaction.commit();

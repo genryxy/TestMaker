@@ -1,14 +1,12 @@
-package com.example.testcreator;
+package com.example.testcreator.Model;
 
-public class AnswerView
-{
+public class AnswerView {
     private String answerText;
     private Boolean isSelected;
 
     public AnswerView() {}
 
-    public AnswerView(String answerText, Boolean isSelected)
-    {
+    public AnswerView(String answerText, Boolean isSelected) {
         this.answerText = answerText;
         this.isSelected = isSelected;
     }

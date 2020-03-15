@@ -14,19 +14,17 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.testcreator.AnswerView;
+import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.R;
 
 import java.util.List;
 
-public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
-{
+public class AnswerViewListAdapter extends ArrayAdapter<AnswerView> {
     private Context context;
     private int resource;
 
 
-    public AnswerViewListAdapter(@NonNull Context context, int resource, @NonNull List<AnswerView> objects)
-    {
+    public AnswerViewListAdapter(@NonNull Context context, int resource, @NonNull List<AnswerView> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
@@ -34,8 +32,7 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
 
     @NonNull
     @Override
-    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent)
-    {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String answerText = getItem(position).getAnswerText();
         Boolean isSelected = getItem(position).getSelected();
 
@@ -50,8 +47,7 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
 
         txtChoiceClickListen(position, txtChoice);
         deleteItemBtnClickListen(position, deleteItemBtn);
-        txtAnswer.addTextChangedListener(new TextWatcher()
-        {
+        txtAnswer.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
@@ -59,8 +55,7 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
             public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
-            public void afterTextChanged(Editable s)
-            {
+            public void afterTextChanged(Editable s) {
                 getItem(position).setAnswerText(s.toString());
                 //Toast.makeText(getContext(), getItem(position).getAnswerText(), Toast.LENGTH_SHORT).show();
             }
@@ -69,19 +64,14 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
     }
 
     private void txtChoiceClickListen(final int position,
-                                      final CheckedTextView txtChoice)
-    {
-        txtChoice.setOnClickListener(new View.OnClickListener()
-        {
+                                      final CheckedTextView txtChoice) {
+        txtChoice.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                if (txtChoice.isChecked())
-                {
+            public void onClick(View v) {
+                if (txtChoice.isChecked()) {
                     txtChoice.setChecked(false);
                     getItem(position).setSelected(false);
-                } else
-                {
+                } else {
                     txtChoice.setChecked(true);
                     getItem(position).setSelected(true);
                 }
@@ -90,13 +80,10 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView>
     }
 
     private void deleteItemBtnClickListen(final int position,
-                                          final ImageButton deleteItemBtn)
-    {
-        deleteItemBtn.setOnClickListener(new View.OnClickListener()
-        {
+                                          final ImageButton deleteItemBtn) {
+        deleteItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 AnswerView answer = getItem(position);
                 remove(answer);
                 notifyDataSetChanged();

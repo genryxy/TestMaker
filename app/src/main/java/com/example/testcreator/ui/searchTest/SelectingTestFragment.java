@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Model.SelectingTestView;
 import com.example.testcreator.R;
 
 import java.util.ArrayList;
@@ -44,25 +42,9 @@ public class SelectingTestFragment extends Fragment {
             lstTests.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
 
         RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
-        SelectingTestRecyclerView adapter = new SelectingTestRecyclerView(lstTests);
+        SelectingTestAdapter adapter = new SelectingTestAdapter(lstTests);
         testsRecycler.setAdapter(adapter);
         testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
-//        testsLstView.setAdapter(adapter);
-
-//        DisplayMetrics metrics = new DisplayMetrics();
-//        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-//        testsLst.setMinimumWidth(metrics.widthPixels);
-
-
-//        testsLstView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-//        {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-//            {
-//                Toast.makeText(getContext(), Integer.valueOf(position).toString(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         return root;
     }

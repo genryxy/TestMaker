@@ -190,79 +190,90 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     private void setupQuestion() {
         if (Common.questionLst.size() > 0) {
-            // Show TextViews with right answer and Timer.
-            questionRightTxt = findViewById(R.id.questionRightTxt);
-            timerTxt = findViewById(R.id.timerTxt);
+            findElementsViewById();
 
+            // Show TextViews with right answer and Timer.
             timerTxt.setVisibility(View.VISIBLE);
             questionRightTxt.setVisibility(View.VISIBLE);
-
             questionRightTxt.setText(String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size()));
 
             // Timer.
             countTimer();
 
             // Set adapter.
-            answerSheetView = findViewById(R.id.gridAnswer);
-            answerSheetView.setHasFixedSize(true);
-            if (Common.questionLst.size() > 5) {
-                answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size() / 2));
-            } else {
-                answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size()));
-            }
-
-            answerSheetAdapter = new AnswerSheetAdapter(this, Common.answerSheetList);
-            answerSheetView.setAdapter(answerSheetAdapter);
-
-            viewPager = findViewById(R.id.viewpager);
-            tabLayout = findViewById(R.id.slidingTabs);
+            setAnswerSheetViewAdapter();
 
             generateFragmentList();
             QuestionFragmentAdapter adapter = new QuestionFragmentAdapter(
                     getSupportFragmentManager(), this, Common.fragmentsLst);
             viewPager.setAdapter(adapter);
-
             tabLayout.setupWithViewPager(viewPager);
 
             // Add event.
-            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-                int prevPosition = 0;
-
-                @Override
-                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
-
-                @Override
-                public void onPageSelected(int position) {
-                    QuestionFragment questionFragment;
-                    if (Common.fragmentsLst.get(position).isWasAnswered()) {
-                        Common.fragmentsLst.get(position).showCorrectAnswers();
-                        Common.fragmentsLst.get(position).disableAnswers();
-                    }
-                    if (!isAnswerModeView) {
-                        questionFragment = Common.fragmentsLst.get(prevPosition);
-                        Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
-
-                        if (Common.selectedValues.size() > 0 && !questionFragment.isWasAnswered()) {
-                            questionFragment.showCorrectAnswers();
-                            Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
-                            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
-                            Common.answerSheetList.set(prevPosition, questionState);
-                            // Notify to change color.
-                            answerSheetAdapter.notifyDataSetChanged();
-                            countCorrectAnswer();
-                            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
-                            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
-                        }
-                        prevPosition = position;
-                    }
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) { }
-            });
+            addViewPagerOnChangeListener();
         }
+    }
+
+    /**
+     * Связывает элементы из разметки XML с полями класса.
+     */
+    private void findElementsViewById() {
+        questionRightTxt = findViewById(R.id.questionRightTxt);
+        timerTxt = findViewById(R.id.timerTxt);
+        answerSheetView = findViewById(R.id.gridAnswer);
+        viewPager = findViewById(R.id.viewpager);
+        tabLayout = findViewById(R.id.slidingTabs);
+    }
+
+    private void addViewPagerOnChangeListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            int prevPosition = 0;
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageSelected(int position) {
+                QuestionFragment questionFragment;
+                if (Common.fragmentsLst.get(position).isWasAnswered() || isAnswerModeView) {
+                    Common.fragmentsLst.get(position).showCorrectAnswers();
+                    Common.fragmentsLst.get(position).disableAnswers();
+                }
+                if (!isAnswerModeView) {
+                    questionFragment = Common.fragmentsLst.get(prevPosition);
+                    Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
+
+                    if (Common.selectedValues.size() > 0 && !questionFragment.isWasAnswered()) {
+                        questionFragment.showCorrectAnswers();
+                        Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
+                        CurrentQuestion questionState = questionFragment.getSelectedAnswer();
+                        Common.answerSheetList.set(prevPosition, questionState);
+                        // Notify to change color.
+                        answerSheetAdapter.notifyDataSetChanged();
+                        countCorrectAnswer();
+                        questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
+                                .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+                        questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+                    }
+                    prevPosition = position;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        });
+    }
+
+    private void setAnswerSheetViewAdapter() {
+        answerSheetView.setHasFixedSize(true);
+        if (Common.questionLst.size() > 5) {
+            answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size() / 2));
+        } else {
+            answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size()));
+        }
+        answerSheetAdapter = new AnswerSheetAdapter(this, Common.answerSheetList);
+        answerSheetView.setAdapter(answerSheetAdapter);
     }
 
     @Override

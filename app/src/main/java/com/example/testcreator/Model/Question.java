@@ -1,9 +1,10 @@
-package com.example.testcreator;
+package com.example.testcreator.Model;
+
+import com.example.testcreator.Enum.TypeAnswer;
 
 import java.util.List;
 
-public class Question
-{
+public class Question {
     private String questionText;
     private TypeAnswer typeAnswer;
     private Integer allAnswersNumber;
@@ -31,8 +32,7 @@ public class Question
      *                             Если OwnAnswer, то строковый ответ.
      */
     public Question(String questionText, TypeAnswer typeAnswer, Integer allAnswersNumber,
-                    List<AnswerView> answersLst, Integer correctAnswersNumber, String correctAnswer)
-    {
+                    List<AnswerView> answersLst, Integer correctAnswersNumber, String correctAnswer) {
         this.questionText = questionText;
         this.typeAnswer = typeAnswer;
         this.allAnswersNumber = allAnswersNumber;
