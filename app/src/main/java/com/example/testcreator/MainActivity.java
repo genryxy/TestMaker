@@ -74,37 +74,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
 //        transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.add(R.id.select_test_fragment, selectingTestFragment);
 //        transaction.commit();
-
-        Button readDataBtn = findViewById(R.id.readDataBtn);
-        //final TextView readDataTxt = findViewById(R.id.readDataTxt);
-
-        readDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.collection("users")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    String tmp = "";
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        tmp += document.getId() + " ";
-                                        //readDataTxt.setText(document.getData().toString() + " " + tmp);
-                                        if (document.getId().equals("VNVXKvyaXnd3RwxUum8HRLr7FOA3")) {
-                                            break;
-                                        }
-                                        // tmp = readDataTxt.getText().toString() + " " + document.getData().toString();
-                                        //readDataTxt.setText(tmp);
-                                    }
-                                } else {
-                                    Log.w(TAG, "Error adding document", task.getException());
-                                    //Toast.makeText(MainActivity.this, "FAILURE", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
-        });
     }
 
     @Override

@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -28,12 +30,11 @@ import io.paperdb.Paper;
 
 public class CategoryFragment extends Fragment {
 
-    private CategoryViewModel toolsViewModel;
-
+    private CategoryViewModel categoryViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        toolsViewModel =
+        categoryViewModel =
                 ViewModelProviders.of(this).get(CategoryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_category, container, false);
 //        final TextView textView = root.findViewById(R.id.text_home);
@@ -47,7 +48,6 @@ public class CategoryFragment extends Fragment {
 
         RecyclerView categoryRecycler = root.findViewById(R.id.categoryRecycler);
         categoryRecycler.setHasFixedSize(true);
-
 
         CategoryAdapter adapter = new CategoryAdapter(getActivity(),
                 DBHelper.getInstance(getActivity()).getAllCategories());
@@ -66,8 +66,13 @@ public class CategoryFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menuSettings) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.menuSettings) {
             showSettings();
+        } else {
+            DrawerLayout drawerLayout = getActivity().findViewById(R.id.drawer_layout);
+            drawerLayout.openDrawer(getActivity().findViewById(R.id.nav_view));
         }
         return true;
     }
