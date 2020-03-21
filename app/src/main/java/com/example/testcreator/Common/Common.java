@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Model.SelectingTestView;
 import com.example.testcreator.QuestionFragment;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Common {
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
     public static Category selectedCategory = new Category();
+    public static SelectingTestView selectedTest= new SelectingTestView();
     public static CountDownTimer countDownTimer;
 
     public static int timer = 0;

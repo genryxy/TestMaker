@@ -75,26 +75,8 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
     private Context context;
 
      SelectingTestAdapter(@NonNull List<SelectingTestView> testsLst) {
-//        super(DIFF_CALLBACK);
         this.testsLst = testsLst;
     }
-
-//    public SelectingTestRecyclerView() {
-//        super(DIFF_CALLBACK);
-//    }
-
-//    public static final DiffUtil.ItemCallback<SelectingTestView> DIFF_CALLBACK =
-//            new DiffUtil.ItemCallback<SelectingTestView>() {
-//                @Override
-//                public boolean areItemsTheSame(SelectingTestView oldItem, SelectingTestView newItem) {
-//                    return oldItem.getName().equals(newItem.getName());
-//                }
-//
-//                @Override
-//                public boolean areContentsTheSame(SelectingTestView oldItem, SelectingTestView newItem) {
-//                    return (oldItem.getName().equals(newItem.getName()) && oldItem.getCreator().equals(newItem.getCreator()));
-//                }
-//            };
 
     // Involves inflating a layout from XML and returning the holder.
     @NonNull
@@ -114,7 +96,6 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data model based on position.
-//        SelectingTestView testView = getItem(position);
         SelectingTestView testView = testsLst.get(position);
 
         // Set item views based on your views and data models.

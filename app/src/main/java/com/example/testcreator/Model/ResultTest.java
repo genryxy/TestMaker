@@ -2,17 +2,36 @@ package com.example.testcreator.Model;
 
 import java.util.List;
 
+/**
+ * Класс для хранения результата за конкретный тест, пройденный пользователем.
+ */
 public class ResultTest {
+    /**
+     * Время затраченное пользователем на прохождение.
+     */
     private String Duration;
+    /**
+     * Список вопросов, которые были в тесте.
+     */
     private List<QuestionModel> questionLst;
+    /**
+     * Список с ответами пользователя на вопросы.
+     */
     private List<CurrentQuestion> answerSheetLst;
+    private String nameTest;
+    private String categoryName;
+    private String finalScore;
 
     public ResultTest() {}
 
-    public ResultTest(String duration, List<QuestionModel> questionLst, List<CurrentQuestion> answerSheetLst) {
+    public ResultTest(String duration, List<QuestionModel> questionLst,
+                      List<CurrentQuestion> answerSheetLst, String nameTest, String categoryName, String finalScore) {
         Duration = duration;
         this.questionLst = questionLst;
         this.answerSheetLst = answerSheetLst;
+        this.nameTest = nameTest;
+        this.categoryName = categoryName;
+        this.finalScore = finalScore;
     }
 
     public String getDuration() {
@@ -37,5 +56,29 @@ public class ResultTest {
 
     public void setAnswerSheetLst(List<CurrentQuestion> answerSheetLst) {
         this.answerSheetLst = answerSheetLst;
+    }
+
+    public String getNameTest() {
+        return nameTest;
+    }
+
+    public void setNameTest(String nameTest) {
+        this.nameTest = nameTest;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getFinalScore() {
+        return finalScore;
+    }
+
+    public void setFinalScore(String finalScore) {
+        this.finalScore = finalScore;
     }
 }

@@ -99,8 +99,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             answerSheetAdapter.notifyDataSetChanged();
 
             countCorrectAnswer();
-            questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                    .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+            questionRightTxt.setText(getFinalResult());
             questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
 
             if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
@@ -108,7 +107,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 questionFragment.disableAnswers();
                 Common.fragmentsLst.get(position).setWasAnswered(true);
             }
-
             writeResultToDatabase();
         }
 
@@ -124,7 +122,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
         final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
-                questionLst, answerSheetList);
+                questionLst, answerSheetList, Common.selectedTest.getName(),
+                Common.selectedCategory.getName(), getFinalResult());
         final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         DocumentReference docRef = db.collection("users").document(keyUser);
         docRef.get()
@@ -157,6 +156,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                 "Возникла ошибка при получении", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private String getFinalResult() {
+        return String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size());
     }
 
     private void generateFragmentList() {
@@ -247,7 +250,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             // Show TextViews with right answer and Timer.
             timerTxt.setVisibility(View.VISIBLE);
             questionRightTxt.setVisibility(View.VISIBLE);
-            questionRightTxt.setText(String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size()));
+            questionRightTxt.setText(getFinalResult());
 
             // Timer.
             countTimer();
@@ -304,8 +307,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         // Notify to change color.
                         answerSheetAdapter.notifyDataSetChanged();
                         countCorrectAnswer();
-                        questionRightTxt.setText(new StringBuilder(String.format("%d", Common.rightAnswerCount))
-                                .append("/").append(String.format("%d", Common.questionLst.size())).toString());
+                        questionRightTxt.setText(getFinalResult());
                         questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
                     }
                     prevPosition = position;
