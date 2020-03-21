@@ -104,7 +104,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         LayoutInflater inflater = LayoutInflater.from(context);
 
         // Inflate the custom layout.
-        View view = inflater.inflate(R.layout.adapter_view_selecting_layout, parent, false);
+        View view = inflater.inflate(R.layout.layout_selecting_test, parent, false);
         // Return a new holder instance.
         ViewHolder viewHolder = new ViewHolder(context, view);
         return viewHolder;

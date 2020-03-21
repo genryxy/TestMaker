@@ -7,6 +7,8 @@ public class CurrentQuestion {
     private Common.AnswerType type;
     private String userAnswer;
 
+    public CurrentQuestion() {}
+
     public CurrentQuestion(int questionIndex, Common.AnswerType type) {
         this.questionIndex = questionIndex;
         this.type = type;

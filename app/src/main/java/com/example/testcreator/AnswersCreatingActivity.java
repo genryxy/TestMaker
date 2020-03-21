@@ -64,7 +64,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             lstAnswers.add(new AnswerView(answerText, false));
 
         final AnswerViewListAdapter adapter = new AnswerViewListAdapter
-                (this, R.layout.adapter_view_answers_layout, lstAnswers);
+                (this, R.layout.layout_creating_answer, lstAnswers);
         lstView.setAdapter(adapter);
 
         addNewVariantBtnClickListen(lstAnswers, adapter);

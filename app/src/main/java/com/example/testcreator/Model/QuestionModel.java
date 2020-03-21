@@ -12,8 +12,7 @@ public class QuestionModel {
     private boolean isImageQuestion;
     private int categoryId;
 
-    public QuestionModel() {
-    }
+    public QuestionModel() { }
 
     public QuestionModel(int id, String questionText, String questionImage, String answerA, String answerB, String answerC, String answerD, String correctAnswer, boolean isImageQuestion, int categoryId) {
         this.id = id;

@@ -7,7 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
+    <string name="menu_statistic">Результаты</string>
     <string name="menu_add_test">Добавить тест</string>
     <string name="menu_search_test">Искать тест</string>
     <string name="menu_pick_theme">Выбрать тему теста</string>
@@ -38,6 +38,8 @@
     <string name="finishTest">Завершить тест</string>
     <string name="viewAnswers">Посмотреть ответы</string>
     <string name="doQuizAgain">Пройти тест снова</string>
+    <string name="time">Время</string>
+    <string name="result">Итог</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -6,14 +6,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -24,6 +27,7 @@ import com.example.testcreator.Adapter.CategoryAdapter;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.DBHelper.DBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.ui.searchTest.SelectingTestFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -39,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     private AppBarConfiguration mAppBarConfiguration;
     private FragmentTransaction transaction;
     private Fragment selectingTestFragment;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_new_test, R.id.nav_selecting_test,
+                R.id.nav_statistic, R.id.nav_new_test, R.id.nav_selecting_test,
                 R.id.nav_category, R.id.nav_share, R.id.nav_send, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
@@ -70,9 +73,20 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+            @Override
+            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                if (destination.getId() == R.id.drawer_layout) {
+                    Toast.makeText(MainActivity.this, "kukukukukareku", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "kvak-plak " + destination.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 //        selectingTestFragment = new SelectingTestFragment();
 //        transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.add(R.id.select_test_fragment, selectingTestFragment);
+//        transaction.add(R.id.nav_host_fragment, selectingTestFragment);
 //        transaction.commit();
     }
 
@@ -88,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
 //        transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.remove(selectingTestFragment);
 //        transaction.commit();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();

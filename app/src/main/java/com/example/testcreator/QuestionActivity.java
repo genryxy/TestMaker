@@ -54,18 +54,18 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static final int CODE_GET_RESULT = 9999;
-    int timePlay = Common.TOTAL_TIME;
-    boolean isAnswerModeView = false;
+    private int timePlay = Common.TOTAL_TIME;
+    private boolean isAnswerModeView = false;
 
-    TextView questionRightTxt;
-    TextView questionWrongTxt;
-    TextView timerTxt;
+    private TextView questionRightTxt;
+    private TextView questionWrongTxt;
+    private TextView timerTxt;
 
-    RecyclerView answerSheetView;
-    AnswerSheetAdapter answerSheetAdapter;
+    private RecyclerView answerSheetView;
+    private AnswerSheetAdapter answerSheetAdapter;
 
-    ViewPager viewPager;
-    TabLayout tabLayout;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,41 +109,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 Common.fragmentsLst.get(position).setWasAnswered(true);
             }
 
-            List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
-            List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
-            final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
-                    questionLst, answerSheetList);
-            DocumentReference docRef = db.collection("users").document(authFrbs.getCurrentUser().getEmail());
-            docRef.get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserResults userResults = documentSnapshot.toObject(UserResults.class);
-                            if (userResults == null) {
-                                userResults = new UserResults();
-                            }
-                            userResults.getResultTestsLst().add(resultTest);
-
-                            db.collection("users").document(authFrbs.getCurrentUser().getEmail())
-                                    .set(userResults)
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-//                                                Log.w(TAG, "Error adding document", e);
-                                            Toast.makeText(QuestionActivity.this,
-                                                    "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error getting document", e);
-                            Toast.makeText(QuestionActivity.this,
-                                    "Возникла ошибка при получении", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            writeResultToDatabase();
         }
 
         // Navigate to new result activity
@@ -152,6 +118,45 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
         // Common.dataQuestion = new StringBuilder(new Gson().toJson(Common.answerSheetList));
         startActivityForResult(intent, CODE_GET_RESULT);
+    }
+
+    private void writeResultToDatabase() {
+        List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
+        List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
+        final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
+                questionLst, answerSheetList);
+        final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
+        DocumentReference docRef = db.collection("users").document(keyUser);
+        docRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserResults userResults = documentSnapshot.toObject(UserResults.class);
+                        if (userResults == null) {
+                            userResults = new UserResults();
+                        }
+                        userResults.getResultTestsLst().add(resultTest);
+
+                        db.collection("users").document(keyUser)
+                                .set(userResults)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+//                                                Log.w(TAG, "Error adding document", e);
+                                        Toast.makeText(QuestionActivity.this,
+                                                "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//                                Log.w(TAG, "Error getting document", e);
+                        Toast.makeText(QuestionActivity.this,
+                                "Возникла ошибка при получении", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void generateFragmentList() {
@@ -407,13 +412,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         question.setType(Common.AnswerType.NO_ANSWER);
                     }
                     answerSheetAdapter.notifyDataSetChanged();
-//                    answerSheetHelperAdapter.notifyDataSetChanged();
                     for (QuestionFragment fragment : Common.fragmentsLst) {
                         fragment.resetQuestion();
+                        fragment.setWasAnswered(false);
                     }
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;
                     Common.noAnswerCount = 0;
+                    Common.selectedValues.clear();
                     questionWrongTxt.setText("0");
                     questionRightTxt.setText(new StringBuilder("0").append("/").append(Common.questionLst.size()));
                     Toast.makeText(this, "new Quiz", Toast.LENGTH_SHORT).show();

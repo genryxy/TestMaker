@@ -9,9 +9,9 @@
             android:icon="@drawable/ic_menu_name_test"
             android:title="@string/menu_add_test" />
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_statistic"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:title="@string/menu_statistic" />
         <item
             android:id="@+id/nav_selecting_test"
             android:icon="@drawable/ic_menu_search_test"

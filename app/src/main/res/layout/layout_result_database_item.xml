@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="155dp"
+    android:background="?android:selectableItemBackground"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <ImageView
+            android:id="@+id/testAvatarImg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="40"
+            android:contentDescription="@string/menu_search_test" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_weight="20"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nameTestViewTxt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/categoryTestViewTxt"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/infoTestTxt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_weight="40"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/result"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/resultTestTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/md_btn_selected"
+                android:layout_marginBottom="8dp"
+                android:text="12/25"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/timeTestTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/md_btn_selected"
+                android:text="10:25"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#EDEDED"
+        android:paddingTop="20dp" />
+
+</LinearLayout>
