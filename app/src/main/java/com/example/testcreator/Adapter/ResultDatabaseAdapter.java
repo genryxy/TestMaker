@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,9 +15,9 @@ import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
-import com.example.testcreator.ResultActivity;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAdapter.MyViewHolder> {
 
@@ -50,8 +49,30 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
         } else {
             holder.nameTestViewTxt.setText(userResult.getNameTest());
         }
-        holder.timeTestTxt.setText(userResult.getDuration());
+
+        holder.timeTestTxt.setText(convertToNormalForm(userResult.getDuration()));
         holder.resultTestTxt.setText(userResult.getFinalScore());
+    }
+
+    /**
+     * Конвертирует миллисекунды в нормальное представление времени.
+     * @param duration Продолжительность в миллисекундах.
+     * @return чч:мм:сс (если чч == 0, то часы опускаются).
+     */
+    private String convertToNormalForm(String duration) {
+        long millis = Long.valueOf(duration);
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        StringBuilder resTime = new StringBuilder();
+        if (hours != 0) {
+            resTime.append(String.format("%02d:", hours));
+        }
+        resTime.append(String.format("%02d:%02d", minutes, seconds));
+        return  resTime.toString();
     }
 
     @Override

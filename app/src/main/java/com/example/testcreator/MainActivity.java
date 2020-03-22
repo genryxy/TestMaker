@@ -73,16 +73,16 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                if (destination.getId() == R.id.drawer_layout) {
-                    Toast.makeText(MainActivity.this, "kukukukukareku", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, "kvak-plak " + destination.toString(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+//            @Override
+//            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+//                if (destination.getId() == R.id.drawer_layout) {
+//                    Toast.makeText(MainActivity.this, "kukukukukareku", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(MainActivity.this, "kvak-plak " + destination.toString(), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
 //        selectingTestFragment = new SelectingTestFragment();
 //        transaction = getSupportFragmentManager().beginTransaction();
