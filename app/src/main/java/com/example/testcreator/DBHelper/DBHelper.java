@@ -13,6 +13,8 @@ import java.util.List;
 
 public class DBHelper extends SQLiteAssetHelper {
 
+    private static final int NUMBER_ANSWER = 10;
+
     private static final String DB_NAME = "Quiz.db";
     private static final int DB_VER = 1;
 
@@ -58,17 +60,19 @@ public class DBHelper extends SQLiteAssetHelper {
     public List<QuestionModel> getQuestionsByCategory(int category) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category) , null);
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category), null);
         List<QuestionModel> questions = new ArrayList<>();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
+                List<String> allAnswer = new ArrayList<>(NUMBER_ANSWER);
+                for (int i = 0; i < NUMBER_ANSWER; i++) {
+                    allAnswer.add(cursor.getString(cursor.getColumnIndex("Answer" + (char)('A' + i))));
+                }
+
                 QuestionModel question = new QuestionModel(cursor.getInt(cursor.getColumnIndex("ID")),
                         cursor.getString(cursor.getColumnIndex("QuestionText")),
                         cursor.getString(cursor.getColumnIndex("QuestionImage")),
-                        cursor.getString(cursor.getColumnIndex("AnswerA")),
-                        cursor.getString(cursor.getColumnIndex("AnswerB")),
-                        cursor.getString(cursor.getColumnIndex("AnswerC")),
-                        cursor.getString(cursor.getColumnIndex("AnswerD")),
+                        allAnswer,
                         cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
                         cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0 ? false : true,
                         cursor.getInt(cursor.getColumnIndex("CategoryID")));

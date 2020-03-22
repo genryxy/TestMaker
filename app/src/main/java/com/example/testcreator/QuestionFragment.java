@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
@@ -26,8 +27,12 @@ import com.example.testcreator.Model.QuestionModel;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
+ * Класс-фрагмент для представления вопроса во ViewPager.
  * A simple {@link Fragment} subclass.
  */
 public class QuestionFragment extends Fragment implements IQuestion {
@@ -37,8 +42,15 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private CheckBox checkBoxB;
     private CheckBox checkBoxC;
     private CheckBox checkBoxD;
+    private CheckBox checkBoxE;
+    private CheckBox checkBoxF;
+    private CheckBox checkBoxG;
+    private CheckBox checkBoxH;
+    private CheckBox checkBoxI;
+    private CheckBox checkBoxJ;
     private FrameLayout layoutImage;
     private ProgressBar progressBar;
+    private List<CheckBox> allCheckbox = new ArrayList<>();
 
     private QuestionModel question;
     private int questionIndex = -1;
@@ -96,17 +108,43 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
             // Set the text.
             setTextToTextView();
+            checkVisibilityCheckbox();
             setOnCheckedChangeListenerToTextView();
         }
         return itemView;
     }
 
+    private void checkVisibilityCheckbox() {
+        for (int i = 0; i < question.getAllAnswer().size(); i++) {
+            if (question.getAllAnswer().get(i) == null) {
+                allCheckbox.get(i).setVisibility(View.GONE);
+            }
+        }
+    }
+
     private void findElementsViewById(View itemView) {
+        allCheckbox.clear();
         questionTextTxt = itemView.findViewById(R.id.fragmentQuestionTextTxt);
         checkBoxA = itemView.findViewById(R.id.checkBoxA);
         checkBoxB = itemView.findViewById(R.id.checkBoxB);
         checkBoxC = itemView.findViewById(R.id.checkBoxC);
         checkBoxD = itemView.findViewById(R.id.checkBoxD);
+        checkBoxE = itemView.findViewById(R.id.checkBoxE);
+        checkBoxF = itemView.findViewById(R.id.checkBoxF);
+        checkBoxG = itemView.findViewById(R.id.checkBoxG);
+        checkBoxH = itemView.findViewById(R.id.checkBoxH);
+        checkBoxI = itemView.findViewById(R.id.checkBoxI);
+        checkBoxJ = itemView.findViewById(R.id.checkBoxJ);
+        allCheckbox.add(checkBoxA);
+        allCheckbox.add(checkBoxB);
+        allCheckbox.add(checkBoxC);
+        allCheckbox.add(checkBoxD);
+        allCheckbox.add(checkBoxE);
+        allCheckbox.add(checkBoxF);
+        allCheckbox.add(checkBoxG);
+        allCheckbox.add(checkBoxH);
+        allCheckbox.add(checkBoxI);
+        allCheckbox.add(checkBoxJ);
     }
 
     private void setTextToTextView() {
@@ -115,60 +153,29 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxB.setText(question.getAnswerB());
         checkBoxC.setText(question.getAnswerC());
         checkBoxD.setText(question.getAnswerD());
+        checkBoxE.setText(question.getAnswerE());
+        checkBoxF.setText(question.getAnswerF());
+        checkBoxG.setText(question.getAnswerG());
+        checkBoxH.setText(question.getAnswerH());
+        checkBoxI.setText(question.getAnswerI());
+        checkBoxJ.setText(question.getAnswerJ());
     }
 
     private void setOnCheckedChangeListenerToTextView() {
-        checkBoxA.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!wasAnswered) {
-                    if (isChecked) {
-                        Common.selectedValues.add(checkBoxA.getText().toString());
-                    } else {
-                        Common.selectedValues.remove(checkBoxA.getText().toString());
+        for (final CheckBox checkbox : allCheckbox) {
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (!wasAnswered) {
+                        if (isChecked) {
+                            Common.selectedValues.add(checkbox.getText().toString());
+                        } else {
+                            Common.selectedValues.remove(checkbox.getText().toString());
+                        }
                     }
                 }
-            }
-        });
-
-        checkBoxB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!wasAnswered) {
-                    if (isChecked) {
-                        Common.selectedValues.add(checkBoxB.getText().toString());
-                    } else {
-                        Common.selectedValues.remove(checkBoxB.getText().toString());
-                    }
-                }
-            }
-        });
-
-        checkBoxC.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!wasAnswered) {
-                    if (isChecked) {
-                        Common.selectedValues.add(checkBoxC.getText().toString());
-                    } else {
-                        Common.selectedValues.remove(checkBoxC.getText().toString());
-                    }
-                }
-            }
-        });
-
-        checkBoxD.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!wasAnswered) {
-                    if (isChecked) {
-                        Common.selectedValues.add(checkBoxD.getText().toString());
-                    } else {
-                        Common.selectedValues.remove(checkBoxD.getText().toString());
-                    }
-                }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -240,6 +247,30 @@ public class QuestionFragment extends Fragment implements IQuestion {
                     checkBoxD.setTypeface(null, Typeface.BOLD);
                     checkBoxD.setTextColor(Color.RED);
                     break;
+                case "E":
+                    checkBoxE.setTypeface(null, Typeface.BOLD);
+                    checkBoxE.setTextColor(Color.RED);
+                    break;
+                case "F":
+                    checkBoxF.setTypeface(null, Typeface.BOLD);
+                    checkBoxF.setTextColor(Color.RED);
+                    break;
+                case "G":
+                    checkBoxG.setTypeface(null, Typeface.BOLD);
+                    checkBoxG.setTextColor(Color.RED);
+                    break;
+                case "H":
+                    checkBoxH.setTypeface(null, Typeface.BOLD);
+                    checkBoxH.setTextColor(Color.RED);
+                    break;
+                case "I":
+                    checkBoxI.setTypeface(null, Typeface.BOLD);
+                    checkBoxI.setTextColor(Color.RED);
+                    break;
+                case "J":
+                    checkBoxJ.setTypeface(null, Typeface.BOLD);
+                    checkBoxJ.setTextColor(Color.RED);
+                    break;
             }
         }
     }
@@ -250,36 +281,42 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxB.setEnabled(false);
         checkBoxC.setEnabled(false);
         checkBoxD.setEnabled(false);
+        checkBoxE.setEnabled(false);
+        checkBoxF.setEnabled(false);
+        checkBoxG.setEnabled(false);
+        checkBoxH.setEnabled(false);
+        checkBoxI.setEnabled(false);
+        checkBoxJ.setEnabled(false);
     }
 
     @Override
     public void resetQuestion() {
         // Enable CheckBoxes
-        checkBoxA.setEnabled(true);
-        checkBoxB.setEnabled(true);
-        checkBoxC.setEnabled(true);
-        checkBoxD.setEnabled(true);
+        for (CheckBox checkbox : allCheckbox) {
+            checkbox.setEnabled(true);
+        }
 
         // Remove all selected.
-        checkBoxA.setChecked(false);
-        checkBoxB.setChecked(false);
-        checkBoxC.setChecked(false);
-        checkBoxD.setChecked(false);
+        for (CheckBox checkbox : allCheckbox) {
+            checkbox.setChecked(false);
+        }
 
         // Remove bold on all texts.
-        checkBoxA.setTypeface(null, Typeface.NORMAL);
-        checkBoxB.setTypeface(null, Typeface.NORMAL);
-        checkBoxC.setTypeface(null, Typeface.NORMAL);
-        checkBoxD.setTypeface(null, Typeface.NORMAL);
+        for (CheckBox checkbox : allCheckbox) {
+            checkbox.setTypeface(null, Typeface.NORMAL);
+        }
 
         // Set black color for all texts.
-        checkBoxA.setTextColor(Color.BLACK);
-        checkBoxB.setTextColor(Color.BLACK);
-        checkBoxC.setTextColor(Color.BLACK);
-        checkBoxD.setTextColor(Color.BLACK);
+        for (CheckBox checkbox : allCheckbox) {
+            checkbox.setTextColor(Color.BLACK);
+        }
     }
 
     void setUserAnswer(String userAnswer) {
+        if (userAnswer == null || userAnswer.length() == 0) {
+            return;
+        }
+
         String[] userAnswers = userAnswer.split(",");
         for (String answer : userAnswers) {
             switch (answer) {
@@ -294,6 +331,24 @@ public class QuestionFragment extends Fragment implements IQuestion {
                     break;
                 case "D":
                     checkBoxD.setChecked(true);
+                    break;
+                case "E":
+                    checkBoxE.setChecked(true);
+                    break;
+                case "F":
+                    checkBoxF.setChecked(true);
+                    break;
+                case "G":
+                    checkBoxG.setChecked(true);
+                    break;
+                case "H":
+                    checkBoxH.setChecked(true);
+                    break;
+                case "I":
+                    checkBoxI.setChecked(true);
+                    break;
+                case "J":
+                    checkBoxJ.setChecked(true);
                     break;
             }
         }

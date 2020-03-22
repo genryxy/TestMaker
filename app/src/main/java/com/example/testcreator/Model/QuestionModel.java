@@ -1,27 +1,34 @@
 package com.example.testcreator.Model;
 
+import java.util.List;
+
 public class QuestionModel {
     private int id;
     private String questionText;
     private String questionImage;
-    private String answerA;
-    private String answerB;
-    private String answerC;
-    private String answerD;
+    private List<String> allAnswer;
     private String correctAnswer;
     private boolean isImageQuestion;
     private int categoryId;
 
+    private String answerA;
+    private String answerB;
+    private String answerC;
+    private String answerD;
+    private String answerE;
+    private String answerF;
+    private String answerG;
+    private String answerH;
+    private String answerI;
+    private String answerJ;
+
     public QuestionModel() { }
 
-    public QuestionModel(int id, String questionText, String questionImage, String answerA, String answerB, String answerC, String answerD, String correctAnswer, boolean isImageQuestion, int categoryId) {
+    public QuestionModel(int id, String questionText, String questionImage, List<String> allAnswer, String correctAnswer, boolean isImageQuestion, int categoryId) {
         this.id = id;
         this.questionText = questionText;
         this.questionImage = questionImage;
-        this.answerA = answerA;
-        this.answerB = answerB;
-        this.answerC = answerC;
-        this.answerD = answerD;
+        this.allAnswer = allAnswer;
         this.correctAnswer = correctAnswer;
         this.isImageQuestion = isImageQuestion;
         this.categoryId = categoryId;
@@ -51,38 +58,6 @@ public class QuestionModel {
         this.questionImage = questionImage;
     }
 
-    public String getAnswerA() {
-        return answerA;
-    }
-
-    public void setAnswerA(String answerA) {
-        this.answerA = answerA;
-    }
-
-    public String getAnswerB() {
-        return answerB;
-    }
-
-    public void setAnswerB(String answerB) {
-        this.answerB = answerB;
-    }
-
-    public String getAnswerC() {
-        return answerC;
-    }
-
-    public void setAnswerC(String answerC) {
-        this.answerC = answerC;
-    }
-
-    public String getAnswerD() {
-        return answerD;
-    }
-
-    public void setAnswerD(String answerD) {
-        this.answerD = answerD;
-    }
-
     public String getCorrectAnswer() {
         return correctAnswer;
     }
@@ -105,5 +80,53 @@ public class QuestionModel {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public List<String> getAllAnswer() {
+        return allAnswer;
+    }
+
+    public void setAllAnswer(List<String> allAnswer) {
+        this.allAnswer = allAnswer;
+    }
+
+    public String getAnswerA() {
+        return allAnswer.get(0);
+    }
+
+    public String getAnswerB() {
+        return allAnswer.get(1);
+    }
+
+    public String getAnswerC() {
+        return allAnswer.get(2);
+    }
+
+    public String getAnswerD() {
+        return allAnswer.get(3);
+    }
+
+    public String getAnswerE() {
+        return allAnswer.get(4);
+    }
+
+    public String getAnswerF() {
+        return allAnswer.get(5);
+    }
+
+    public String getAnswerG() {
+        return allAnswer.get(6);
+    }
+
+    public String getAnswerH() {
+        return allAnswer.get(7);
+    }
+
+    public String getAnswerI() {
+        return allAnswer.get(8);
+    }
+
+    public String getAnswerJ() {
+        return allAnswer.get(9);
     }
 }

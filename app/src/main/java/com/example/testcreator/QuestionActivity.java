@@ -317,13 +317,17 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             @Override
             public void onPageSelected(int position) {
                 QuestionFragment questionFragment;
+                if (position >= Common.fragmentsLst.size()) {
+                    position = Common.fragmentsLst.size() - 1;
+                }
+
                 if (Common.fragmentsLst.get(position).isWasAnswered() || isAnswerModeView) {
                     Common.fragmentsLst.get(position).showCorrectAnswers();
 
                     // Установить ответы, которые дал пользователь.
                     QuestionFragment tmp = Common.fragmentsLst.get(position);
                     tmp.setUserAnswer(Common.answerSheetList.get(position).getUserAnswer());
-                    Common.fragmentsLst.get(position).disableAnswers();
+                    tmp.disableAnswers();
                 }
                 if (!isAnswerModeView) {
                     questionFragment = Common.fragmentsLst.get(prevPosition);

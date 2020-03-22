@@ -62,6 +62,42 @@
             android:layout_height="wrap_content"
             android:text="Answer D" />
 
+        <CheckBox
+            android:id="@+id/checkBoxE"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer E" />
+
+        <CheckBox
+            android:id="@+id/checkBoxF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer F" />
+
+        <CheckBox
+            android:id="@+id/checkBoxG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer G" />
+
+        <CheckBox
+            android:id="@+id/checkBoxH"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer H" />
+
+        <CheckBox
+            android:id="@+id/checkBoxI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer I" />
+
+        <CheckBox
+            android:id="@+id/checkBoxJ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Answer J" />
+
     </LinearLayout>
 
 </RelativeLayout>
