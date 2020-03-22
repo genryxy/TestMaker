@@ -21,6 +21,13 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
+import com.ToxicBakery.viewpager.transforms.CubeInTransformer;
+import com.ToxicBakery.viewpager.transforms.FlipHorizontalTransformer;
+import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.ToxicBakery.viewpager.transforms.ScaleInOutTransformer;
+import com.ToxicBakery.viewpager.transforms.StackTransformer;
+import com.ToxicBakery.viewpager.transforms.ZoomInTransformer;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Adapter.AnswerSheetAdapter;
@@ -31,6 +38,7 @@ import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
+import com.example.testcreator.Model.Question;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.Model.UserResults;
@@ -73,6 +81,11 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         setContentView(R.layout.activity_question);
         setTitle(Common.selectedCategory.getName());
 
+        if (getIntent().hasExtra("isAnswerModeView")) {
+            if (getIntent().getStringExtra("isAnswerModeView").equals("true")) {
+                isAnswerModeView = true;
+            }
+        }
         // Get questions from DB.
         getQuestions();
     }
@@ -123,7 +136,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
         final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
                 questionLst, answerSheetList, Common.selectedTest.getName(),
-                Common.selectedCategory.getName(), getFinalResult());
+                Common.selectedCategory.getName(), getFinalResult(), String.valueOf(Common.wrongAnswerCount));
         final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         DocumentReference docRef = db.collection("users").document(keyUser);
         docRef.get()
@@ -169,10 +182,16 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             QuestionFragment questionFragment = new QuestionFragment();
             questionFragment.setArguments(bundle);
 
+            if (isAnswerModeView) {
+                questionFragment.setWasAnswered(true);
+            }
             Common.fragmentsLst.add(questionFragment);
         }
     }
 
+    /**
+     * Включить таймер с заданным шагом обновления.
+     */
     private void countTimer() {
         if (Common.countDownTimer != null) {
             Common.countDownTimer.cancel();
@@ -196,24 +215,28 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     private void getQuestions() {
 
-        if (!Common.isOnlineMode) {
-            Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
-            addQuestionToCommonAnswerSheetAdapter();
-            setupQuestion();
-        } else {
-            new OnlineDBHelper(this, FirebaseFirestore.getInstance())
-                    .readData(new MyCallBack() {
-                        @Override
-                        public void setQuestionList(List<QuestionModel> questionList) {
+        if (!isAnswerModeView) {
+            if (!Common.isOnlineMode) {
+                Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
+                addQuestionToCommonAnswerSheetAdapter();
+                setupQuestion();
+            } else {
+                new OnlineDBHelper(this, FirebaseFirestore.getInstance())
+                        .readData(new MyCallBack() {
+                            @Override
+                            public void setQuestionList(List<QuestionModel> questionList) {
 
-                            Common.questionLst.clear();
-                            Common.questionLst = questionList;
-                            addQuestionToCommonAnswerSheetAdapter();
-                            setupQuestion();
-                        }
-                    }, Common.selectedCategory.getName()
-                            .replace(" ", "")
-                            .replace("/", "_"));
+                                Common.questionLst.clear();
+                                Common.questionLst = questionList;
+                                addQuestionToCommonAnswerSheetAdapter();
+                                setupQuestion();
+                            }
+                        }, Common.selectedCategory.getName()
+                                .replace(" ", "")
+                                .replace("/", "_"));
+            }
+        } else {
+            setupQuestion();
         }
     }
 
@@ -247,13 +270,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         if (Common.questionLst.size() > 0) {
             findElementsViewById();
 
-            // Show TextViews with right answer and Timer.
-            timerTxt.setVisibility(View.VISIBLE);
+            if (!isAnswerModeView) {
+                // Show TextViews with right answer and Timer.
+                timerTxt.setVisibility(View.VISIBLE);
+                // Timer.
+                countTimer();
+            }
             questionRightTxt.setVisibility(View.VISIBLE);
             questionRightTxt.setText(getFinalResult());
-
-            // Timer.
-            countTimer();
 
             // Set adapter.
             setAnswerSheetViewAdapter();
@@ -262,6 +286,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             QuestionFragmentAdapter adapter = new QuestionFragmentAdapter(
                     getSupportFragmentManager(), this, Common.fragmentsLst);
             viewPager.setAdapter(adapter);
+            // Добавим эффект при смене вопроса.
+            viewPager.setPageTransformer(true, new ScaleInOutTransformer());
             tabLayout.setupWithViewPager(viewPager);
 
             // Add event.
@@ -281,7 +307,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     }
 
     private void addViewPagerOnChangeListener() {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        final ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
 
             int prevPosition = 0;
 
@@ -293,6 +319,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 QuestionFragment questionFragment;
                 if (Common.fragmentsLst.get(position).isWasAnswered() || isAnswerModeView) {
                     Common.fragmentsLst.get(position).showCorrectAnswers();
+
+                    // Установить ответы, которые дал пользователь.
+                    QuestionFragment tmp = Common.fragmentsLst.get(position);
+                    tmp.setUserAnswer(Common.answerSheetList.get(position).getUserAnswer());
                     Common.fragmentsLst.get(position).disableAnswers();
                 }
                 if (!isAnswerModeView) {
@@ -316,6 +346,15 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
             @Override
             public void onPageScrollStateChanged(int state) { }
+        };
+
+        viewPager.addOnPageChangeListener(pageChangeListener);
+        // do this in a runnable to make sure the viewPager's views are already instantiated before triggering the onPageSelected call
+        viewPager.post(new Runnable() {
+            @Override
+            public void run() {
+                pageChangeListener.onPageSelected(viewPager.getCurrentItem());
+            }
         });
     }
 
@@ -344,6 +383,11 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         ConstraintLayout constraintLayout = (ConstraintLayout) item.getActionView();
         questionWrongTxt = constraintLayout.findViewById(R.id.wrongAnswerTxt);
         questionWrongTxt.setText(String.valueOf(0));
+        if (isAnswerModeView) {
+            questionWrongTxt.setVisibility(View.GONE);
+        } else {
+            questionWrongTxt.setVisibility(View.VISIBLE);
+        }
         return true;
     }
 
@@ -396,7 +440,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     viewPager.setCurrentItem(questionNum);
 
                     isAnswerModeView = true;
-                    Common.countDownTimer.cancel();
+                    if (Common.countDownTimer != null) {
+                        Common.countDownTimer.cancel();
+                    }
                     questionWrongTxt.setVisibility(View.GONE);
                     questionRightTxt.setVisibility(View.GONE);
                     timerTxt.setVisibility(View.GONE);
@@ -423,7 +469,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     Common.noAnswerCount = 0;
                     Common.selectedValues.clear();
                     questionWrongTxt.setText("0");
-                    questionRightTxt.setText(new StringBuilder("0").append("/").append(Common.questionLst.size()));
+                    questionRightTxt.setText(getFinalResult());
                     Toast.makeText(this, "new Quiz", Toast.LENGTH_SHORT).show();
                 }
             }

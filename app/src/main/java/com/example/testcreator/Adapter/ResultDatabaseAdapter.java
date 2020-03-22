@@ -1,6 +1,7 @@
 package com.example.testcreator.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.ResultTest;
+import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
+import com.example.testcreator.ResultActivity;
 
 import java.util.List;
 
@@ -79,6 +83,16 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
                 ResultTest resultTest = resultTests.get(position);
                 // We can access the data within the views
                 Toast.makeText(context, resultTest.getFinalScore(), Toast.LENGTH_SHORT).show();
+                Common.questionLst = resultTest.getQuestionLst();
+                Common.answerSheetList = resultTest.getAnswerSheetLst();
+                int rightAnswer = Integer.valueOf(resultTest.getFinalScore().split("/")[0]);
+                int wrongAnswer = Integer.valueOf(resultTest.getWrongAnswer());
+                Common.rightAnswerCount = rightAnswer;
+                Common.wrongAnswerCount = wrongAnswer;
+                Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
+                Intent intent = new Intent(context, QuestionActivity.class);
+                intent.putExtra("isAnswerModeView", "true");
+                context.startActivity(intent);
             }
         }
     }

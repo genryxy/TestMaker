@@ -21,17 +21,19 @@ public class ResultTest {
     private String nameTest;
     private String categoryName;
     private String finalScore;
+    private String wrongAnswer;
 
     public ResultTest() {}
 
-    public ResultTest(String duration, List<QuestionModel> questionLst,
-                      List<CurrentQuestion> answerSheetLst, String nameTest, String categoryName, String finalScore) {
+    public ResultTest(String duration, List<QuestionModel> questionLst, List<CurrentQuestion> answerSheetLst,
+                      String nameTest, String categoryName, String finalScore, String wrongAnswer) {
         Duration = duration;
         this.questionLst = questionLst;
         this.answerSheetLst = answerSheetLst;
         this.nameTest = nameTest;
         this.categoryName = categoryName;
         this.finalScore = finalScore;
+        this.wrongAnswer = wrongAnswer;
     }
 
     public String getDuration() {
@@ -80,5 +82,13 @@ public class ResultTest {
 
     public void setFinalScore(String finalScore) {
         this.finalScore = finalScore;
+    }
+
+    public String getWrongAnswer() {
+        return wrongAnswer;
+    }
+
+    public void setWrongAnswer(String wrongAnswer) {
+        this.wrongAnswer = wrongAnswer;
     }
 }

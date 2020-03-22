@@ -223,18 +223,23 @@ public class QuestionFragment extends Fragment implements IQuestion {
         // Format: A,B
         String[] correctAnswers = question.getCorrectAnswer().split(",");
         for (String answer : correctAnswers) {
-            if (answer.equals("A")) {
-                checkBoxA.setTypeface(null, Typeface.BOLD);
-                checkBoxA.setTextColor(Color.RED);
-            } else if (answer.equals("B")) {
-                checkBoxB.setTypeface(null, Typeface.BOLD);
-                checkBoxB.setTextColor(Color.RED);
-            } else if (answer.equals("C")) {
-                checkBoxC.setTypeface(null, Typeface.BOLD);
-                checkBoxC.setTextColor(Color.RED);
-            } else if (answer.equals("D")) {
-                checkBoxD.setTypeface(null, Typeface.BOLD);
-                checkBoxD.setTextColor(Color.RED);
+            switch (answer) {
+                case "A":
+                    checkBoxA.setTypeface(null, Typeface.BOLD);
+                    checkBoxA.setTextColor(Color.RED);
+                    break;
+                case "B":
+                    checkBoxB.setTypeface(null, Typeface.BOLD);
+                    checkBoxB.setTextColor(Color.RED);
+                    break;
+                case "C":
+                    checkBoxC.setTypeface(null, Typeface.BOLD);
+                    checkBoxC.setTextColor(Color.RED);
+                    break;
+                case "D":
+                    checkBoxD.setTypeface(null, Typeface.BOLD);
+                    checkBoxD.setTextColor(Color.RED);
+                    break;
             }
         }
     }
@@ -272,5 +277,25 @@ public class QuestionFragment extends Fragment implements IQuestion {
         checkBoxB.setTextColor(Color.BLACK);
         checkBoxC.setTextColor(Color.BLACK);
         checkBoxD.setTextColor(Color.BLACK);
+    }
+
+    void setUserAnswer(String userAnswer) {
+        String[] userAnswers = userAnswer.split(",");
+        for (String answer : userAnswers) {
+            switch (answer) {
+                case "A":
+                    checkBoxA.setChecked(true);
+                    break;
+                case "B":
+                    checkBoxB.setChecked(true);
+                    break;
+                case "C":
+                    checkBoxC.setChecked(true);
+                    break;
+                case "D":
+                    checkBoxD.setChecked(true);
+                    break;
+            }
+        }
     }
 }
