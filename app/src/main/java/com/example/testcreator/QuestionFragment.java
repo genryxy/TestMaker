@@ -116,7 +116,8 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
     private void checkVisibilityCheckbox() {
         for (int i = 0; i < question.getAllAnswer().size(); i++) {
-            if (question.getAllAnswer().get(i) == null) {
+            if (question.getAllAnswer().get(i) == null
+                    || question.getAllAnswer().get(i).equals("Z")) {
                 allCheckbox.get(i).setVisibility(View.GONE);
             }
         }
@@ -224,6 +225,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
         return currentQuestion;
     }
 
+    /**
+     * Метод для вывода правильных ответов.
+     * Парсится строка с эталонными ответами, а затем вызывается метод
+     * для смены написания текста checkbox.
+     */
     @Override
     public void showCorrectAnswers() {
         // Bold correct answer.
@@ -232,47 +238,47 @@ public class QuestionFragment extends Fragment implements IQuestion {
         for (String answer : correctAnswers) {
             switch (answer) {
                 case "A":
-                    checkBoxA.setTypeface(null, Typeface.BOLD);
-                    checkBoxA.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxA);
                     break;
                 case "B":
-                    checkBoxB.setTypeface(null, Typeface.BOLD);
-                    checkBoxB.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxB);
                     break;
                 case "C":
-                    checkBoxC.setTypeface(null, Typeface.BOLD);
-                    checkBoxC.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxC);
                     break;
                 case "D":
-                    checkBoxD.setTypeface(null, Typeface.BOLD);
-                    checkBoxD.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxD);
                     break;
                 case "E":
-                    checkBoxE.setTypeface(null, Typeface.BOLD);
-                    checkBoxE.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxE);
                     break;
                 case "F":
-                    checkBoxF.setTypeface(null, Typeface.BOLD);
-                    checkBoxF.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxF);
                     break;
                 case "G":
-                    checkBoxG.setTypeface(null, Typeface.BOLD);
-                    checkBoxG.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxG);
                     break;
                 case "H":
-                    checkBoxH.setTypeface(null, Typeface.BOLD);
-                    checkBoxH.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxH);
                     break;
                 case "I":
-                    checkBoxI.setTypeface(null, Typeface.BOLD);
-                    checkBoxI.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxI);
                     break;
                 case "J":
-                    checkBoxJ.setTypeface(null, Typeface.BOLD);
-                    checkBoxJ.setTextColor(Color.RED);
+                    changeTypefaceAndColor(checkBoxJ);
                     break;
             }
         }
+    }
+
+    /**
+     * Меняет цвет текста checkbox на зелёный и делает шрифт жирным.
+     *
+     * @param checkBox Вариант ответа, написание текста которого нужно изменить.
+     */
+    private void changeTypefaceAndColor(CheckBox checkBox) {
+        checkBox.setTypeface(null, Typeface.BOLD);
+        checkBox.setTextColor(Color.parseColor("#228B22"));
     }
 
     @Override
@@ -312,6 +318,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
         }
     }
 
+    /**
+     * Выделить checkbox, которые отметил пользователь в качестве ответа.
+     *
+     * @param userAnswer Ответы пользователя.
+     */
     void setUserAnswer(String userAnswer) {
         if (userAnswer == null || userAnswer.length() == 0) {
             return;

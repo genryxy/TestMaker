@@ -102,8 +102,7 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
             // Check if an item was deleted, but the user clicked it before the UI removed it
             if (position != RecyclerView.NO_POSITION) {
                 ResultTest resultTest = resultTests.get(position);
-                // We can access the data within the views
-                Toast.makeText(context, resultTest.getFinalScore(), Toast.LENGTH_SHORT).show();
+                Common.fragmentsLst.clear();
                 Common.questionLst = resultTest.getQuestionLst();
                 Common.answerSheetList = resultTest.getAnswerSheetLst();
                 int rightAnswer = Integer.valueOf(resultTest.getFinalScore().split("/")[0]);

@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteAssetHelper {
-
-    private static final int NUMBER_ANSWER = 10;
-
     private static final String DB_NAME = "Quiz.db";
     private static final int DB_VER = 1;
 
@@ -64,9 +61,9 @@ public class DBHelper extends SQLiteAssetHelper {
         List<QuestionModel> questions = new ArrayList<>();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                List<String> allAnswer = new ArrayList<>(NUMBER_ANSWER);
-                for (int i = 0; i < NUMBER_ANSWER; i++) {
-                    allAnswer.add(cursor.getString(cursor.getColumnIndex("Answer" + (char)('A' + i))));
+                List<String> allAnswer = new ArrayList<>(QuestionModel.NUMBER_ANSWER);
+                for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
+                    allAnswer.add(cursor.getString(cursor.getColumnIndex("Answer" + (char) ('A' + i))));
                 }
 
                 QuestionModel question = new QuestionModel(cursor.getInt(cursor.getColumnIndex("ID")),

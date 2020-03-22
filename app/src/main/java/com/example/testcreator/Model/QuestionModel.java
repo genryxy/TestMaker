@@ -1,12 +1,18 @@
 package com.example.testcreator.Model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 public class QuestionModel {
+    public static final int NUMBER_ANSWER = 10;
+
     private int id;
     private String questionText;
     private String questionImage;
-    private List<String> allAnswer;
+    private List<String> allAnswer = new ArrayList<>();
     private String correctAnswer;
     private boolean isImageQuestion;
     private int categoryId;
@@ -22,7 +28,9 @@ public class QuestionModel {
     private String answerI;
     private String answerJ;
 
-    public QuestionModel() { }
+    public QuestionModel() {
+        allAnswer.clear();
+    }
 
     public QuestionModel(int id, String questionText, String questionImage, List<String> allAnswer, String correctAnswer, boolean isImageQuestion, int categoryId) {
         this.id = id;
@@ -83,12 +91,13 @@ public class QuestionModel {
     }
 
     public List<String> getAllAnswer() {
+        Collections.sort(allAnswer);
         return allAnswer;
     }
 
-    public void setAllAnswer(List<String> allAnswer) {
-        this.allAnswer = allAnswer;
-    }
+//    public void setAllAnswer(List<String> allAnswer) {
+//        this.allAnswer = allAnswer;
+//    }
 
     public String getAnswerA() {
         return allAnswer.get(0);
@@ -128,5 +137,107 @@ public class QuestionModel {
 
     public String getAnswerJ() {
         return allAnswer.get(9);
+    }
+
+    public void setAnswerA(String answerA) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerA == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerA);
+            }
+        }
+        Collections.sort(allAnswer);
+    }
+
+    public void setAnswerB(String answerB) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerB == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerB);
+            }
+        }
+    }
+
+    public void setAnswerC(String answerC) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerC == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerC);
+            }
+        }
+    }
+
+    public void setAnswerD(String answerD) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerD == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerD);
+            }
+        }
+    }
+
+    public void setAnswerE(String answerE) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerE == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerE);
+            }
+        }
+    }
+
+    public void setAnswerF(String answerF) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerF == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerF);
+            }
+        }
+    }
+
+    public void setAnswerG(String answerG) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerG == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerG);
+            }
+        }
+    }
+
+    public void setAnswerH(String answerH) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerH == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerH);
+            }
+        }
+    }
+
+    public void setAnswerI(String answerI) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerI == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerI);
+            }
+        }
+    }
+
+    public void setAnswerJ(String answerJ) {
+        if (allAnswer.size() < NUMBER_ANSWER) {
+            if (answerJ == null) {
+                allAnswer.add("Z");
+            } else {
+                allAnswer.add(answerJ);
+            }
+        }
+        Collections.sort(allAnswer);
     }
 }
