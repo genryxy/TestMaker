@@ -114,6 +114,10 @@ public class QuestionFragment extends Fragment implements IQuestion {
         return itemView;
     }
 
+    /**
+     * Метод, который делает невидимыми нижние checkbox, если вариантов ответов
+     * меньше максимально возможного количества (10 ответов).
+     */
     private void checkVisibilityCheckbox() {
         for (int i = 0; i < question.getAllAnswer().size(); i++) {
             if (question.getAllAnswer().get(i) == null

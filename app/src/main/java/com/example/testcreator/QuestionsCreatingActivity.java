@@ -13,10 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.testcreator.Enum.TypeAnswer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -59,7 +61,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Внимание");
-        builder.setMessage("Изменения не будут сохранены ");
+        builder.setMessage("Изменения не будут сохранены! Создаваемый тест будет удалён!");
         builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 removeNameTestFromDataBase();
@@ -179,6 +181,25 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error updating testsNumber", e);
+                    }
+                });
+
+        db.collection("tests").document(nameTest)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(QuestionsCreatingActivity.this, "Тест был успешно удален",
+                                Toast.LENGTH_SHORT).show();
+//                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(QuestionsCreatingActivity.this, "Не удалось удалить тест",
+                                Toast.LENGTH_SHORT).show();
+//                                Log.w(TAG, "Error deleting document", e);
                     }
                 });
     }

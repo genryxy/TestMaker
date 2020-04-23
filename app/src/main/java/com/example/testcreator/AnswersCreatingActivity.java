@@ -28,7 +28,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections {
     private static final String TAG = "AnswersCreatingActivity";
@@ -49,6 +51,14 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     // intent из обработчика события.
     private boolean isFromEndCreatingBtn;
     private boolean isFromNextQuestionBtn;
+    // Словарь, состоящий из пар (номер вопроса, вариант ответа).
+    private Map<Integer, String> lettersMap = new HashMap<>();
+    // Список с вариантами ответов на вопросы. Варианты ответов
+    // вводит пользователь.
+    private List<AnswerView> lstAnswers;
+    // Список с вариантами ответов на вопросы. Варианты ответов
+    // вводит пользователь.
+    private List<String> lstAnswersToDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,17 +69,23 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         getInfoFromPreviousIntent();
 
         // Создаём список с ответами.
-        final List<AnswerView> lstAnswers = new ArrayList<>();
-        for (int i = 0; i < answersNumber; i++)
+        lstAnswers = new ArrayList<>();
+        for (int i = 0; i < answersNumber; i++) {
             lstAnswers.add(new AnswerView(answerText, false));
+        }
+
+        // Заполняем словарь.
+        for (int i = 0; i < 10; i++) {
+            lettersMap.put(i, String.valueOf((char) ('A' + i)));
+        }
 
         final AnswerViewListAdapter adapter = new AnswerViewListAdapter
                 (this, R.layout.layout_creating_answer, lstAnswers);
         lstView.setAdapter(adapter);
 
-        addNewVariantBtnClickListen(lstAnswers, adapter);
-        createNextQuestionBtnClickListen(lstAnswers);
-        endCreatingTestBtnClickListen(lstAnswers);
+        addNewVariantBtnClickListen(adapter);
+        createNextQuestionBtnClickListen();
+        endCreatingTestBtnClickListen();
     }
 
     @Override
@@ -93,40 +109,65 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     /**
      * Создаёт список вопросов, состоящий из одного вопроса с заданными параметрами.
      *
-     * @param lstAnswers      Список ответов на создаваемый вопрос.
      * @param rightAnsBuilder Правильный ответ в строковом представлении.
      * @param rightAnsNumber  Количество правильных ответов.
      * @return Список вопросов
      */
-    private List<Question> createQuestion(List<AnswerView> lstAnswers,
-                                          StringBuilder rightAnsBuilder, int rightAnsNumber) {
-        // (Длина - 1), чтобы не было висячей запятой.
-        String correctAnswersStr = rightAnsBuilder.substring(0, rightAnsBuilder.length() - 1);
+    private List<Question> createQuestion(StringBuilder rightAnsBuilder, int rightAnsNumber) {
+        processLstAnswers();
         Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
                 ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
-                lstAnswers, rightAnsNumber, correctAnswersStr);
+                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
         List<Question> questions = new ArrayList<>();
         questions.add(question);
         return questions;
     }
 
     /**
+     * Метод для обработки вариантов ответов. Каждый ответ должен начинаться с
+     * заглавной буквы латинского алфавита, которая означает номер ответа.
+     * Потом следует точка. Ещё в каждом вопросе должно быть 10 вариантов ответа
+     * для правильного вывода возможных ответов на вопрос, поэтому дозаполняем
+     * оставшиеся варианты ответов строкой "Z".
+     * Для отображения ответов при заполнении используется класс AnswerView, но
+     * в базе данных достаточно только формулировки ответа, поэтому переносим
+     * все ответы в другой список, использующий встроенный класс String.
+     */
+    private void processLstAnswers() {
+        lstAnswersToDatabase = new ArrayList<>();
+        String tmp;
+        int size = lstAnswers.size();
+        for (int i = 0; i < size; i++) {
+            tmp = lettersMap.get(i) + ". " + lstAnswers.get(i).getAnswerText();
+            lstAnswersToDatabase.add(tmp);
+        }
+
+        // Теперь дозаполним оставшиеся ответы.
+        for (int i = size; i < lettersMap.size(); i++) {
+            lstAnswersToDatabase.add("Z");
+        }
+    }
+
+    /**
      * Метод для подсчёта количества правильных ответов и запоминания
      * номеров правильных ответов.
      *
-     * @param lstAnswers Список со всеми ответами.
      * @return Возвращается пара (количество верных ответов,
      * строка с номерами верных ответов)
      */
-    private Pair<Integer, StringBuilder> countRightAnswers(List<AnswerView> lstAnswers) {
+    private Pair<Integer, StringBuilder> saveRightAnswers() {
         int rightAnsNumber = 0;
         StringBuilder rightAnsBuilder = new StringBuilder();
         for (int i = 0; i < lstAnswers.size(); i++) {
             if (lstAnswers.get(i).getSelected()) {
                 rightAnsNumber++;
-                rightAnsBuilder.append(i);
+                rightAnsBuilder.append(lettersMap.get(i));
                 rightAnsBuilder.append(",");
             }
+        }
+        // (Длина - 1), чтобы не было висячей запятой.
+        if (rightAnsBuilder.length() > 0) {
+            rightAnsBuilder.deleteCharAt(rightAnsBuilder.length() - 1);
         }
         return new Pair<>(rightAnsNumber, rightAnsBuilder);
     }
@@ -146,8 +187,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
-    private void addNewVariantBtnClickListen(final List<AnswerView> lstAnswers,
-                                             final AnswerViewListAdapter adapter) {
+    /**
+     * Добавляет в адаптер новое поле для записи ответа. Добавляемый элемент
+     * включает checkbox, textBox для ввода ответа, кнопку для удаления ответа.
+     *
+     * @param adapter Адаптер для вывода коллекции на экране.
+     */
+    private void addNewVariantBtnClickListen(final AnswerViewListAdapter adapter) {
         addNewVariantBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,24 +213,40 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         });
     }
 
-    private void endCreatingTestBtnClickListen(final List<AnswerView> lstAnswers) {
+    /**
+     * Обработчик события для кнопки для завершения создания теста.
+     * Если создаётся первый вопрос, то необходимо отметить хотя бы один
+     * правильный ответ в вопросе. Иначе делегируем создание вопроса кнопке
+     * createNextQuestionBtn (вызываем искусственное нажатие).
+     * Если пользователь нажал на кнопку "Завершить создание" и уже есть хотя
+     * бы один созданный вопрос, то проверяем что выбран хотя бы один ответ в
+     * вопросе и переходим на MainActivity.
+     */
+    private void endCreatingTestBtnClickListen() {
         endCreatingTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Pair<Integer, StringBuilder> rightAns = saveRightAnswers();
                 // Если создаётся не первый вопрос, то вызвать нажатие
                 // на кнопку для создания следующего вопроса.
                 if (questionNumber > 1) {
-                    isFromEndCreatingBtn = true;
-                    createNextQuestionBtn.callOnClick();
+                    // Если был выбран хотя бы один ответ и была нажата кнопка
+                    // "Завершить создание", то запоминаем последний вопрос перед
+                    // завершением создания теста. Иначе переходим сразу на
+                    // следующую страницу.
+                    if (rightAns.first > 0) {
+                        isFromEndCreatingBtn = true;
+                        createNextQuestionBtn.callOnClick();
+                    }
                 } else {
-                    Pair<Integer, StringBuilder> rightAns = countRightAnswers(lstAnswers);
                     if (rightAns.first == 0) {
                         Toast.makeText(AnswersCreatingActivity.this,
-                                "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
+                                "Нужно отметить правильный ответ, чтобы добавить тест " +
+                                        "из одного вопроса", Toast.LENGTH_LONG).show();
                         return;
                     }
 
-                    List<Question> questions = createQuestion(lstAnswers, rightAns.second, rightAns.first);
+                    List<Question> questions = createQuestion(rightAns.second, rightAns.first);
                     testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(),
                             nameTest, nameImage, 1, questions);
                     db.collection("tests").document(nameTest)
@@ -198,6 +260,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                                 }
                             });
                 }
+
                 // Если нажимал пользователь, то открыть новый intent.
                 // Если вызов был искусственным, то ничего не делать.
                 if (!isFromNextQuestionBtn) {
@@ -209,11 +272,21 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         });
     }
 
-    private void createNextQuestionBtnClickListen(final List<AnswerView> lstAnswers) {
+    /**
+     * Обработчик события для кнопки для завершения создания текущего вопроса.
+     * Если создаётся первый вопрос, то делегируем создание вопроса кнопке
+     * endCreatingTestBtn (вызываем искусственное нажатие), потому что именно
+     * в ней создаётся документ в БД с названием теста.
+     * Если пользователь нажал на кнопку "Перейти к следующему вопросу" и уже есть
+     * хотя бы один созданный вопрос, то проверяем что выбран хотя бы один ответ в
+     * вопросе и переходим на QuestionsCreatingActivity для создания следующего
+     * вопроса.
+     */
+    private void createNextQuestionBtnClickListen() {
         createNextQuestionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Pair<Integer, StringBuilder> rightAns = countRightAnswers(lstAnswers);
+                final Pair<Integer, StringBuilder> rightAns = saveRightAnswers();
                 if (rightAns.first == 0) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
@@ -232,7 +305,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     testInfo = documentSnapshot.toObject(TestInfo.class);
                                     List<Question> lstQuestions = testInfo.getQuestionsLst();
-                                    List<Question> question = createQuestion(lstAnswers, rightAns.second, rightAns.first);
+                                    List<Question> question = createQuestion(rightAns.second, rightAns.first);
                                     lstQuestions.add(question.get(0));
                                     testInfo.setQuestionsNumber(lstQuestions.size());
                                     testInfo.setQuestionsLst(lstQuestions);
@@ -269,6 +342,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 }
                 isFromEndCreatingBtn = false;
             }
+
         });
     }
 
