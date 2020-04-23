@@ -12,8 +12,6 @@ import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.QuestionActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -52,7 +50,7 @@ public class OnlineDBHelper {
                         QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
 
                         if (questionFirebase != null) {
-                            myCallBack.setQuestionList(questionFirebase.getQuestion());
+                            myCallBack.setQuestionList(questionFirebase.getQuestions());
                         } else {
                             myCallBack.setQuestionList(new ArrayList<QuestionModel>());
                         }

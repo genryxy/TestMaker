@@ -154,16 +154,27 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
     private void setTextToTextView() {
         questionTextTxt.setText(question.getQuestionText());
-        checkBoxA.setText(question.getAnswerA());
-        checkBoxB.setText(question.getAnswerB());
-        checkBoxC.setText(question.getAnswerC());
-        checkBoxD.setText(question.getAnswerD());
-        checkBoxE.setText(question.getAnswerE());
-        checkBoxF.setText(question.getAnswerF());
-        checkBoxG.setText(question.getAnswerG());
-        checkBoxH.setText(question.getAnswerH());
-        checkBoxI.setText(question.getAnswerI());
-        checkBoxJ.setText(question.getAnswerJ());
+        checkBoxA.setText(question.getAllAnswer().get(0));
+        checkBoxB.setText(question.getAllAnswer().get(1));
+        checkBoxC.setText(question.getAllAnswer().get(2));
+        checkBoxD.setText(question.getAllAnswer().get(3));
+        checkBoxE.setText(question.getAllAnswer().get(4));
+        checkBoxF.setText(question.getAllAnswer().get(5));
+        checkBoxG.setText(question.getAllAnswer().get(6));
+        checkBoxH.setText(question.getAllAnswer().get(7));
+        checkBoxI.setText(question.getAllAnswer().get(8));
+        checkBoxJ.setText(question.getAllAnswer().get(9));
+
+//        checkBoxA.setText(question.getAnswerA());
+//        checkBoxB.setText(question.getAnswerB());
+//        checkBoxC.setText(question.getAnswerC());
+//        checkBoxD.setText(question.getAnswerD());
+//        checkBoxE.setText(question.getAnswerE());
+//        checkBoxF.setText(question.getAnswerF());
+//        checkBoxG.setText(question.getAnswerG());
+//        checkBoxH.setText(question.getAnswerH());
+//        checkBoxI.setText(question.getAnswerI());
+//        checkBoxJ.setText(question.getAnswerJ());
     }
 
     private void setOnCheckedChangeListenerToTextView() {

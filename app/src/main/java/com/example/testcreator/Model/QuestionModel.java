@@ -2,9 +2,7 @@ package com.example.testcreator.Model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 
 public class QuestionModel {
     public static final int NUMBER_ANSWER = 10;

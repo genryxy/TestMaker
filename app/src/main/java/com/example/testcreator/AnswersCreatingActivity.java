@@ -18,8 +18,8 @@ import com.example.testcreator.Adapter.AnswerViewListAdapter;
 import com.example.testcreator.Enum.TypeAnswer;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
-import com.example.testcreator.Model.Question;
-import com.example.testcreator.Model.TestInfo;
+import com.example.testcreator.Model.QuestionFirebase;
+import com.example.testcreator.Model.QuestionModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -46,7 +46,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private int questionNumber;
     private int answersNumber;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private TestInfo testInfo;
+//    private TestInfo testInfo;
+    private QuestionFirebase questionsFirebase;
+
     // Если не из другой кнопки вызов, то открыть
     // intent из обработчика события.
     private boolean isFromEndCreatingBtn;
@@ -113,12 +115,14 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      * @param rightAnsNumber  Количество правильных ответов.
      * @return Список вопросов
      */
-    private List<Question> createQuestion(StringBuilder rightAnsBuilder, int rightAnsNumber) {
+    private List<QuestionModel> createQuestion(StringBuilder rightAnsBuilder, int rightAnsNumber) {
         processLstAnswers();
-        Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
-                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
-                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
-        List<Question> questions = new ArrayList<>();
+//        Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
+//                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
+//                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
+        List<QuestionModel> questions = new ArrayList<>();
+        QuestionModel question = new QuestionModel(questionNumber, questionText, null, lstAnswersToDatabase,
+                rightAnsBuilder.toString(), false, 0);
         questions.add(question);
         return questions;
     }
@@ -246,11 +250,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                         return;
                     }
 
-                    List<Question> questions = createQuestion(rightAns.second, rightAns.first);
-                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(),
-                            nameTest, nameImage, 1, questions);
+                    List<QuestionModel> questions = createQuestion(rightAns.second, rightAns.first);
+//                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(),
+//                            nameTest, nameImage, 1, questions);
+                    questionsFirebase = new QuestionFirebase(questions);
                     db.collection("tests").document(nameTest)
-                            .set(testInfo)
+//                    db.collection("themes").document("Music")
+                            .set(questionsFirebase)
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
@@ -299,19 +305,21 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     endCreatingTestBtn.callOnClick();
                 } else {
                     DocumentReference docRef = db.collection("tests").document(nameTest);
+//                    DocumentReference docRef = db.collection("themes").document("Music");
                     docRef.get()
                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    testInfo = documentSnapshot.toObject(TestInfo.class);
-                                    List<Question> lstQuestions = testInfo.getQuestionsLst();
-                                    List<Question> question = createQuestion(rightAns.second, rightAns.first);
+                                    questionsFirebase = documentSnapshot.toObject(QuestionFirebase.class);
+                                    List<QuestionModel> lstQuestions = questionsFirebase.getQuestions();
+                                    List<QuestionModel> question = createQuestion(rightAns.second, rightAns.first);
                                     lstQuestions.add(question.get(0));
-                                    testInfo.setQuestionsNumber(lstQuestions.size());
-                                    testInfo.setQuestionsLst(lstQuestions);
+                                    //testInfo.setQuestionsNumber(lstQuestions.size());
+                                    questionsFirebase.setQuestions(lstQuestions);
 
                                     db.collection("tests").document(nameTest)
-                                            .set(testInfo)
+//                                    db.collection("themes").document("Music")
+                                            .set(questionsFirebase)
                                             .addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
