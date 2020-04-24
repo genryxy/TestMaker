@@ -41,6 +41,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private String typeAnswer;
     private String nameTest;
     private String nameImage;
+    private String categoryName;
     private String questionText;
     private int keyNameTest;
     private int questionNumber;
@@ -77,7 +78,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         }
 
         // Заполняем словарь.
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
             lettersMap.put(i, String.valueOf((char) ('A' + i)));
         }
 
@@ -122,7 +123,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
 //                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
         List<QuestionModel> questions = new ArrayList<>();
         QuestionModel question = new QuestionModel(questionNumber, questionText, null, lstAnswersToDatabase,
-                rightAnsBuilder.toString(), false, 0);
+                rightAnsBuilder.toString(), false, categoryName);
         questions.add(question);
         return questions;
     }
@@ -188,6 +189,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         typeAnswer = prevIntent.getStringExtra("typeAnswer");
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
+        categoryName = prevIntent.getStringExtra("categoryName");
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
@@ -205,7 +207,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 if (typeAnswer.equals(TypeAnswer.OwnAnswer.name()) && lstAnswers.size() != 0) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Вы выбрали ответ в свободной форме!", Toast.LENGTH_SHORT).show();
-                } else if (lstAnswers.size() >= 10) {
+                } else if (lstAnswers.size() >= QuestionModel.NUMBER_ANSWER) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Не может быть больше 10 ответов", Toast.LENGTH_SHORT).show();
 

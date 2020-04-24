@@ -34,11 +34,13 @@ import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.Model.UserResults;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -74,13 +76,17 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 isAnswerModeView = true;
             }
         }
-        // Get questions from DB.
-        getQuestions();
+        // Получить вопросы из БД и установить их.
+        getAndSetupQuestions();
     }
 
+    /**
+     * Метод для подсчёта количества правильных и неправильных ответов.
+     */
     private void countCorrectAnswer() {
-        // Reset values.
-        Common.rightAnswerCount = Common.wrongAnswerCount = 0;
+        // Сбрасываем имеющиеся значения.
+        Common.rightAnswerCount = 0;
+        Common.wrongAnswerCount = 0;
         for (CurrentQuestion item : Common.answerSheetList) {
             if (item.getType() == Common.AnswerType.RIGHT_ANSWER) {
                 Common.rightAnswerCount++;
@@ -90,35 +96,46 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
     }
 
+    /**
+     * Метод для завершения прохождения теста. Может вызываться при двух разных случаях.
+     * Если пользователь находится в режиме прохождения теста, то подсчитывает результаты
+     * и записывает их в базу данных. Затем независимо от режима (просмотр ответов или
+     * прохождение теста) запускает интент, содержащий информацию о прохождении пользователем
+     * теста.
+     */
     private void finishQuiz() {
         if (!isAnswerModeView) {
             int position = viewPager.getCurrentItem();
             QuestionFragment questionFragment = Common.fragmentsLst.get(position);
             CurrentQuestion questionState = questionFragment.getSelectedAnswer();
             Common.answerSheetList.set(position, questionState);
-            // Notify to change color.
+            // Оповестить об изменении цвета.
             answerSheetAdapter.notifyDataSetChanged();
 
             countCorrectAnswer();
             questionRightTxt.setText(getFinalResult());
             questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
 
-            if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
-                questionFragment.showCorrectAnswers();
-                questionFragment.disableAnswers();
-                Common.fragmentsLst.get(position).setWasAnswered(true);
+            // Проходимся по всем фрагментам и устанавливаем правильные ответы,
+            // чтобы корректно отображались правильные ответы при просмотре ответов.
+            for (QuestionFragment frag : Common.fragmentsLst) {
+                frag.showCorrectAnswers();
+                frag.disableAnswers();
+                frag.setWasAnswered(true);
             }
             writeResultToDatabase();
         }
 
-        // Navigate to new result activity
+        // Перейти к новому activity с ожиданием ответа от него.
         Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
         Common.timer = Common.TOTAL_TIME - timePlay;
         Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
-        // Common.dataQuestion = new StringBuilder(new Gson().toJson(Common.answerSheetList));
         startActivityForResult(intent, CODE_GET_RESULT);
     }
 
+    /**
+     * Метод для записи результатов прохождения теста в БД.
+     */
     private void writeResultToDatabase() {
         List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
@@ -126,19 +143,23 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 questionLst, answerSheetList, Common.selectedTest.getName(),
                 Common.selectedCategory.getName(), getFinalResult(), String.valueOf(Common.wrongAnswerCount));
         final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
-        DocumentReference docRef = db.collection("users").document(keyUser);
-        docRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserResults userResults = documentSnapshot.toObject(UserResults.class);
-                        if (userResults == null) {
-                            userResults = new UserResults();
-                        }
+
+        final DocumentReference docIdRef = db.collection("users").document(keyUser);
+        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Если у пользователя ещё не было пройденных тестов,
+                    // то создаём экземпляр класса UserResults и добавляем его.
+                    // Иначе просто добавляем в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        docIdRef.update("resultTestsLst", FieldValue.arrayUnion(resultTest));
+                    } else {
+                        UserResults userResults = new UserResults();
                         userResults.getResultTestsLst().add(resultTest);
 
-                        db.collection("users").document(keyUser)
-                                .set(userResults)
+                        docIdRef.set(userResults)
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
@@ -148,21 +169,21 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                     }
                                 });
                     }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-//                                Log.w(TAG, "Error getting document", e);
-                        Toast.makeText(QuestionActivity.this,
-                                "Возникла ошибка при получении", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                } else {
+//                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
     }
 
     private String getFinalResult() {
         return String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size());
     }
 
+    /**
+     * Метод для генерирования списка, содержащего фрагменты с вопросами.
+     * Необходимо, чтобы потом отображать вопросы в viewPager.
+     */
     private void generateFragmentList() {
         for (int i = 0; i < Common.questionLst.size(); i++) {
             Bundle bundle = new Bundle();
@@ -179,6 +200,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     /**
      * Включить таймер с заданным шагом обновления.
+     * (шаг обновления - 1000 мс)
      */
     private void countTimer() {
         if (Common.countDownTimer != null) {
@@ -187,6 +209,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         Common.countDownTimer = new CountDownTimer(Common.TOTAL_TIME, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
+                // Переводит в формат: мм::сс
                 timerTxt.setText(String.format("%02d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
                         TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
@@ -201,8 +224,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }.start();
     }
 
-    private void getQuestions() {
-
+    /**
+     * Метод для получения вопросов из БД и их вывода на экран.
+     */
+    private void getAndSetupQuestions() {
         if (!isAnswerModeView) {
             if (!Common.isOnlineMode) {
                 Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
@@ -213,10 +238,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         .readData(new MyCallBack() {
                             @Override
                             public void setQuestionList(List<QuestionModel> questionList) {
-
                                 Common.questionLst.clear();
                                 Common.questionLst = questionList;
                                 addQuestionToCommonAnswerSheetAdapter();
+                                // Устанавливаем в коллбэке вопросы.
                                 setupQuestion();
                             }
                         }, Common.selectedCategory.getName()
@@ -254,22 +279,25 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
     }
 
+    /**
+     * Метод для вывода формулировки вопроса и вариантов ответов на него.
+     * Также метод отображает таймер, количество правильных/неправильных ответов.
+     * Вызывает методы для создания фрагментов
+     */
     private void setupQuestion() {
         if (Common.questionLst.size() > 0) {
             findElementsViewById();
 
             if (!isAnswerModeView) {
-                // Show TextViews with right answer and Timer.
+                // Показывать поле, отвечающее выведение значения таймера.
                 timerTxt.setVisibility(View.VISIBLE);
-                // Timer.
+                // Запустить отсчёт таймера.
                 countTimer();
             }
             questionRightTxt.setVisibility(View.VISIBLE);
             questionRightTxt.setText(getFinalResult());
 
-            // Set adapter.
             setAnswerSheetViewAdapter();
-
             generateFragmentList();
             QuestionFragmentAdapter adapter = new QuestionFragmentAdapter(
                     getSupportFragmentManager(), this, Common.fragmentsLst);
@@ -277,8 +305,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             // Добавим эффект при смене вопроса.
             viewPager.setPageTransformer(true, new ScaleInOutTransformer());
             tabLayout.setupWithViewPager(viewPager);
-
-            // Add event.
             addViewPagerOnChangeListener();
         }
     }
@@ -326,7 +352,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
                         CurrentQuestion questionState = questionFragment.getSelectedAnswer();
                         Common.answerSheetList.set(prevPosition, questionState);
-                        // Notify to change color.
                         answerSheetAdapter.notifyDataSetChanged();
                         countCorrectAnswer();
                         questionRightTxt.setText(getFinalResult());
@@ -350,6 +375,11 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         });
     }
 
+    /**
+     * Метод для установки адаптера, отвечающего за вывод таблицы, которая
+     * отображает правильные/неправильные ответы, а также вопросы, оставшиеся
+     * без ответа.
+     */
     private void setAnswerSheetViewAdapter() {
         answerSheetView.setHasFixedSize(true);
         if (Common.questionLst.size() > 5) {
@@ -420,6 +450,25 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Метод для установки textView, отвечающих за количество правильных
+     * и неправильных ответов, а также за вывод значения таймера, видимыми
+     * или невидимыми в зависимости от переданного параметра.
+     *
+     * @param isVisible true - сделать видимыми, false - спрятать
+     */
+    private void setVisibilityOfNumberAnswers(boolean isVisible) {
+        if (isVisible) {
+            questionWrongTxt.setVisibility(View.VISIBLE);
+            questionRightTxt.setVisibility(View.VISIBLE);
+            timerTxt.setVisibility(View.VISIBLE);
+        } else {
+            questionWrongTxt.setVisibility(View.GONE);
+            questionRightTxt.setVisibility(View.GONE);
+            timerTxt.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -435,18 +484,13 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     if (Common.countDownTimer != null) {
                         Common.countDownTimer.cancel();
                     }
-                    questionWrongTxt.setVisibility(View.GONE);
-                    questionRightTxt.setVisibility(View.GONE);
-                    timerTxt.setVisibility(View.GONE);
+                    setVisibilityOfNumberAnswers(false);
                 } else if (action.equals("doQuizAgain")) {
                     viewPager.setCurrentItem(0);
 
                     isAnswerModeView = false;
                     countTimer();
-
-                    questionWrongTxt.setVisibility(View.VISIBLE);
-                    questionRightTxt.setVisibility(View.VISIBLE);
-                    timerTxt.setVisibility(View.VISIBLE);
+                    setVisibilityOfNumberAnswers(true);
 
                     for (CurrentQuestion question : Common.answerSheetList) {
                         question.setType(Common.AnswerType.NO_ANSWER);
@@ -462,7 +506,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     Common.selectedValues.clear();
                     questionWrongTxt.setText("0");
                     questionRightTxt.setText(getFinalResult());
-                    Toast.makeText(this, "new Quiz", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Новая попытка", Toast.LENGTH_SHORT).show();
                 }
             }
         }

@@ -19,6 +19,12 @@ import com.example.testcreator.R;
 
 import java.util.List;
 
+/**
+ * Класс-адаптер для создания вариантов ответов пользователем.
+ * Каждый элемент содержит CheckedTextView, EditText и ImageButton.
+ * Это позволяет вводить формулировку ответа. Отмечать ответ как
+ * правильный. Удалять вариант ответа при необходимости.
+ */
 public class AnswerViewListAdapter extends ArrayAdapter<AnswerView> {
     private Context context;
     private int resource;

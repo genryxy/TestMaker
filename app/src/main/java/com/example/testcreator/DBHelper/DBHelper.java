@@ -66,13 +66,14 @@ public class DBHelper extends SQLiteAssetHelper {
                     allAnswer.add(cursor.getString(cursor.getColumnIndex("Answer" + (char) ('A' + i))));
                 }
 
+                // TODO В базе данных хранится ID категории а не строка!!!!!
                 QuestionModel question = new QuestionModel(cursor.getInt(cursor.getColumnIndex("ID")),
                         cursor.getString(cursor.getColumnIndex("QuestionText")),
                         cursor.getString(cursor.getColumnIndex("QuestionImage")),
                         allAnswer,
                         cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
                         cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0 ? false : true,
-                        cursor.getInt(cursor.getColumnIndex("CategoryID")));
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex("CategoryID"))));
                 questions.add(question);
                 cursor.moveToNext();
             }

@@ -7,15 +7,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.testcreator.Interface.MyCallBack;
+import com.example.testcreator.Interface.ThemesCallBack;
 import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.QuestionActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
@@ -88,5 +94,24 @@ public class OnlineDBHelper {
 //                        Toast.makeText(context, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
 //                    }
 //                });
+    }
+
+    public void readThemes(final ThemesCallBack themesCallBack) {
+        final List<String> themesLst = new ArrayList<>();
+        firebaseFirestore.collection("themes")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                themesLst.add(document.getId());
+//                                Log.d(TAG, document.getId() + " => " + document.getData());
+                            }
+                            themesCallBack.setThemesToAdapter(themesLst);
+                        } else {
+                        }
+                    }
+                });
     }
 }

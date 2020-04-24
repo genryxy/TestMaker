@@ -32,6 +32,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
 
     private String nameTest;
     private String nameImage;
+    private String categoryName;
     private int keyNameTest;
     private TextView numberQuestionTxt;
     private RadioGroup typeAnsRadioGroup;
@@ -120,6 +121,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
+        categoryName = prevIntent.getStringExtra("categoryName");
     }
 
     private void setCreatingAnswersBtnClickListener() {
@@ -133,6 +135,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
                 newIntent.putExtra("questionNumber", questionNumber);
+                newIntent.putExtra("categoryName", categoryName);
                 if (answersNumberEdt.getText().toString().length() == 0) {
                     newIntent.putExtra("answersNumberEdt", "4");
                     startActivity(newIntent);

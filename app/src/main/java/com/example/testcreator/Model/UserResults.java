@@ -12,6 +12,7 @@ public class UserResults {
      * пройденных пользователем.
      */
     private List<ResultTest> resultTestsLst = new ArrayList<>();
+    private boolean isExists = true;
 
     public UserResults() { }
 

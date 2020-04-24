@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +23,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.Interface.ThemesCallBack;
 import com.example.testcreator.QuestionsCreatingActivity;
 import com.example.testcreator.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,6 +40,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -53,6 +58,9 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private ImageView imgView;
     private Uri imgUri;
     private String nameImage;
+    private StringBuilder themeName = new StringBuilder();
+    private Spinner themesSpinner;
+    private List<String> themesLst;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,7 +88,10 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
             }
         });
         findElementsViewById(root);
+        themesSpinner = root.findViewById(R.id.themesSpinner);
 
+        addSpinnerAdapter();
+        themesSpinner.setOnItemSelectedListener(new SpinnerOnItemSelectedListener(themeName));
         chooseImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +99,19 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
             }
         });
         return root;
+    }
+
+    private void addSpinnerAdapter() {
+        new OnlineDBHelper(getContext(), FirebaseFirestore.getInstance())
+                .readThemes(new ThemesCallBack() {
+                    @Override
+                    public void setThemesToAdapter(List<String> themes) {
+                        themesLst = themes;
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                                android.R.layout.simple_spinner_dropdown_item, themes);
+                        themesSpinner.setAdapter(adapter);
+                    }
+                });
     }
 
     @Override
@@ -233,6 +257,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                                         }
                                         Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
                                         newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
+                                        newIntent.putExtra("themeName", themeName.toString());
                                         newIntent.putExtra("keyNameTestEdt", Integer.valueOf(testsNumber + 1));
                                         newIntent.putExtra("nameImage", nameImage);
 //                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();

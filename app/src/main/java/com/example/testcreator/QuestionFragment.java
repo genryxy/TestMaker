@@ -38,16 +38,6 @@ import java.util.List;
 public class QuestionFragment extends Fragment implements IQuestion {
 
     private TextView questionTextTxt;
-    private CheckBox checkBoxA;
-    private CheckBox checkBoxB;
-    private CheckBox checkBoxC;
-    private CheckBox checkBoxD;
-    private CheckBox checkBoxE;
-    private CheckBox checkBoxF;
-    private CheckBox checkBoxG;
-    private CheckBox checkBoxH;
-    private CheckBox checkBoxI;
-    private CheckBox checkBoxJ;
     private FrameLayout layoutImage;
     private ProgressBar progressBar;
     private List<CheckBox> allCheckbox = new ArrayList<>();
@@ -58,7 +48,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private boolean wasAnswered = false;
 
     public QuestionFragment() {
-        // Required empty public constructor
+        // Для работы требуется пустой конструктор
     }
 
     public boolean isWasAnswered() {
@@ -72,11 +62,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View itemView = inflater.inflate(R.layout.fragment_question, container, false);
 
 
-        // Get question.
+        // Получить вопрос из общего класса по индексу, который передали
+        // при создании экземпляра класса.
         questionIndex = getArguments().getInt("index", -1);
         question = Common.questionLst.get(questionIndex);
 
@@ -103,10 +93,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 layoutImage.setVisibility(View.GONE);
             }
 
-            // Find elements.
             findElementsViewById(itemView);
-
-            // Set the text.
             setTextToTextView();
             checkVisibilityCheckbox();
             setOnCheckedChangeListenerToTextView();
@@ -130,51 +117,23 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private void findElementsViewById(View itemView) {
         allCheckbox.clear();
         questionTextTxt = itemView.findViewById(R.id.fragmentQuestionTextTxt);
-        checkBoxA = itemView.findViewById(R.id.checkBoxA);
-        checkBoxB = itemView.findViewById(R.id.checkBoxB);
-        checkBoxC = itemView.findViewById(R.id.checkBoxC);
-        checkBoxD = itemView.findViewById(R.id.checkBoxD);
-        checkBoxE = itemView.findViewById(R.id.checkBoxE);
-        checkBoxF = itemView.findViewById(R.id.checkBoxF);
-        checkBoxG = itemView.findViewById(R.id.checkBoxG);
-        checkBoxH = itemView.findViewById(R.id.checkBoxH);
-        checkBoxI = itemView.findViewById(R.id.checkBoxI);
-        checkBoxJ = itemView.findViewById(R.id.checkBoxJ);
-        allCheckbox.add(checkBoxA);
-        allCheckbox.add(checkBoxB);
-        allCheckbox.add(checkBoxC);
-        allCheckbox.add(checkBoxD);
-        allCheckbox.add(checkBoxE);
-        allCheckbox.add(checkBoxF);
-        allCheckbox.add(checkBoxG);
-        allCheckbox.add(checkBoxH);
-        allCheckbox.add(checkBoxI);
-        allCheckbox.add(checkBoxJ);
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxA));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxB));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxC));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxD));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxE));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxF));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxG));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxH));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxI));
+        allCheckbox.add((CheckBox) itemView.findViewById(R.id.checkBoxJ));
     }
 
     private void setTextToTextView() {
         questionTextTxt.setText(question.getQuestionText());
-        checkBoxA.setText(question.getAllAnswer().get(0));
-        checkBoxB.setText(question.getAllAnswer().get(1));
-        checkBoxC.setText(question.getAllAnswer().get(2));
-        checkBoxD.setText(question.getAllAnswer().get(3));
-        checkBoxE.setText(question.getAllAnswer().get(4));
-        checkBoxF.setText(question.getAllAnswer().get(5));
-        checkBoxG.setText(question.getAllAnswer().get(6));
-        checkBoxH.setText(question.getAllAnswer().get(7));
-        checkBoxI.setText(question.getAllAnswer().get(8));
-        checkBoxJ.setText(question.getAllAnswer().get(9));
-
-//        checkBoxA.setText(question.getAnswerA());
-//        checkBoxB.setText(question.getAnswerB());
-//        checkBoxC.setText(question.getAnswerC());
-//        checkBoxD.setText(question.getAnswerD());
-//        checkBoxE.setText(question.getAnswerE());
-//        checkBoxF.setText(question.getAnswerF());
-//        checkBoxG.setText(question.getAnswerG());
-//        checkBoxH.setText(question.getAnswerH());
-//        checkBoxI.setText(question.getAnswerI());
-//        checkBoxJ.setText(question.getAnswerJ());
+        for (int i = 0; i < allCheckbox.size(); i++) {
+            allCheckbox.get(i).setText(question.getAllAnswer().get(i));
+        }
     }
 
     private void setOnCheckedChangeListenerToTextView() {
@@ -242,52 +201,53 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
     /**
      * Метод для вывода правильных ответов.
-     * Парсится строка с эталонными ответами, а затем вызывается метод
-     * для смены написания текста checkbox.
+     * Парсится строка с эталонными ответами, а затем вызывается метод для
+     * выделения текста ответа жирным шрифтом и для смены цвета текста.
      */
     @Override
     public void showCorrectAnswers() {
-        // Bold correct answer.
-        // Format: A,B
+        // Формат: A,B
         String[] correctAnswers = question.getCorrectAnswer().split(",");
         for (String answer : correctAnswers) {
             switch (answer) {
                 case "A":
-                    changeTypefaceAndColor(checkBoxA);
+                    changeTypefaceAndColor(allCheckbox.get(0));
                     break;
                 case "B":
-                    changeTypefaceAndColor(checkBoxB);
+                    changeTypefaceAndColor(allCheckbox.get(1));
                     break;
                 case "C":
-                    changeTypefaceAndColor(checkBoxC);
+                    changeTypefaceAndColor(allCheckbox.get(2));
                     break;
                 case "D":
-                    changeTypefaceAndColor(checkBoxD);
+                    changeTypefaceAndColor(allCheckbox.get(3));
                     break;
                 case "E":
-                    changeTypefaceAndColor(checkBoxE);
+                    changeTypefaceAndColor(allCheckbox.get(4));
                     break;
                 case "F":
-                    changeTypefaceAndColor(checkBoxF);
+                    changeTypefaceAndColor(allCheckbox.get(5));
                     break;
                 case "G":
-                    changeTypefaceAndColor(checkBoxG);
+                    changeTypefaceAndColor(allCheckbox.get(6));
                     break;
                 case "H":
-                    changeTypefaceAndColor(checkBoxH);
+                    changeTypefaceAndColor(allCheckbox.get(7));
                     break;
                 case "I":
-                    changeTypefaceAndColor(checkBoxI);
+                    changeTypefaceAndColor(allCheckbox.get(8));
                     break;
                 case "J":
-                    changeTypefaceAndColor(checkBoxJ);
+                    changeTypefaceAndColor(allCheckbox.get(9));
                     break;
             }
         }
     }
 
     /**
-     * Меняет цвет текста checkbox на зелёный и делает шрифт жирным.
+     * Выделяет правильный вариант ответа. Для этого меняет
+     * цвет текста на зелёный и делает шрифт жирным, помечает
+     * чекбокс.
      *
      * @param checkBox Вариант ответа, написание текста которого нужно изменить.
      */
@@ -298,16 +258,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
     @Override
     public void disableAnswers() {
-        checkBoxA.setEnabled(false);
-        checkBoxB.setEnabled(false);
-        checkBoxC.setEnabled(false);
-        checkBoxD.setEnabled(false);
-        checkBoxE.setEnabled(false);
-        checkBoxF.setEnabled(false);
-        checkBoxG.setEnabled(false);
-        checkBoxH.setEnabled(false);
-        checkBoxI.setEnabled(false);
-        checkBoxJ.setEnabled(false);
+        for (CheckBox chckBox : allCheckbox) {
+            chckBox.setEnabled(false);
+        }
     }
 
     @Override
@@ -334,7 +287,8 @@ public class QuestionFragment extends Fragment implements IQuestion {
     }
 
     /**
-     * Выделить checkbox, которые отметил пользователь в качестве ответа.
+     * Метод для отображения ответов пользователь с помощью выделения
+     * checkbox, которые отметил пользователь в качестве ответа.
      *
      * @param userAnswer Ответы пользователя.
      */
@@ -347,34 +301,34 @@ public class QuestionFragment extends Fragment implements IQuestion {
         for (String answer : userAnswers) {
             switch (answer) {
                 case "A":
-                    checkBoxA.setChecked(true);
+                    allCheckbox.get(0).setChecked(true);
                     break;
                 case "B":
-                    checkBoxB.setChecked(true);
+                    allCheckbox.get(1).setChecked(true);
                     break;
                 case "C":
-                    checkBoxC.setChecked(true);
+                    allCheckbox.get(2).setChecked(true);
                     break;
                 case "D":
-                    checkBoxD.setChecked(true);
+                    allCheckbox.get(3).setChecked(true);
                     break;
                 case "E":
-                    checkBoxE.setChecked(true);
+                    allCheckbox.get(4).setChecked(true);
                     break;
                 case "F":
-                    checkBoxF.setChecked(true);
+                    allCheckbox.get(5).setChecked(true);
                     break;
                 case "G":
-                    checkBoxG.setChecked(true);
+                    allCheckbox.get(6).setChecked(true);
                     break;
                 case "H":
-                    checkBoxH.setChecked(true);
+                    allCheckbox.get(7).setChecked(true);
                     break;
                 case "I":
-                    checkBoxI.setChecked(true);
+                    allCheckbox.get(8).setChecked(true);
                     break;
                 case "J":
-                    checkBoxJ.setChecked(true);
+                    allCheckbox.get(9).setChecked(true);
                     break;
             }
         }
