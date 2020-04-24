@@ -15,7 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
-import com.example.testcreator.Enum.TypeAnswer;
+import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.Model.QuestionFirebase;
@@ -116,8 +116,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
 //        Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
 //                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
 //                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
-        QuestionModel question = new QuestionModel(questionNumber, questionText, null, lstAnswersToDatabase,
-                rightAnsBuilder.toString(), false, categoryName);
+        QuestionModel question = new QuestionModel(questionText, null, lstAnswersToDatabase,
+                rightAnsBuilder.toString(), false, categoryName, typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())
+                ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
         return question;
     }
 
@@ -179,7 +180,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         answersNumber = Integer.valueOf(prevIntent.getStringExtra("answersNumberEdt"));
         typeAnswer = prevIntent.getStringExtra("typeAnswer");
         questionText = prevIntent.getStringExtra("questionTextEdt");
-        typeAnswer = prevIntent.getStringExtra("typeAnswer");
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
         categoryName = prevIntent.getStringExtra("categoryName");
@@ -197,7 +197,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             @Override
             public void onClick(View v) {
 
-                if (typeAnswer.equals(TypeAnswer.OwnAnswer.name()) && lstAnswers.size() != 0) {
+                if (typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name()) && lstAnswers.size() != 0) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Вы выбрали ответ в свободной форме!", Toast.LENGTH_SHORT).show();
                 } else if (lstAnswers.size() >= QuestionModel.NUMBER_ANSWER) {

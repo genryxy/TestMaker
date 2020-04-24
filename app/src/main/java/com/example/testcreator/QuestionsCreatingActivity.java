@@ -15,7 +15,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.testcreator.Enum.TypeAnswer;
+import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,7 +39,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     private EditText questionTextEdt;
     private EditText answersNumberEdt;
     private Button startCreatingAnswersBtn;
-    private TypeAnswer typeAnswer = TypeAnswer.OneOrManyAnswers;
+    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.OneOrManyAnswers;
     private int questionNumber = 1;
 
     @Override
@@ -100,11 +100,11 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
                 answersNumberEdt.setText("4");
                 switch (checkedId) {
                     case R.id.oneOrManyAnsRadioBtn:
-                        typeAnswer = TypeAnswer.OneOrManyAnswers;
+                        typeAnswer = NumberAnswerEnum.OneOrManyAnswers;
                         answersNumberEdt.setEnabled(true);
                         break;
                     case R.id.ownAnsRadioBtn:
-                        typeAnswer = TypeAnswer.OwnAnswer;
+                        typeAnswer = NumberAnswerEnum.OwnAnswer;
                         answersNumberEdt.setEnabled(false);
                         answersNumberEdt.setText("1");
                         break;

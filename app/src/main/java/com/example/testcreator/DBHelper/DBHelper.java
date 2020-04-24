@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.QuestionModel;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -67,13 +68,15 @@ public class DBHelper extends SQLiteAssetHelper {
                 }
 
                 // TODO В базе данных хранится ID категории а не строка!!!!!
-                QuestionModel question = new QuestionModel(cursor.getInt(cursor.getColumnIndex("ID")),
+                QuestionModel question = new QuestionModel(
                         cursor.getString(cursor.getColumnIndex("QuestionText")),
                         cursor.getString(cursor.getColumnIndex("QuestionImage")),
                         allAnswer,
                         cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
                         cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0 ? false : true,
-                        String.valueOf(cursor.getInt(cursor.getColumnIndex("CategoryID"))));
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex("CategoryID"))),
+                        cursor.getString(cursor.getColumnIndex("NumberAnswerEnum")).equals(NumberAnswerEnum.OwnAnswer.name())
+                                ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
                 questions.add(question);
                 cursor.moveToNext();
             }
