@@ -38,7 +38,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity implements FireBaseConnections {
-    private final String TAG = "FAILURE MainActivity";
+    public final String TAG = "FAILURE MainActivity";
 
     private AppBarConfiguration mAppBarConfiguration;
     private FragmentTransaction transaction;

@@ -1,9 +1,5 @@
 package com.example.testcreator;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,27 +10,35 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
 import com.example.testcreator.Enum.TypeAnswer;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections {
-    private static final String TAG = "AnswersCreatingActivity";
+
+    public static final String TAG = "AnswersCreatingActivity";
+
     private final String answerText = "Текст ответа";
+
     private Button addNewVariantBtn;
     private Button createNextQuestionBtn;
     private Button endCreatingTestBtn;
@@ -47,20 +51,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private int questionNumber;
     private int answersNumber;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-//    private TestInfo testInfo;
     private QuestionFirebase questionsFirebase;
 
-    // Если не из другой кнопки вызов, то открыть
-    // intent из обработчика события.
-    private boolean isFromEndCreatingBtn;
-    private boolean isFromNextQuestionBtn;
     // Словарь, состоящий из пар (номер вопроса, вариант ответа).
     private Map<Integer, String> lettersMap = new HashMap<>();
-    // Список с вариантами ответов на вопросы. Варианты ответов
-    // вводит пользователь.
+    // Список с вариантами ответов на вопросы. Варианты ответов вводит пользователь.
     private List<AnswerView> lstAnswers;
-    // Список с вариантами ответов на вопросы. Варианты ответов
-    // вводит пользователь.
+    // Список с вариантами ответов на вопросы. Варианты ответов вводит пользователь.
     private List<String> lstAnswersToDatabase;
 
     @Override
@@ -76,7 +73,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         for (int i = 0; i < answersNumber; i++) {
             lstAnswers.add(new AnswerView(answerText, false));
         }
-
         // Заполняем словарь.
         for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
             lettersMap.put(i, String.valueOf((char) ('A' + i)));
@@ -110,22 +106,19 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     /**
-     * Создаёт список вопросов, состоящий из одного вопроса с заданными параметрами.
+     * Создаёт экземпляр класса QuestionModel с заданными параметрами.
      *
      * @param rightAnsBuilder Правильный ответ в строковом представлении.
-     * @param rightAnsNumber  Количество правильных ответов.
-     * @return Список вопросов
+     * @return Созданный вопрос QuestionModel.
      */
-    private List<QuestionModel> createQuestion(StringBuilder rightAnsBuilder, int rightAnsNumber) {
+    private QuestionModel createQuestion(StringBuilder rightAnsBuilder) {
         processLstAnswers();
 //        Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
 //                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
 //                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
-        List<QuestionModel> questions = new ArrayList<>();
         QuestionModel question = new QuestionModel(questionNumber, questionText, null, lstAnswersToDatabase,
                 rightAnsBuilder.toString(), false, categoryName);
-        questions.add(question);
-        return questions;
+        return question;
     }
 
     /**
@@ -220,13 +213,76 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     /**
+     * Метод для сохранения созданных вопросов в БД. Если на послендний вопрос
+     * не были даны ответы, то он не сохраняется. Об этом выводится
+     * соответствующее уведомление.
+     * Вопросы добавляются к уже существующим вопросам в выбранной категории, а
+     * <p>
+     * также создаётся новый тест с указанным названием и составленными вопросами.
+     *
+     * @param rightAns Пара вида (количество правильных ответов, правильные ответы).
+     * @param isFinal  true - вызывается по нажатию на кнопку для завершения создания теста
+     *                 false - вызывается по нажатию на кнопку для перехода к созданию
+     *                 следующего вопроса.
+     */
+    private void saveQuestionToDB(final Pair<Integer, StringBuilder> rightAns, boolean isFinal) {
+        if (isFinal && rightAns.first == 0) {
+            Toast.makeText(this, "Последний вопрос не был сохранён, так как для него не отмечены ответы!",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        final DocumentReference docRef = db.collection("tests").document(nameTest);
+        saveQuestionByCategoryAndTest(docRef, rightAns.second);
+
+        final DocumentReference docRefTheme = db.collection("themes").document(categoryName);
+        saveQuestionByCategoryAndTest(docRefTheme, rightAns.second);
+    }
+
+    /**
+     * Метод для сохранения вопроса в БД по переданной ссылке.
+     *
+     * @param docRef      Ссылка на документ в таблице, в который нужно сохранять.
+     * @param strRightAns Строка, содержащая правильные варианты ответов.
+     */
+    private void saveQuestionByCategoryAndTest(final DocumentReference docRef, final StringBuilder strRightAns) {
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    QuestionModel question = createQuestion(strRightAns);
+                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
+                    // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        docRef.update("questions", FieldValue.arrayUnion(question));
+                    } else {
+                        List<QuestionModel> questions = new ArrayList<>();
+                        questions.add(question);
+                        questionsFirebase = new QuestionFirebase(questions);
+
+                        docRef.set(questionsFirebase)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error adding document", e);
+                                        Toast.makeText(AnswersCreatingActivity.this,
+                                                "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
      * Обработчик события для кнопки для завершения создания теста.
      * Если создаётся первый вопрос, то необходимо отметить хотя бы один
-     * правильный ответ в вопросе. Иначе делегируем создание вопроса кнопке
-     * createNextQuestionBtn (вызываем искусственное нажатие).
+     * правильный ответ в вопросе.
      * Если пользователь нажал на кнопку "Завершить создание" и уже есть хотя
-     * бы один созданный вопрос, то проверяем что выбран хотя бы один ответ в
-     * вопросе и переходим на MainActivity.
+     * бы один созданный вопрос, то переходим на MainActivity.
      */
     private void endCreatingTestBtnClickListen() {
         endCreatingTestBtn.setOnClickListener(new View.OnClickListener() {
@@ -235,60 +291,24 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 Pair<Integer, StringBuilder> rightAns = saveRightAnswers();
                 // Если создаётся не первый вопрос, то вызвать нажатие
                 // на кнопку для создания следующего вопроса.
-                if (questionNumber > 1) {
-                    // Если был выбран хотя бы один ответ и была нажата кнопка
-                    // "Завершить создание", то запоминаем последний вопрос перед
-                    // завершением создания теста. Иначе переходим сразу на
-                    // следующую страницу.
-                    if (rightAns.first > 0) {
-                        isFromEndCreatingBtn = true;
-                        createNextQuestionBtn.callOnClick();
-                    }
-                } else {
-                    if (rightAns.first == 0) {
-                        Toast.makeText(AnswersCreatingActivity.this,
-                                "Нужно отметить правильный ответ, чтобы добавить тест " +
-                                        "из одного вопроса", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    List<QuestionModel> questions = createQuestion(rightAns.second, rightAns.first);
-//                    testInfo = new TestInfo(authFrbs.getCurrentUser().getEmail(), new Date(),
-//                            nameTest, nameImage, 1, questions);
-                    questionsFirebase = new QuestionFirebase(questions);
-                    db.collection("tests").document(nameTest)
-//                    db.collection("themes").document("Music")
-                            .set(questionsFirebase)
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error adding document", e);
-                                    Toast.makeText(AnswersCreatingActivity.this,
-                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                if (questionNumber == 1 && rightAns.first == 0) {
+                    Toast.makeText(AnswersCreatingActivity.this,
+                            "Нужно отметить правильный ответ, чтобы добавить тест " +
+                                    "из одного вопроса", Toast.LENGTH_LONG).show();
+                    return;
                 }
-
-                // Если нажимал пользователь, то открыть новый intent.
-                // Если вызов был искусственным, то ничего не делать.
-                if (!isFromNextQuestionBtn) {
-                    Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
-                }
-                isFromNextQuestionBtn = false;
+                saveQuestionToDB(rightAns, true);
+                Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
             }
         });
     }
 
     /**
      * Обработчик события для кнопки для завершения создания текущего вопроса.
-     * Если создаётся первый вопрос, то делегируем создание вопроса кнопке
-     * endCreatingTestBtn (вызываем искусственное нажатие), потому что именно
-     * в ней создаётся документ в БД с названием теста.
-     * Если пользователь нажал на кнопку "Перейти к следующему вопросу" и уже есть
-     * хотя бы один созданный вопрос, то проверяем что выбран хотя бы один ответ в
-     * вопросе и переходим на QuestionsCreatingActivity для создания следующего
-     * вопроса.
+     * Если пользователь нажал на кнопку "Перейти к следующему вопросу", то
+     * проверяем что выбран хотя бы один ответ в вопросе и переходим на
+     * QuestionsCreatingActivity для создания следующего вопроса.
      */
     private void createNextQuestionBtnClickListen() {
         createNextQuestionBtn.setOnClickListener(new View.OnClickListener() {
@@ -300,59 +320,15 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // Если создаётся первый вопрос, то вызвать нажатие
-                // на кнопку для завершения создания теста.
-                if (questionNumber == 1) {
-                    isFromNextQuestionBtn = true;
-                    endCreatingTestBtn.callOnClick();
-                } else {
-                    DocumentReference docRef = db.collection("tests").document(nameTest);
-//                    DocumentReference docRef = db.collection("themes").document("Music");
-                    docRef.get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    questionsFirebase = documentSnapshot.toObject(QuestionFirebase.class);
-                                    List<QuestionModel> lstQuestions = questionsFirebase.getQuestions();
-                                    List<QuestionModel> question = createQuestion(rightAns.second, rightAns.first);
-                                    lstQuestions.add(question.get(0));
-                                    //testInfo.setQuestionsNumber(lstQuestions.size());
-                                    questionsFirebase.setQuestions(lstQuestions);
+                saveQuestionToDB(rightAns, false);
 
-                                    db.collection("tests").document(nameTest)
-//                                    db.collection("themes").document("Music")
-                                            .set(questionsFirebase)
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Log.w(TAG, "Error adding document", e);
-                                                    Toast.makeText(AnswersCreatingActivity.this,
-                                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error getting document", e);
-                                    Toast.makeText(AnswersCreatingActivity.this,
-                                            "Возникла ошибка", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
-                // Если нажимал пользователь, то открыть новый intent.
-                // Если вызов был искусственным, то ничего не делать.
-                if (!isFromEndCreatingBtn) {
-                    Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
-                    newIntent.putExtra("questionNumber", questionNumber + 1);
-                    newIntent.putExtra("nameTestEdt", nameTest);
-                    newIntent.putExtra("keyNameTestEdt", keyNameTest);
-                    startActivity(newIntent);
-                }
-                isFromEndCreatingBtn = false;
+                Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
+                newIntent.putExtra("questionNumber", questionNumber + 1);
+                newIntent.putExtra("nameTestEdt", nameTest);
+                newIntent.putExtra("keyNameTestEdt", keyNameTest);
+                newIntent.putExtra("categoryName", categoryName);
+                startActivity(newIntent);
             }
-
         });
     }
 

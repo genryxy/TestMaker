@@ -55,7 +55,7 @@ public class OnlineDBHelper {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
 
-                        if (questionFirebase != null) {
+                        if (questionFirebase != null && questionFirebase.getQuestions() != null) {
                             myCallBack.setQuestionList(questionFirebase.getQuestions());
                         } else {
                             myCallBack.setQuestionList(new ArrayList<QuestionModel>());

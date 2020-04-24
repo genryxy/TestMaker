@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class QuestionsCreatingActivity extends AppCompatActivity {
-    private final String TAG = "FAILUREQuestionActivity";
+    public final String TAG = "FAILUREQuestionActivity";
 
     private String nameTest;
     private String nameImage;

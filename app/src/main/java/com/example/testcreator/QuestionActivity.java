@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
+    public static final String TAG = "QuestionActivity";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static final int CODE_GET_RESULT = 9999;
@@ -163,14 +165,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-//                                                Log.w(TAG, "Error adding document", e);
+                                        Log.w(TAG, "Error adding document", e);
                                         Toast.makeText(QuestionActivity.this,
                                                 "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
                 } else {
-//                    Log.d(TAG, "Failed with: ", task.getException());
+                    Log.d(TAG, "Failed with: ", task.getException());
                 }
             }
         });
@@ -320,9 +322,16 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         tabLayout = findViewById(R.id.slidingTabs);
     }
 
+    /**
+     * Метод для обработки смены страниц в viewPager.
+     * Если пользователь отметил хотя бы один вариант ответа в режиме прохождения
+     * теста, то при смене страниц произойдёт проверка отмеченных вариантов ответов,
+     * то есть по возвращении на эту страницу будут отмечены уже правильные варианты
+     * ответов и изменить свои ответы нельзя. Но если не было выбрано ни одного
+     * варианта ответа, то есть возможность вернуться к вопросу и отметить ответы.
+     */
     private void addViewPagerOnChangeListener() {
         final ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
-
             int prevPosition = 0;
 
             @Override
@@ -337,7 +346,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
                 if (Common.fragmentsLst.get(position).isWasAnswered() || isAnswerModeView) {
                     Common.fragmentsLst.get(position).showCorrectAnswers();
-
                     // Установить ответы, которые дал пользователь.
                     QuestionFragment tmp = Common.fragmentsLst.get(position);
                     tmp.setUserAnswer(Common.answerSheetList.get(position).getUserAnswer());
@@ -345,8 +353,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 }
                 if (!isAnswerModeView) {
                     questionFragment = Common.fragmentsLst.get(prevPosition);
-                    Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
-
+//                    Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
                     if (Common.selectedValues.size() > 0 && !questionFragment.isWasAnswered()) {
                         questionFragment.showCorrectAnswers();
                         Common.fragmentsLst.get(prevPosition).setWasAnswered(true);

@@ -58,7 +58,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private ImageView imgView;
     private Uri imgUri;
     private String nameImage;
-    private StringBuilder themeName = new StringBuilder();
+    private StringBuilder categoryName = new StringBuilder();
     private Spinner themesSpinner;
     private List<String> themesLst;
 
@@ -91,7 +91,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         themesSpinner = root.findViewById(R.id.themesSpinner);
 
         addSpinnerAdapter();
-        themesSpinner.setOnItemSelectedListener(new SpinnerOnItemSelectedListener(themeName));
+        themesSpinner.setOnItemSelectedListener(new SpinnerOnItemSelectedListener(categoryName));
         chooseImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -257,7 +257,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                                         }
                                         Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
                                         newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
-                                        newIntent.putExtra("themeName", themeName.toString());
+                                        newIntent.putExtra("categoryName", categoryName.toString());
                                         newIntent.putExtra("keyNameTestEdt", Integer.valueOf(testsNumber + 1));
                                         newIntent.putExtra("nameImage", nameImage);
 //                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();
