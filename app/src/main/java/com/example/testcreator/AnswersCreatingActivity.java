@@ -57,7 +57,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private Map<Integer, String> lettersMap = new HashMap<>();
     // Список с вариантами ответов на вопросы. Варианты ответов вводит пользователь.
     private List<AnswerView> lstAnswers;
-    // Список с вариантами ответов на вопросы. Варианты ответов вводит пользователь.
+    // Список с вариантами ответов на вопросы. Позволяет хранить коллекцию
+    // в удобном формате в базе данных.
     private List<String> lstAnswersToDatabase;
 
     @Override
@@ -123,7 +124,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     /**
-     * Метод для обработки вариантов ответов. Каждый ответ должен начинаться с
+     * Метод для обработки вариантов ответов.
+     * Для тестовых вопрос каждый ответ должен начинаться с
      * заглавной буквы латинского алфавита, которая означает номер ответа.
      * Потом следует точка. Ещё в каждом вопросе должно быть 10 вариантов ответа
      * для правильного вывода возможных ответов на вопрос, поэтому дозаполняем
@@ -131,19 +133,24 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      * Для отображения ответов при заполнении используется класс AnswerView, но
      * в базе данных достаточно только формулировки ответа, поэтому переносим
      * все ответы в другой список, использующий встроенный класс String.
+     * <p>
+     * Если ответ подразумевает ввод ответа на клавиатуре, то оставляем
+     * пустую коллекцию.
      */
     private void processLstAnswers() {
         lstAnswersToDatabase = new ArrayList<>();
-        String tmp;
-        int size = lstAnswers.size();
-        for (int i = 0; i < size; i++) {
-            tmp = lettersMap.get(i) + ". " + lstAnswers.get(i).getAnswerText();
-            lstAnswersToDatabase.add(tmp);
-        }
+        if (typeAnswer.equals(NumberAnswerEnum.OneOrManyAnswers.name())) {
+            String tmp;
+            int size = lstAnswers.size();
+            for (int i = 0; i < size; i++) {
+                tmp = lettersMap.get(i) + ". " + lstAnswers.get(i).getAnswerText();
+                lstAnswersToDatabase.add(tmp);
+            }
 
-        // Теперь дозаполним оставшиеся ответы.
-        for (int i = size; i < lettersMap.size(); i++) {
-            lstAnswersToDatabase.add("Z");
+            // Теперь дозаполним оставшиеся ответы.
+            for (int i = size; i < lettersMap.size(); i++) {
+                lstAnswersToDatabase.add("Z");
+            }
         }
     }
 
@@ -157,16 +164,24 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private Pair<Integer, StringBuilder> saveRightAnswers() {
         int rightAnsNumber = 0;
         StringBuilder rightAnsBuilder = new StringBuilder();
-        for (int i = 0; i < lstAnswers.size(); i++) {
-            if (lstAnswers.get(i).getSelected()) {
-                rightAnsNumber++;
-                rightAnsBuilder.append(lettersMap.get(i));
-                rightAnsBuilder.append(",");
+        if (typeAnswer.equals(NumberAnswerEnum.OneOrManyAnswers.name())) {
+            for (int i = 0; i < lstAnswers.size(); i++) {
+                if (lstAnswers.get(i).getSelected()) {
+                    rightAnsNumber++;
+                    rightAnsBuilder.append(lettersMap.get(i));
+                    rightAnsBuilder.append(",");
+                }
             }
-        }
-        // (Длина - 1), чтобы не было висячей запятой.
-        if (rightAnsBuilder.length() > 0) {
-            rightAnsBuilder.deleteCharAt(rightAnsBuilder.length() - 1);
+            // (Длина - 1), чтобы не было висячей запятой.
+            if (rightAnsBuilder.length() > 0) {
+                rightAnsBuilder.deleteCharAt(rightAnsBuilder.length() - 1);
+            }
+        } else {
+            rightAnsBuilder.append(lstAnswers.get(0).getAnswerText());
+            if (rightAnsBuilder.toString().length() > 0
+                    && !rightAnsBuilder.toString().toLowerCase().equals("текст ответа")) {
+                rightAnsNumber++;
+            }
         }
         return new Pair<>(rightAnsNumber, rightAnsBuilder);
     }

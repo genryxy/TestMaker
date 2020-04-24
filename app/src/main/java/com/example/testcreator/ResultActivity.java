@@ -197,7 +197,7 @@ public class ResultActivity extends AppCompatActivity {
         new MaterialStyledDialog.Builder(this)
                 .setTitle("Пройти тест снова?")
                 .setIcon(R.drawable.ic_mood_black_24dp)
-                .setDescription("Вы действительно хотите удалить результат?")
+                .setDescription("Результаты данной попытки сохранены")
                 .setNegativeText("Нет")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override

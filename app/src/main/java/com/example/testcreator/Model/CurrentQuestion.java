@@ -4,7 +4,7 @@ import com.example.testcreator.Common.Common;
 
 public class CurrentQuestion {
     private int questionIndex;
-    private Common.AnswerType type;
+    private Common.AnswerType type = Common.AnswerType.NO_ANSWER;
     private String userAnswer;
 
     public CurrentQuestion() {}

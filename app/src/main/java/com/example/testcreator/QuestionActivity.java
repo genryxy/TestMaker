@@ -28,6 +28,7 @@ import com.example.testcreator.Adapter.QuestionFragmentAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.DBHelper.DBHelper;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
+import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
@@ -109,7 +110,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         if (!isAnswerModeView) {
             int position = viewPager.getCurrentItem();
             QuestionFragment questionFragment = Common.fragmentsLst.get(position);
-            CurrentQuestion questionState = questionFragment.getSelectedAnswer();
+            CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
             Common.answerSheetList.set(position, questionState);
             // Оповестить об изменении цвета.
             answerSheetAdapter.notifyDataSetChanged();
@@ -354,15 +355,18 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 if (!isAnswerModeView) {
                     questionFragment = Common.fragmentsLst.get(prevPosition);
 //                    Toast.makeText(QuestionActivity.this, "prevPos: " + Common.selectedValues.toString(), Toast.LENGTH_SHORT).show();
-                    if (Common.selectedValues.size() > 0 && !questionFragment.isWasAnswered()) {
-                        questionFragment.showCorrectAnswers();
-                        Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
-                        CurrentQuestion questionState = questionFragment.getSelectedAnswer();
-                        Common.answerSheetList.set(prevPosition, questionState);
-                        answerSheetAdapter.notifyDataSetChanged();
-                        countCorrectAnswer();
-                        questionRightTxt.setText(getFinalResult());
-                        questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+                    if (!questionFragment.isWasAnswered() && (Common.selectedValues.size() > 0
+                            || Common.questionLst.get(prevPosition).getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer))) {
+                        CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
+                        if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+                            questionFragment.showCorrectAnswers();
+                            Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
+                            Common.answerSheetList.set(prevPosition, questionState);
+                            answerSheetAdapter.notifyDataSetChanged();
+                            countCorrectAnswer();
+                            questionRightTxt.setText(getFinalResult());
+                            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+                        }
                     }
                     prevPosition = position;
                 }
@@ -390,7 +394,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private void setAnswerSheetViewAdapter() {
         answerSheetView.setHasFixedSize(true);
         if (Common.questionLst.size() > 5) {
-            answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size() / 2));
+            answerSheetView.setLayoutManager(new GridLayoutManager(this, (Common.questionLst.size() + 1) / 2));
         } else {
             answerSheetView.setLayoutManager(new GridLayoutManager(this, Common.questionLst.size()));
         }

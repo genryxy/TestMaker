@@ -19,6 +19,10 @@ import com.example.testcreator.R;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Класс-адаптер для вывода результатов прохождения тестов пользователем.
+ */
 public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAdapter.MyViewHolder> {
 
     private Context context;
@@ -99,7 +103,6 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            // Check if an item was deleted, but the user clicked it before the UI removed it
             if (position != RecyclerView.NO_POSITION) {
                 ResultTest resultTest = resultTests.get(position);
                 Common.fragmentsLst.clear();
