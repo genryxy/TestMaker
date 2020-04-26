@@ -1,5 +1,6 @@
 package com.example.testcreator.ui.searchTest;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,12 @@ import com.example.testcreator.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
+
 public class SelectingTestFragment extends Fragment {
 
     private SelectingTestViewModel selectingTestViewModel;
-//    private ListView testsLst;
+    private AlertDialog dialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,25 +40,37 @@ public class SelectingTestFragment extends Fragment {
 //            }
 //        });
 
-//        ListView testsLstView = root.findViewById(R.id.selectingTestsRecView);
-        // Создаём список с ответами.
-        final List<SelectingTestView> lstTests = new ArrayList<>();
+        showLoadingDialog();
         final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
-//        for (int i = 0; i < 4; i++)
-//            lstTests.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
+        testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         OnlineDBHelper.getInstance(getContext())
                 .getNamesTest(new NameTestCallBack() {
                     @Override
                     public void setNamesToAdapter(List<String> namesTestLst, List<String> categoriesLst) {
+                        List<SelectingTestView> lstTests = new ArrayList<>();
                         for (int i = 0; i < namesTestLst.size(); i++) {
                             lstTests.add(new SelectingTestView(namesTestLst.get(i), categoriesLst.get(i), ""));
                         }
                         SelectingTestAdapter adapter = new SelectingTestAdapter(lstTests);
                         testsRecycler.setAdapter(adapter);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
                     }
                 });
-        testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return root;
+    }
+
+    private void showLoadingDialog() {
+        dialog = new SpotsDialog.Builder()
+                .setContext(getContext())
+                .setMessage("loading ...")
+                .setCancelable(false)
+                .build();
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
     }
 }

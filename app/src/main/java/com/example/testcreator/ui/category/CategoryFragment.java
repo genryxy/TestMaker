@@ -46,11 +46,8 @@ public class CategoryFragment extends Fragment {
 //        final TextView textView = root.findViewById(R.id.text_home);
         setHasOptionsMenu(true);
 
-        //Init paper
         Paper.init(getContext());
-
-        // Get value online mode
-        Common.isOnlineMode = Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, false);
+        Common.isOnlineMode = Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, true);
 
         categoryRecycler = root.findViewById(R.id.categoryRecycler);
         categoryRecycler.setHasFixedSize(true);

@@ -1,5 +1,6 @@
 package com.example.testcreator.ui.statistic;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +27,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import dmax.dialog.SpotsDialog;
+
 public class StatisticFragment extends Fragment implements FireBaseConnections {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private StatisticViewModel statisticViewModel;
+    private AlertDialog dialog;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,8 +50,11 @@ public class StatisticFragment extends Fragment implements FireBaseConnections {
 //            }
 //        });
 
-        final RecyclerView resultDatabaseRecycler = root.findViewById(R.id.resultDatabaseRecycler);
-
+        showLoadingDialog();
+        int spaceInPixel = 4;
+        final RecyclerView resultDBRecycler = root.findViewById(R.id.resultDatabaseRecycler);
+        resultDBRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
+        resultDBRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         DocumentReference docRef = db.collection("users").document(keyUser);
@@ -56,25 +63,40 @@ public class StatisticFragment extends Fragment implements FireBaseConnections {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         UserResults userResults = documentSnapshot.toObject(UserResults.class);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
                         if (userResults == null) {
                             Toast.makeText(getContext(), "Вы ещё не проходили тесты!", Toast.LENGTH_LONG).show();
                             return;
                         }
                         ResultDatabaseAdapter adapter = new ResultDatabaseAdapter(getActivity(), userResults.getResultTestsLst());
-                        int spaceInPixel = 4;
-                        resultDatabaseRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
-                        resultDatabaseRecycler.setAdapter(adapter);
-                        resultDatabaseRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        resultDBRecycler.setAdapter(adapter);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
 //                                Log.w(TAG, "Error getting document", e);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
                         Toast.makeText(getContext(), "Не удалось загрузить результаты", Toast.LENGTH_SHORT).show();
                     }
                 });
 
         return root;
+    }
+
+    private void showLoadingDialog() {
+        dialog = new SpotsDialog.Builder()
+                .setContext(getContext())
+                .setMessage("loading ...")
+                .setCancelable(false)
+                .build();
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
     }
 }

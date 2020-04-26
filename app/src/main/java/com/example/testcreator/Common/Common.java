@@ -50,7 +50,6 @@ public class Common {
         return "";
     }
 
-
     public enum AnswerType {
         NO_ANSWER,
         WRONG_ANSWER,

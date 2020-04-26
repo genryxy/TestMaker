@@ -1,47 +1,32 @@
 package com.example.testcreator;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.testcreator.Adapter.CategoryAdapter;
 import com.example.testcreator.Common.Common;
-import com.example.testcreator.Common.SpaceDecoration;
-import com.example.testcreator.DBHelper.DBHelper;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.ThemesCallBack;
 import com.example.testcreator.Model.Category;
-import com.example.testcreator.ui.searchTest.SelectingTestFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
+
+import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity implements FireBaseConnections {
     public final String TAG = "FAILURE MainActivity";
@@ -49,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
     private AppBarConfiguration mAppBarConfiguration;
     private FragmentTransaction transaction;
     private Fragment selectingTestFragment;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +44,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         toolbar.setTitle("Quiz 2020");
         setSupportActionBar(toolbar);
 
+        showLoadingDialog();
         OnlineDBHelper.getInstance(this).getCategories(new ThemesCallBack() {
             @Override
             public void setThemes(List<Category> themesLst) {
                 Common.categoryLst = themesLst;
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
             }
         });
 
@@ -101,6 +91,18 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
 //        transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.add(R.id.nav_host_fragment, selectingTestFragment);
 //        transaction.commit();
+    }
+
+    private void showLoadingDialog() {
+        dialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("loading ...")
+                .setCancelable(false)
+                .build();
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
     }
 
     @Override

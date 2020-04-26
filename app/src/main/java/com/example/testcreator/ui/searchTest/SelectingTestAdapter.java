@@ -74,7 +74,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
     private List<SelectingTestView> testsLst;
     private Context context;
 
-     SelectingTestAdapter(@NonNull List<SelectingTestView> testsLst) {
+    public SelectingTestAdapter(@NonNull List<SelectingTestView> testsLst) {
         this.testsLst = testsLst;
     }
 
