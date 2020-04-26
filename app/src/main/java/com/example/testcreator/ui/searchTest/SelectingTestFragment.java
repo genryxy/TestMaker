@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.DBHelper.OnlineDBHelper;
+import com.example.testcreator.Interface.NameTestCallBack;
 import com.example.testcreator.Model.SelectingTestView;
 import com.example.testcreator.R;
 
@@ -37,13 +39,21 @@ public class SelectingTestFragment extends Fragment {
 
 //        ListView testsLstView = root.findViewById(R.id.selectingTestsRecView);
         // Создаём список с ответами.
-        List<SelectingTestView> lstTests = new ArrayList<>();
-        for (int i = 0; i < 4; i++)
-            lstTests.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
-
-        RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
-        SelectingTestAdapter adapter = new SelectingTestAdapter(lstTests);
-        testsRecycler.setAdapter(adapter);
+        final List<SelectingTestView> lstTests = new ArrayList<>();
+        final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
+//        for (int i = 0; i < 4; i++)
+//            lstTests.add(new SelectingTestView("nameTest" + i, "creator" + i, ""));
+        OnlineDBHelper.getInstance(getContext())
+                .getNamesTest(new NameTestCallBack() {
+                    @Override
+                    public void setNamesToAdapter(List<String> namesTestLst, List<String> categoriesLst) {
+                        for (int i = 0; i < namesTestLst.size(); i++) {
+                            lstTests.add(new SelectingTestView(namesTestLst.get(i), categoriesLst.get(i), ""));
+                        }
+                        SelectingTestAdapter adapter = new SelectingTestAdapter(lstTests);
+                        testsRecycler.setAdapter(adapter);
+                    }
+                });
         testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return root;

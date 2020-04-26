@@ -3,29 +3,24 @@ package com.example.testcreator;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
+import com.example.testcreator.Common.Common;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -45,7 +40,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private String typeAnswer;
     private String nameTest;
     private String nameImage;
-    private String categoryName;
+    private int categoryID;
     private String questionText;
     private int keyNameTest;
     private int questionNumber;
@@ -118,7 +113,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
 //                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
 //                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
         QuestionModel question = new QuestionModel(questionText, null, lstAnswersToDatabase,
-                rightAnsBuilder.toString(), false, categoryName, typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())
+                rightAnsBuilder.toString(), false, categoryID, typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())
                 ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
         return question;
     }
@@ -197,7 +192,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         questionText = prevIntent.getStringExtra("questionTextEdt");
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
-        categoryName = prevIntent.getStringExtra("categoryName");
+        categoryID = prevIntent.getIntExtra("categoryID", 1);
         keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
@@ -247,49 +242,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         }
 
         final DocumentReference docRef = db.collection("tests").document(nameTest);
-        saveQuestionByCategoryAndTest(docRef, rightAns.second);
+        final QuestionModel questionModel = createQuestion(rightAns.second);
+        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRef, questionModel);
 
-        final DocumentReference docRefTheme = db.collection("themes").document(categoryName);
-        saveQuestionByCategoryAndTest(docRefTheme, rightAns.second);
-    }
-
-    /**
-     * Метод для сохранения вопроса в БД по переданной ссылке.
-     *
-     * @param docRef      Ссылка на документ в таблице, в который нужно сохранять.
-     * @param strRightAns Строка, содержащая правильные варианты ответов.
-     */
-    private void saveQuestionByCategoryAndTest(final DocumentReference docRef, final StringBuilder strRightAns) {
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    QuestionModel question = createQuestion(strRightAns);
-                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
-                    // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
-                    if (document != null && document.exists()) {
-                        docRef.update("questions", FieldValue.arrayUnion(question));
-                    } else {
-                        List<QuestionModel> questions = new ArrayList<>();
-                        questions.add(question);
-                        questionsFirebase = new QuestionFirebase(questions);
-
-                        docRef.set(questionsFirebase)
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error adding document", e);
-                                        Toast.makeText(AnswersCreatingActivity.this,
-                                                "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else {
-                    Log.d(TAG, "Failed with: ", task.getException());
-                }
-            }
-        });
+        final DocumentReference docRefTheme = db.collection("themes")
+                .document(Common.getNameCategoryByID(categoryID));
+        final QuestionModel questionModelTheme = createQuestion(rightAns.second);
+        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModelTheme );
     }
 
     /**
@@ -341,7 +300,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 newIntent.putExtra("questionNumber", questionNumber + 1);
                 newIntent.putExtra("nameTestEdt", nameTest);
                 newIntent.putExtra("keyNameTestEdt", keyNameTest);
-                newIntent.putExtra("categoryName", categoryName);
+                newIntent.putExtra("categoryID", categoryID);
                 startActivity(newIntent);
             }
         });

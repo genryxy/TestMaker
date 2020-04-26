@@ -55,6 +55,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
         // Для работы требуется пустой конструктор
     }
 
+    public QuestionFragment(int questionIndex) {
+        this.questionIndex = questionIndex;
+        question = Common.questionLst.get(questionIndex);
+    }
+
     public boolean isWasAnswered() {
         return wasAnswered;
     }
@@ -67,12 +72,6 @@ public class QuestionFragment extends Fragment implements IQuestion {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View itemView = inflater.inflate(R.layout.fragment_question, container, false);
-
-
-        // Получить вопрос из общего класса по индексу, который передали
-        // при создании экземпляра класса.
-        questionIndex = getArguments().getInt("index", -1);
-        question = Common.questionLst.get(questionIndex);
 
         if (question != null) {
             progressBar = itemView.findViewById(R.id.progressBar);

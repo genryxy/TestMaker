@@ -10,6 +10,7 @@ import com.example.testcreator.Model.SelectingTestView;
 import com.example.testcreator.QuestionFragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.TreeSet;
@@ -24,6 +25,7 @@ public class Common {
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
     public static Category selectedCategory = new Category();
+    public static List<Category> categoryLst = new ArrayList<>();
     public static SelectingTestView selectedTest= new SelectingTestView();
     public static CountDownTimer countDownTimer;
 
@@ -38,6 +40,15 @@ public class Common {
     // Выбранные варианты ответов.
     public static TreeSet<String> selectedValues = new TreeSet<>();
     public static boolean isOnlineMode = false;
+
+    public static String getNameCategoryByID (int categoryID) {
+        for (int i = 0; i < categoryLst.size(); i++) {
+            if (categoryLst.get(i).getId() == categoryID) {
+                return categoryLst.get(i).getName();
+            }
+        }
+        return "";
+    }
 
 
     public enum AnswerType {

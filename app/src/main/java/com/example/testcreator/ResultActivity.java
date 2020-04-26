@@ -31,16 +31,16 @@ import java.util.concurrent.TimeUnit;
 
 public class ResultActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    TextView timeTxt;
-    TextView resultTxt;
-    TextView rightAnswerTxt;
-    Button filterTotalBtn;
-    Button filterRightAnswerBtn;
-    Button filterWrongAnswerBtn;
-    Button filterNoAnswerBtn;
-    RecyclerView resultRecycler;
-    ResultGridAdapter gridAdapter, filteredGridAdapter;
+    private TextView timeTxt;
+    private TextView resultTxt;
+    private TextView rightAnswerTxt;
+    private Button filterTotalBtn;
+    private Button filterRightAnswerBtn;
+    private Button filterWrongAnswerBtn;
+    private Button filterNoAnswerBtn;
+    private RecyclerView resultRecycler;
+    private ResultGridAdapter gridAdapter;
+    private ResultGridAdapter filteredGridAdapter;
 
     BroadcastReceiver backToQuestion = new BroadcastReceiver() {
         @Override
@@ -68,15 +68,13 @@ public class ResultActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(backToQuestion, new IntentFilter(Common.KEY_BACK_FROM_RESULT));
 
         findElementsViewById();
-        toolbar.setTitle("Результаты");
-//        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Результаты");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         resultRecycler.setHasFixedSize(true);
         resultRecycler.setLayoutManager(new GridLayoutManager(this, 3));
 
-        // Устанавливаем адаптер.
         gridAdapter = new ResultGridAdapter(this, Common.answerSheetList);
         resultRecycler.addItemDecoration(new SpaceDecoration(4));
         resultRecycler.setAdapter(gridAdapter);
@@ -160,7 +158,6 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void findElementsViewById() {
-        toolbar = findViewById(R.id.toolbarResult);
         timeTxt = findViewById(R.id.timeTxt);
         resultTxt = findViewById(R.id.resultTxt);
         rightAnswerTxt = findViewById(R.id.rightAnswerTxt);

@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -23,14 +22,21 @@ import com.example.testcreator.Adapter.CategoryAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.DBHelper.DBHelper;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
+import com.example.testcreator.Interface.ThemesCallBack;
+import com.example.testcreator.Model.Category;
 import com.example.testcreator.R;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+
+import java.util.List;
 
 import io.paperdb.Paper;
 
 public class CategoryFragment extends Fragment {
 
     private CategoryViewModel categoryViewModel;
+    private CategoryAdapter adapter;
+    private RecyclerView categoryRecycler;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -46,16 +52,12 @@ public class CategoryFragment extends Fragment {
         // Get value online mode
         Common.isOnlineMode = Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, false);
 
-        RecyclerView categoryRecycler = root.findViewById(R.id.categoryRecycler);
+        categoryRecycler = root.findViewById(R.id.categoryRecycler);
         categoryRecycler.setHasFixedSize(true);
-
-        CategoryAdapter adapter = new CategoryAdapter(getActivity(),
-                DBHelper.getInstance(getActivity()).getAllCategories());
         int spaceInPixel = 4;
         categoryRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
-        categoryRecycler.setAdapter(adapter);
         categoryRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
+        setAdapterDependingMode(Common.isOnlineMode);
         return root;
     }
 
@@ -75,6 +77,16 @@ public class CategoryFragment extends Fragment {
             drawerLayout.openDrawer(getActivity().findViewById(R.id.nav_view));
         }
         return true;
+    }
+
+    private void setAdapterDependingMode(boolean isOnlineMode) {
+        if (isOnlineMode) {
+            adapter = new CategoryAdapter(getActivity(), Common.categoryLst);
+            categoryRecycler.setAdapter(adapter);
+        } else {
+            adapter = new CategoryAdapter(getActivity(), DBHelper.getInstance(getActivity()).getAllCategories());
+            categoryRecycler.setAdapter(adapter);
+        }
     }
 
     private void showSettings() {
@@ -102,14 +114,13 @@ public class CategoryFragment extends Fragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (checkBoxOnlineMode.isChecked()) {
-                            Common.isOnlineMode = true;
-                        } else {
-                            Common.isOnlineMode = false;
+
+                        if (Common.isOnlineMode != checkBoxOnlineMode.isChecked()) {
+                            Common.isOnlineMode = checkBoxOnlineMode.isChecked();
+                            setAdapterDependingMode(Common.isOnlineMode);
                         }
                         // Сохраняем режим.
                         Paper.book().write(Common.KEY_SAVE_ONLINE_MODE, checkBoxOnlineMode.isChecked());
-
                         dialog.dismiss();
                     }
                 })

@@ -11,6 +11,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DBHelper extends SQLiteAssetHelper {
     private static final String DB_NAME = "Quiz.db";
@@ -25,12 +26,13 @@ public class DBHelper extends SQLiteAssetHelper {
         return instance;
     }
 
-    public DBHelper(Context context) {
+    private DBHelper(Context context) {
         super(context, DB_NAME, null, DB_VER);
     }
 
     /**
-     * Get all categories from DB
+     * Возвращает все категории из локальной БД. При этом в некоторых
+     * категориях может не быть вопросов.
      */
     public List<Category> getAllCategories() {
         SQLiteDatabase db = instance.getWritableDatabase();
@@ -55,27 +57,29 @@ public class DBHelper extends SQLiteAssetHelper {
     /**
      * Get 30 questions from DB by category
      */
-    public List<QuestionModel> getQuestionsByCategory(int category) {
+    public List<QuestionModel> getQuestionsByCategory(Category category) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category), null);
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category.getId()), null);
         List<QuestionModel> questions = new ArrayList<>();
+        String answer;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 List<String> allAnswer = new ArrayList<>(QuestionModel.NUMBER_ANSWER);
                 for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
-                    allAnswer.add(cursor.getString(cursor.getColumnIndex("Answer" + (char) ('A' + i))));
+                    answer = cursor.getString(cursor.getColumnIndex("Answer" + (char) ('A' + i)));
+                    allAnswer.add(answer != null ? answer : "Z");
                 }
+                String ans = cursor.getString(cursor.getColumnIndex("TypeAnswer"));
 
-                // TODO В базе данных хранится ID категории а не строка!!!!!
                 QuestionModel question = new QuestionModel(
                         cursor.getString(cursor.getColumnIndex("QuestionText")),
                         cursor.getString(cursor.getColumnIndex("QuestionImage")),
                         allAnswer,
                         cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
-                        cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0 ? false : true,
-                        String.valueOf(cursor.getInt(cursor.getColumnIndex("CategoryID"))),
-                        cursor.getString(cursor.getColumnIndex("NumberAnswerEnum")).equals(NumberAnswerEnum.OwnAnswer.name())
+                        cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 1,
+                        cursor.getInt(cursor.getColumnIndex("CategoryID")),
+                        ans.equals(NumberAnswerEnum.OwnAnswer.name())
                                 ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
                 questions.add(question);
                 cursor.moveToNext();

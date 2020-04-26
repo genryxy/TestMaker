@@ -24,9 +24,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.Adapter.CategoryAdapter;
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.DBHelper.DBHelper;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.Interface.ThemesCallBack;
+import com.example.testcreator.Model.Category;
 import com.example.testcreator.ui.searchTest.SelectingTestFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,6 +40,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FireBaseConnections {
     public final String TAG = "FAILURE MainActivity";
@@ -51,6 +57,13 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Quiz 2020");
         setSupportActionBar(toolbar);
+
+        OnlineDBHelper.getInstance(this).getCategories(new ThemesCallBack() {
+            @Override
+            public void setThemes(List<Category> themesLst) {
+                Common.categoryLst = themesLst;
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

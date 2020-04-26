@@ -23,9 +23,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.ThemesCallBack;
+import com.example.testcreator.Model.Category;
 import com.example.testcreator.QuestionsCreatingActivity;
 import com.example.testcreator.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,6 +41,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +63,6 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private String nameImage;
     private StringBuilder categoryName = new StringBuilder();
     private Spinner themesSpinner;
-    private List<String> themesLst;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,16 +104,13 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     }
 
     private void addSpinnerAdapter() {
-        new OnlineDBHelper(getContext(), FirebaseFirestore.getInstance())
-                .readThemes(new ThemesCallBack() {
-                    @Override
-                    public void setThemesToAdapter(List<String> themes) {
-                        themesLst = themes;
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                                android.R.layout.simple_spinner_dropdown_item, themes);
-                        themesSpinner.setAdapter(adapter);
-                    }
-                });
+        List<String> themesLstStr = new ArrayList<>();
+        for (int i = 0; i < Common.categoryLst.size(); i++) {
+            themesLstStr.add(Common.categoryLst.get(i).getName());
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_dropdown_item, themesLstStr);
+        themesSpinner.setAdapter(adapter);
     }
 
     @Override

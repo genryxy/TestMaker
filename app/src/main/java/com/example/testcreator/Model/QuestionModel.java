@@ -14,7 +14,7 @@ public class QuestionModel {
     private List<String> allAnswer = new ArrayList<>();
     private String correctAnswer;
     private boolean isImageQuestion;
-    private String categoryName;
+    private int categoryID;
     private NumberAnswerEnum typeAnswer;
 
     public QuestionModel() {
@@ -22,23 +22,15 @@ public class QuestionModel {
     }
 
     public QuestionModel(String questionText, String questionImage, List<String> allAnswer, String correctAnswer,
-                         boolean isImageQuestion, String categoryName, NumberAnswerEnum typeAnswer) {
+                         boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer) {
         this.questionText = questionText;
         this.questionImage = questionImage;
         this.allAnswer = allAnswer;
         this.correctAnswer = correctAnswer;
         this.isImageQuestion = isImageQuestion;
-        this.categoryName = categoryName;
+        this.categoryID = categoryID;
         this.typeAnswer = typeAnswer;
     }
-
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
 
     public String getQuestionText() {
         return questionText;
@@ -77,12 +69,12 @@ public class QuestionModel {
         return allAnswer;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public int getCategoryID() {
+        return categoryID;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
     public NumberAnswerEnum getTypeAnswer() {

@@ -61,7 +61,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                 @Override
                 public void onClick(View v) {
 //                    Toast.makeText(context, "Click at category " + categories.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
-                    // Assign selected Category
                     Common.selectedCategory = categories.get(getAdapterPosition());
                     Common.fragmentsLst.clear();
                     Common.answerSheetList.clear();

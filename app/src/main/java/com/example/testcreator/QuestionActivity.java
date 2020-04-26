@@ -119,11 +119,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             questionRightTxt.setText(getFinalResult());
             questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
 
+            // Устанавливаем правильные ответы, потому что если откроют этот
+            // же вопрос при просмотре результатов первым, то они не выделятся,
+            // потому что не произойдёт смена позиции ViewPager.
+            Common.fragmentsLst.get(position).showCorrectAnswers();
+            Common.fragmentsLst.get(position).disableAnswers();
             // Проходимся по всем фрагментам и устанавливаем правильные ответы,
             // чтобы корректно отображались правильные ответы при просмотре ответов.
             for (QuestionFragment frag : Common.fragmentsLst) {
-                frag.showCorrectAnswers();
-                frag.disableAnswers();
                 frag.setWasAnswered(true);
             }
             writeResultToDatabase();
@@ -189,11 +192,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      */
     private void generateFragmentList() {
         for (int i = 0; i < Common.questionLst.size(); i++) {
-            Bundle bundle = new Bundle();
-            bundle.putInt("index", i);
-            QuestionFragment questionFragment = new QuestionFragment();
-            questionFragment.setArguments(bundle);
-
+            QuestionFragment questionFragment = new QuestionFragment(i);
             if (isAnswerModeView) {
                 questionFragment.setWasAnswered(true);
             }
@@ -224,7 +223,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             public void onFinish() {
                 finishQuiz();
             }
-        }.start();
+        };
+        Common.countDownTimer.start();
     }
 
     /**
@@ -233,12 +233,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private void getAndSetupQuestions() {
         if (!isAnswerModeView) {
             if (!Common.isOnlineMode) {
-                Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory.getId());
+                Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
                 addQuestionToCommonAnswerSheetAdapter();
                 setupQuestion();
             } else {
-                new OnlineDBHelper(this, FirebaseFirestore.getInstance())
-                        .readData(new MyCallBack() {
+                OnlineDBHelper.getInstance(this)
+                        .getQuestionsByCategory(new MyCallBack() {
                             @Override
                             public void setQuestionList(List<QuestionModel> questionList) {
                                 Common.questionLst.clear();
@@ -247,9 +247,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                 // Устанавливаем в коллбэке вопросы.
                                 setupQuestion();
                             }
-                        }, Common.selectedCategory.getName()
-                                .replace(" ", "")
-                                .replace("/", "_"));
+                        }, Common.selectedCategory.getId());
             }
         } else {
             setupQuestion();
@@ -407,6 +405,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         if (Common.countDownTimer != null) {
             Common.countDownTimer.cancel();
         }
+        Common.selectedValues.clear();
         super.onDestroy();
     }
 
@@ -471,11 +470,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private void setVisibilityOfNumberAnswers(boolean isVisible) {
         if (isVisible) {
             questionWrongTxt.setVisibility(View.VISIBLE);
-            questionRightTxt.setVisibility(View.VISIBLE);
             timerTxt.setVisibility(View.VISIBLE);
         } else {
             questionWrongTxt.setVisibility(View.GONE);
-            questionRightTxt.setVisibility(View.GONE);
             timerTxt.setVisibility(View.GONE);
         }
     }
