@@ -20,19 +20,20 @@ public class ResultTest {
      */
     private List<CurrentQuestion> answerSheetLst;
     private String nameTest;
-    private String categoryName;
+    private int categoryID;
     private String finalScore;
-    private String wrongAnswer;
+    private int wrongAnswer;
+    private int resultID;
 
     public ResultTest() {}
 
     public ResultTest(String duration, List<QuestionModel> questionLst, List<CurrentQuestion> answerSheetLst,
-                      String nameTest, String categoryName, String finalScore, String wrongAnswer) {
+                      String nameTest, int categoryID, String finalScore, int wrongAnswer) {
         Duration = duration;
         this.questionLst = questionLst;
         this.answerSheetLst = answerSheetLst;
         this.nameTest = nameTest;
-        this.categoryName = categoryName;
+        this.categoryID = categoryID;
         this.finalScore = finalScore;
         this.wrongAnswer = wrongAnswer;
     }
@@ -69,12 +70,12 @@ public class ResultTest {
         this.nameTest = nameTest;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public int getCategoryID() {
+        return categoryID;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
     }
 
     public String getFinalScore() {
@@ -85,11 +86,19 @@ public class ResultTest {
         this.finalScore = finalScore;
     }
 
-    public String getWrongAnswer() {
+    public int getWrongAnswer() {
         return wrongAnswer;
     }
 
-    public void setWrongAnswer(String wrongAnswer) {
+    public void setWrongAnswer(int wrongAnswer) {
         this.wrongAnswer = wrongAnswer;
+    }
+
+    public int getResultID() {
+        return resultID;
+    }
+
+    public void setResultID(int resultID) {
+        this.resultID = resultID;
     }
 }

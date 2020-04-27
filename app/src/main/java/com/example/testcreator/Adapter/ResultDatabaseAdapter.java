@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,21 +44,20 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ResultTest userResult = resultTests.get(position);
 
-        // Если пользователь выбирал категорию для прохождения,
-        // то название теста будет null. Если выбирал тест по названию,
-        // то категория == null.
-        if (userResult.getCategoryName() != null && userResult.getCategoryName().length() > 0) {
-            holder.categoryTestViewTxt.setText(userResult.getCategoryName());
-        } else {
+        // Если пользователь выбирал тест для прохождения, то у
+        // теста будет название, которое можно вывести.
+        if (userResult.getNameTest() != null && userResult.getNameTest().length() > 0) {
             holder.nameTestViewTxt.setText(userResult.getNameTest());
         }
 
+        holder.categoryTestViewTxt.setText(Common.getNameCategoryByID(userResult.getCategoryID()));
         holder.timeTestTxt.setText(convertToNormalForm(userResult.getDuration()));
         holder.resultTestTxt.setText(userResult.getFinalScore());
     }
 
     /**
      * Конвертирует миллисекунды в нормальное представление времени.
+     *
      * @param duration Продолжительность в миллисекундах.
      * @return чч:мм:сс (если чч == 0, то часы опускаются).
      */
@@ -76,7 +74,7 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
             resTime.append(String.format("%02d:", hours));
         }
         resTime.append(String.format("%02d:%02d", minutes, seconds));
-        return  resTime.toString();
+        return resTime.toString();
     }
 
     @Override
@@ -105,6 +103,11 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
                 ResultTest resultTest = resultTests.get(position);
+                // Чтобы понимать какие вопросы загружать
+                Common.selectedTest = resultTest.getNameTest();
+                Common.selectedCategory = resultTest.getCategoryID();
+                Common.keyGetTestByResult = String.valueOf(resultTest.getResultID());
+
                 Common.fragmentsLst.clear();
                 Common.questionLst = resultTest.getQuestionLst();
                 Common.answerSheetList = resultTest.getAnswerSheetLst();

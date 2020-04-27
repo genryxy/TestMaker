@@ -5,13 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.testcreator.Adapter.ResultDatabaseAdapter;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.Interface.FireBaseConnections;
-import com.example.testcreator.Model.UserResults;
+import com.example.testcreator.Model.ResultTest;
+import com.example.testcreator.Model.ResultTestFirebase;
 import com.example.testcreator.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,7 +25,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import dmax.dialog.SpotsDialog;
+
+import static java.util.Arrays.asList;
 
 public class StatisticFragment extends Fragment implements FireBaseConnections {
 
@@ -62,15 +67,16 @@ public class StatisticFragment extends Fragment implements FireBaseConnections {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserResults userResults = documentSnapshot.toObject(UserResults.class);
+                        ResultTestFirebase resultTestFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
-                        if (userResults == null) {
+                        if (resultTestFirebase == null) {
                             Toast.makeText(getContext(), "Вы ещё не проходили тесты!", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        ResultDatabaseAdapter adapter = new ResultDatabaseAdapter(getActivity(), userResults.getResultTestsLst());
+                        ResultDatabaseAdapter adapter = new ResultDatabaseAdapter(getActivity(),
+                                new ArrayList<>(resultTestFirebase.getResultTestsMap().values()));
                         resultDBRecycler.setAdapter(adapter);
                     }
                 })

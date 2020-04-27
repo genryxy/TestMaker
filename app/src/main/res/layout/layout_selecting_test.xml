@@ -52,7 +52,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="8dp"
         android:background="#EDEDED"
         android:paddingTop="20dp" />
 </LinearLayout>

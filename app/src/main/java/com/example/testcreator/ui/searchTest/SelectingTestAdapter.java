@@ -1,6 +1,7 @@
 package com.example.testcreator.ui.searchTest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +13,29 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.Interface.FireBaseConnections;
-import com.example.testcreator.Model.SelectingTestView;
+import com.example.testcreator.Model.TestInfo;
+import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         //ListAdapter<SelectingTestView, SelectingTestRecyclerView.ViewHolder>
         RecyclerView.Adapter<SelectingTestAdapter.ViewHolder> implements FireBaseConnections {
+
+    private List<TestInfo> testInfos;
+    private Context context;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // Your holder should contain a member variable
@@ -31,6 +43,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         private ImageView imgTest;
         private TextView nameTestViewTxt;
         private TextView infoTestTxt;
+        private TextView creatingDateTxt;
         private Context context;
 
         // We also create a constructor that accepts the entire item row
@@ -43,39 +56,50 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
             imgTest = itemView.findViewById(R.id.testAvatarImg);
             nameTestViewTxt = itemView.findViewById(R.id.nameTestViewTxt);
             infoTestTxt = itemView.findViewById(R.id.infoTestTxt);
+            creatingDateTxt = itemView.findViewById(R.id.creatingDateTxt);
             // Attach a click listener to the entire row view
             itemView.setOnClickListener(this);
-        }
-
-        private ImageView getImgTest() {
-            return imgTest;
-        }
-
-        private TextView getNameTestViewTxt() {
-            return nameTestViewTxt;
-        }
-
-        private TextView getInfoTestTxt() {
-            return infoTestTxt;
         }
 
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            // Check if an item was deleted, but the user clicked it before the UI removed it
             if (position != RecyclerView.NO_POSITION) {
-                SelectingTestView test = testsLst.get(position);
-                // We can access the data within the views
-                Toast.makeText(context, test.getName(), Toast.LENGTH_SHORT).show();
+                TestInfo test = testInfos.get(position);
+                new MaterialStyledDialog.Builder(context)
+                        .setIcon(R.drawable.ic_question_answer_black_24dp)
+                        .setTitle("Подтверждение")
+                        .setDescription("Начать тест \"" + test.getName() + "\"?")
+//                        .setCustomView(settingLayout)
+                        .setNegativeText("Нет")
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveText("Да")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
+                                Common.selectedTest = testInfos.get(getAdapterPosition()).getName();
+                                Common.fragmentsLst.clear();
+                                Common.answerSheetList.clear();
+                                Common.rightAnswerCount = 0;
+                                Common.wrongAnswerCount = 0;
+                                Intent intent = new Intent(context, QuestionActivity.class);
+                                context.startActivity(intent);
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         }
     }
 
-    private List<SelectingTestView> testsLst;
-    private Context context;
-
-    public SelectingTestAdapter(@NonNull List<SelectingTestView> testsLst) {
-        this.testsLst = testsLst;
+    public SelectingTestAdapter(@NonNull List<TestInfo> testInfos) {
+        this.testInfos = testInfos;
     }
 
     // Involves inflating a layout from XML and returning the holder.
@@ -92,49 +116,42 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         return viewHolder;
     }
 
-    // Involves populating data into the item through holder.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Get the data model based on position.
-        SelectingTestView testView = testsLst.get(position);
+        TestInfo testInfo = testInfos.get(position);
 
-        // Set item views based on your views and data models.
-        TextView nameTestViewTxt = holder.getNameTestViewTxt();
-        final TextView infoTestTxt = holder.getInfoTestTxt();
-        final ImageView imgTest = holder.getImgTest();
+        final ImageView imgTest = holder.imgTest;
+        String someInfo = Common.getNameCategoryByID(testInfo.getCategoryID()) + "\n" + testInfo.getCreator();
 
-        nameTestViewTxt.setText(testView.getName());
-        infoTestTxt.setText(testView.getCreator());
+        Calendar.getInstance().setTime(testInfo.getDateCreation());
+
+        holder.nameTestViewTxt.setText(testInfo.getName());
+        holder.creatingDateTxt.setText(new SimpleDateFormat("HH:mm \n dd-MM-yyyy").format(testInfo.getDateCreation()));
+        holder.infoTestTxt.setText(someInfo);
         imgTest.setImageResource(R.drawable.ic_launcher_foreground);
-        // TODO: !!!!!!!!! Брать ссылку из клааса.
-        //imgTest.setImageResource(R.drawable.ic_menu_name_test);
 
+        if (testInfo.getPathToImg() != null) {
+            storageRef.child(testInfo.getPathToImg()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    // Got the download URL
+                    Glide.with(context)
+                            .load(uri)
+                            .into(imgTest);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
 
-        storageRef.child("myImage.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                // Got the download URL
-                Glide.with(context)
-                        .load(uri)
-                        .into(imgTest);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-//                imgTest.setImageResource(R.drawable.ic_launcher_foreground);
-            }
-        });
+                }
+            });
+        }
     }
-
-//    public void addMoreTests(List<SelectingTestView> newContacts) {
-//        testsLst.addAll(newContacts);
-//        submitList(testsLst); // DiffUtil takes care of the check
-//    }
 
     @Override
     public int getItemCount() {
-        return testsLst.size();
+        return testInfos.size();
     }
 
 //    private void uploadImage(String nameImage)

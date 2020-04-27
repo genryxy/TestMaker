@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Interface.NameTestCallBack;
+import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Model.SelectingTestView;
+import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.R;
 
 import java.util.ArrayList;
@@ -44,14 +45,10 @@ public class SelectingTestFragment extends Fragment {
         final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
         testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         OnlineDBHelper.getInstance(getContext())
-                .getNamesTest(new NameTestCallBack() {
+                .getTestInfos(new TestInfoCallBack() {
                     @Override
-                    public void setNamesToAdapter(List<String> namesTestLst, List<String> categoriesLst) {
-                        List<SelectingTestView> lstTests = new ArrayList<>();
-                        for (int i = 0; i < namesTestLst.size(); i++) {
-                            lstTests.add(new SelectingTestView(namesTestLst.get(i), categoriesLst.get(i), ""));
-                        }
-                        SelectingTestAdapter adapter = new SelectingTestAdapter(lstTests);
+                    public void setInfosToAdapter(List<TestInfo> testInfos) {
+                        SelectingTestAdapter adapter = new SelectingTestAdapter(testInfos);
                         testsRecycler.setAdapter(adapter);
                         if (dialog.isShowing()) {
                             dialog.dismiss();

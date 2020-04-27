@@ -21,8 +21,8 @@ import java.util.List;
 
 public class ResultGridAdapter extends RecyclerView.Adapter<ResultGridAdapter.MyViewHolder> {
 
-    Context context;
-    List<CurrentQuestion> currentQuestionsLst;
+    private Context context;
+    private  List<CurrentQuestion> currentQuestionsLst;
 
     public ResultGridAdapter(Context context, List<CurrentQuestion> answerSheetList) {
         this.context = context;

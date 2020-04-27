@@ -57,10 +57,10 @@ public class DBHelper extends SQLiteAssetHelper {
     /**
      * Get 30 questions from DB by category
      */
-    public List<QuestionModel> getQuestionsByCategory(Category category) {
+    public List<QuestionModel> getQuestionsByCategory(int categoryID) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", category.getId()), null);
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", categoryID), null);
         List<QuestionModel> questions = new ArrayList<>();
         String answer;
         if (cursor.moveToFirst()) {

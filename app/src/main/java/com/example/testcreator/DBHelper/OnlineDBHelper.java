@@ -8,12 +8,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
-import com.example.testcreator.Interface.NameTestCallBack;
+import com.example.testcreator.Interface.ResultCallBack;
+import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Interface.ThemesCallBack;
 import com.example.testcreator.Model.CategoryFirebase;
+import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Model.ResultTest;
+import com.example.testcreator.Model.ResultTestFirebase;
+import com.example.testcreator.Model.TestInfo;
+import com.example.testcreator.Model.TestInfoFirebase;
 import com.example.testcreator.QuestionActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,15 +34,18 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
-public class OnlineDBHelper {
+public class OnlineDBHelper implements FireBaseConnections {
 
     public static final String TAG = "OnlineDBHelper";
 
-    private FirebaseFirestore firebaseFirestore;
+    private FirebaseFirestore db;
     private Context context;
     private String categoryName;
 
@@ -51,7 +61,7 @@ public class OnlineDBHelper {
 
     private OnlineDBHelper(Context context) {
         this.context = context;
-        this.firebaseFirestore = FirebaseFirestore.getInstance();
+        this.db = FirebaseFirestore.getInstance();
     }
 
     public void getQuestionsByCategory(final MyCallBack myCallBack, final int categoryID) {
@@ -67,7 +77,7 @@ public class OnlineDBHelper {
         }
 
         categoryName = Common.getNameCategoryByID(categoryID);
-        firebaseFirestore.collection("themes")
+        db.collection("themes")
                 .document(categoryName)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -94,9 +104,127 @@ public class OnlineDBHelper {
                 });
     }
 
-    /**
-     * @param themesCallBack
-     */
+    public void getQuestionsByTest(final MyCallBack myCallBack, final String nameTest) {
+        final AlertDialog dialog = new SpotsDialog.Builder()
+                .setContext(context)
+                .setCancelable(false)
+                .build();
+
+        if (!((QuestionActivity) context).isFinishing()) {
+            if (!dialog.isShowing()) {
+                dialog.show();
+            }
+        }
+
+        db.collection("tests")
+                .document(nameTest)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
+
+                        if (questionFirebase != null && questionFirebase.getQuestions() != null) {
+                            myCallBack.setQuestionList(questionFirebase.getQuestions());
+                        } else {
+                            myCallBack.setQuestionList(new ArrayList<QuestionModel>());
+                        }
+
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void getQuestionsByResult(final String key, final ResultCallBack resCallBack) {
+        final AlertDialog dialog = new SpotsDialog.Builder()
+                .setContext(context)
+                .setCancelable(false)
+                .build();
+
+        if (!((QuestionActivity) context).isFinishing()) {
+            if (!dialog.isShowing()) {
+                dialog.show();
+            }
+        }
+        final String keyName = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
+
+        db.collection("users")
+                .document(keyName)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ResultTestFirebase resFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
+                        if (resFirebase != null && resFirebase.getTotalCount() != 0) {
+                            resCallBack.setQuestionList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getQuestionLst()));
+                            resCallBack.setUserAnswerList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getAnswerSheetLst()));
+                        } else {
+                            resCallBack.setQuestionList(new ArrayList<QuestionModel>());
+                            resCallBack.setUserAnswerList(new ArrayList<CurrentQuestion>());
+                        }
+
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void saveResultToDatabase(final ResultTest resultTest) {
+        String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
+        final DocumentReference docIdRef = db.collection("users").document(keyUser);
+        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Если у пользователя не было пройденных тестов, то создаём экземпляр ResultTestFirebase
+                    //  и добавляем его. Иначе просто добавляем в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        ResultTestFirebase result = document.toObject(ResultTestFirebase.class);
+                        int newCount = result.getTotalCount() + 1;
+                        result.setTotalCount(newCount);
+                        resultTest.setResultID(newCount);
+                        result.getResultTestsMap().put(String.valueOf(newCount), resultTest);
+                        docIdRef.set(result);
+                    } else {
+                        Map<String, ResultTest> mapResult = new HashMap<>();
+                        resultTest.setResultID(1);
+                        mapResult.put("1", resultTest);
+                        ResultTestFirebase resultTestFirebase = new ResultTestFirebase();
+                        resultTestFirebase.setResultTestsMap(mapResult);
+                        resultTestFirebase.setTotalCount(1);
+                        docIdRef.set(resultTestFirebase)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error adding document", e);
+                                        Toast.makeText(context, "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+
     public void getCategories(final ThemesCallBack themesCallBack) {
 //        CategoryFirebase categoryFirebase = new CategoryFirebase();
 //        List<Category> cat = new ArrayList<>();
@@ -104,11 +232,11 @@ public class OnlineDBHelper {
 //        cat.add(new Category(2, "Geography", null));
 //        categoryFirebase.setCategoryList(cat);
 //
-//        firebaseFirestore.collection("themes")
+//        db.collection("themes")
 //                .document("categoryID")
 //                .set(categoryFirebase);
 
-        firebaseFirestore.collection("themes")
+        db.collection("themes")
                 .document("categoryID")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -118,47 +246,53 @@ public class OnlineDBHelper {
                         themesCallBack.setThemes(categoryFirebase.getCategoryList());
 
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Failed with: ", e.fillInStackTrace());
+                    }
                 });
-
-
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                if (!document.getId().equals("categoryID")) {
-//                                    themesLst.add(new Category(document.getId(), ""));
-//                                }
-////                                Log.d(TAG, document.getId() + " => " + document.getData());
-//                            }
-//                            themesCallBack.setThemes(themesLst);
-//                        }
-//                    }
-//                });
     }
 
-    public void getNamesTest(final NameTestCallBack namesCallBack) {
-        final List<String> namesTestLst = new ArrayList<>();
-        final List<String> categoriesLst = new ArrayList<>();
-        firebaseFirestore.collection("tests")
+    public void getTestInfos(final TestInfoCallBack infosCallBack) {
+        db.collection("tests").document("testInfo")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (!document.getId().equals("tests_names")
-                                        && !document.getId().equals("tests") && !document.getId().equals("hereTestsName")) {
-                                    namesTestLst.add(document.getId());
-                                    QuestionFirebase questionFirebase = document.toObject(QuestionFirebase.class);
-                                    String categoryName = Common.getNameCategoryByID(
-                                            questionFirebase.getQuestions().get(0).getCategoryID());
-                                    categoriesLst.add(categoryName);
-                                }
-//                                Log.d(TAG, document.getId() + " => " + document.getData());
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        TestInfoFirebase infoFirebase = documentSnapshot.toObject(TestInfoFirebase.class);
+                        infosCallBack.setInfosToAdapter(infoFirebase.getTestInfos());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Failed with: ", e.fillInStackTrace());
+                    }
+                });
+    }
+
+    public void putNamesTestToSet() {
+        Common.namesTestSet.clear();
+        db.collection("tests")
+                .document("testInfo")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        TestInfoFirebase testInfoFirebase = documentSnapshot.toObject(TestInfoFirebase.class);
+                        if (testInfoFirebase != null) {
+                            for (TestInfo test : testInfoFirebase.getTestInfos()) {
+                                Common.namesTestSet.add(test.getName());
                             }
-                            namesCallBack.setNamesToAdapter(namesTestLst, categoriesLst);
                         }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "Failed with: ", e.fillInStackTrace());
                     }
                 });
     }
@@ -188,6 +322,39 @@ public class OnlineDBHelper {
                         QuestionFirebase questionsFirebase = new QuestionFirebase(questions);
 
                         docRef.set(questionsFirebase)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error adding document", e);
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void saveTestInfo(final String name, final String pathToImg, final int categoryID) {
+        final DocumentReference docRef = db.collection("tests").document("testInfo");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    TestInfo testInfo = new TestInfo(name, categoryID, null, pathToImg,
+                            authFrbs.getCurrentUser().getEmail(), new Date());
+                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
+                    // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        docRef.update("testInfos", FieldValue.arrayUnion(testInfo));
+                    } else {
+                        List<TestInfo> testInfos = new ArrayList<>();
+                        testInfos.add(testInfo);
+                        TestInfoFirebase infoFirebase = new TestInfoFirebase(testInfos);
+
+                        docRef.set(infoFirebase)
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {

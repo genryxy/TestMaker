@@ -18,7 +18,6 @@ import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
-import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -42,11 +41,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private String nameImage;
     private int categoryID;
     private String questionText;
-    private int keyNameTest;
     private int questionNumber;
     private int answersNumber;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private QuestionFirebase questionsFirebase;
 
     // Словарь, состоящий из пар (номер вопроса, вариант ответа).
     private Map<Integer, String> lettersMap = new HashMap<>();
@@ -193,7 +190,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
         categoryID = prevIntent.getIntExtra("categoryID", 1);
-        keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
     }
 
     /**
@@ -248,7 +244,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         final DocumentReference docRefTheme = db.collection("themes")
                 .document(Common.getNameCategoryByID(categoryID));
         final QuestionModel questionModelTheme = createQuestion(rightAns.second);
-        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModelTheme );
+        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModelTheme);
     }
 
     /**
@@ -272,6 +268,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     return;
                 }
                 saveQuestionToDB(rightAns, true);
+                OnlineDBHelper.getInstance(null).saveTestInfo(nameTest, nameImage, categoryID);
                 Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
             }
@@ -299,7 +296,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
                 newIntent.putExtra("questionNumber", questionNumber + 1);
                 newIntent.putExtra("nameTestEdt", nameTest);
-                newIntent.putExtra("keyNameTestEdt", keyNameTest);
+                newIntent.putExtra("nameImage", nameImage);
                 newIntent.putExtra("categoryID", categoryID);
                 startActivity(newIntent);
             }

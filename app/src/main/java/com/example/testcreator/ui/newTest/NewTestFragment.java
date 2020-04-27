@@ -53,8 +53,6 @@ import static android.app.Activity.RESULT_OK;
 public class NewTestFragment extends Fragment implements FireBaseConnections {
     private final String TAG = "FAILURE NewTestFragment";
 
-    private volatile Integer testsNumber;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private Button saveNameTestBtn;
     private EditText nameTestEdt;
     private Button chooseImageBtn;
@@ -63,19 +61,6 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private String nameImage;
     private StringBuilder categoryName = new StringBuilder();
     private Spinner themesSpinner;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        CountDownLatch downLatch = new CountDownLatch(1);
-        new CountTests(downLatch);
-        try {
-            // Ждём, пока не произойдёт событие.
-            downLatch.await();
-        } catch (InterruptedException e) {
-            Log.w("FAILURE", "Error CountDownLatch", e);
-        }
-    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -93,6 +78,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         themesSpinner = root.findViewById(R.id.themesSpinner);
 
         addSpinnerAdapter();
+        saveNameTestBtnOnClickListen();
         themesSpinner.setOnItemSelectedListener(new SpinnerOnItemSelectedListener(categoryName));
         chooseImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,12 +97,6 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_dropdown_item, themesLstStr);
         themesSpinner.setAdapter(adapter);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        saveNameTestBtnOnClickListen();
     }
 
     @Override
@@ -201,7 +181,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
 
     private void chooseImage() {
         Intent intent = new Intent();
-        intent.setType("image/'");
+//        intent.setType("image/'");
+        intent.setType("image/");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 1);
     }
@@ -220,155 +201,28 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                     nameImage = System.currentTimeMillis() + "." + getExtension(imgUri);
                     uploadImage(nameImage);
                 }
-                CountDownLatch downLatch = new CountDownLatch(1);
-                new CountTests(downLatch);
-                try {
-                    // Ждём, пока не произойдёт событие.
-                    downLatch.await();
-                } catch (InterruptedException e) {
-                    Log.w(TAG, "Error CountDownLatch", e);
-                    return;
-                }
 
-                db.collection("tests")
-                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (nameTestEdt.getText().toString().length() == 0) {
-                            nameTestEdt.setError("Небходимо заполнить это поле");
-                            nameTestEdt.requestFocus();
-                        } else if (task.isSuccessful()) {
-                            for (DocumentSnapshot docSnapshot : task.getResult().getDocuments()) {
-                                if (docSnapshot.getId().equals("tests_names")) {
-                                    if (docSnapshot.getData().values()
-                                            .contains(nameTestEdt.getText().toString())) {
-                                        nameTestEdt.setError("Тест с таким названием уже существует");
-                                        nameTestEdt.requestFocus();
-                                    } else if (testsNumber != null) {
-                                        CountDownLatch downLatch2 = new CountDownLatch(1);
-                                        new UpdateDataBase(downLatch2, nameTestEdt);
-                                        try {
-                                            // Ждём, пока не произойдёт событие.
-                                            downLatch2.await();
-                                        } catch (InterruptedException e) {
-                                            Log.w(TAG, "Error CountDownLatch", e);
-                                            return;
-                                        }
-                                        Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
-                                        newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
-                                        newIntent.putExtra("categoryName", categoryName.toString());
-                                        newIntent.putExtra("keyNameTestEdt", Integer.valueOf(testsNumber + 1));
-                                        newIntent.putExtra("nameImage", nameImage);
-//                                        Toast.makeText(getContext(), "name" + testsNumber, Toast.LENGTH_SHORT).show();
-                                        startActivity(newIntent);
-                                    }
-                                    break;
-                                }
-                            }
-                        } else {
-                            Log.w(TAG, "Error adding document", task.getException());
-                            Toast.makeText(getContext(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
+                if (nameTestEdt.getText().toString().length() == 0) {
+                    nameTestEdt.setError("Небходимо заполнить это поле");
+                    nameTestEdt.requestFocus();
+                } else if (Common.namesTestSet.contains(nameTestEdt.getText().toString())) {
+                    nameTestEdt.setError("Тест с таким названием уже существует");
+                    nameTestEdt.requestFocus();
+                } else {
+                    int categoryID = 1;
+                    for (int i = 0; i < Common.categoryLst.size(); i++) {
+                        if (Common.categoryLst.get(i).getName().equals(categoryName.toString())) {
+                            categoryID = Common.categoryLst.get(i).getId();
+                            break;
                         }
                     }
-                });
+                    Intent newIntent = new Intent(getActivity(), QuestionsCreatingActivity.class);
+                    newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
+                    newIntent.putExtra("categoryID", categoryID);
+                    newIntent.putExtra("nameImage", nameImage);
+                    startActivity(newIntent);
+                }
             }
         });
-    }
-
-    /**
-     * Класс для обращения к FireBase в другом потоке.
-     * Нужен, чтобы можно было отправить в режим ожидания основной
-     * поток до тех пор, пока не произойдёт одно (или больше) событие.
-     */
-    class CountTests implements Runnable {
-        CountDownLatch latch;
-
-        /**
-         * Конструктор класса.
-         *
-         * @param downLatch Экземпляр класса для снятия самоблокировки
-         *                  пссле определенного числа событий.
-         */
-        CountTests(CountDownLatch downLatch) {
-            latch = downLatch;
-            new Thread(this).start();
-        }
-
-        public void run() {
-            // Считываем количество тестов в БД для создания ключа.
-            db.collection("tests")
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        for (DocumentSnapshot docSnapshot : task.getResult().getDocuments()) {
-                            if (docSnapshot.getId().equals("tests")) {
-                                testsNumber = Integer.valueOf(docSnapshot.getData().get("testsNumber").toString());
-                                //Toast.makeText(getActivity(), testsNumber.toString(), Toast.LENGTH_SHORT).show();
-                                break;
-                            }
-                        }
-                    } else {
-                        Log.w(TAG, "Error adding document", task.getException());
-                        //Toast.makeText(getContext(), "FAILURE", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-            // Изещаем о том, что произошло событие.
-            latch.countDown();
-        }
-    }
-
-    /**
-     * Класс для обращения к FireBase в другом потоке.
-     * Нужен, чтобы можно было отправить в режим ожидания основной
-     * поток до тех пор, пока не произойдёт одно (или больше) событие.
-     */
-    class UpdateDataBase implements Runnable {
-        CountDownLatch latch;
-        private EditText nameTestEdt;
-
-        /**
-         * Конструктор класса.
-         *
-         * @param downLatch Экземпляр класса для снятия самоблокировки
-         *                  пссле определенного числа событий.
-         */
-        UpdateDataBase(CountDownLatch downLatch, EditText nameTestEdt) {
-            latch = downLatch;
-            this.nameTestEdt = nameTestEdt;
-            new Thread(this).start();
-        }
-
-        public void run() {
-            Map<String, String> data = new HashMap<>();
-            data.put("name" + testsNumber, nameTestEdt.getText().toString());
-            db.collection("tests").document("tests_names")
-                    .set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Toast.makeText(getActivity(), "Название добавлено", Toast.LENGTH_SHORT).show();
-                    Map<String, Object> dataNumb = new HashMap<>();
-                    dataNumb.put("testsNumber", testsNumber + 1);
-                    db.collection("tests").document("tests")
-                            .update(dataNumb)
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error updating testsNumber", e);
-                                }
-                            });
-                }
-            })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error adding testName", e);
-                            Toast.makeText(getActivity(), "Не удалось добавить", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-            // Изещаем о том, что произошло событие.
-            latch.countDown();
-        }
     }
 }

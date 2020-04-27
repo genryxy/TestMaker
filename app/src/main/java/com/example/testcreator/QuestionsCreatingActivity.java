@@ -32,8 +32,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
 
     private String nameTest;
     private String nameImage;
-    private String categoryName;
-    private int keyNameTest;
+    private int categoryID;
     private TextView numberQuestionTxt;
     private RadioGroup typeAnsRadioGroup;
     private EditText questionTextEdt;
@@ -65,7 +64,6 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         builder.setMessage("Изменения не будут сохранены! Создаваемый тест будет удалён!");
         builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                removeNameTestFromDataBase();
                 startActivity(new Intent(QuestionsCreatingActivity.this, MainActivity.class));
                 //QuestionsCreatingActivity.super.onBackPressed();
             }
@@ -120,8 +118,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         Intent prevIntent = getIntent();
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
-        keyNameTest = prevIntent.getIntExtra("keyNameTestEdt", 1);
-        categoryName = prevIntent.getStringExtra("categoryName");
+        categoryID = prevIntent.getIntExtra("categoryID", 1);
     }
 
     private void setCreatingAnswersBtnClickListener() {
@@ -131,11 +128,10 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
                 Intent newIntent = new Intent(QuestionsCreatingActivity.this, AnswersCreatingActivity.class);
                 newIntent.putExtra("nameTestEdt", nameTest);
                 newIntent.putExtra("nameImage", nameImage);
-                newIntent.putExtra("keyNameTestEdt", keyNameTest);
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
                 newIntent.putExtra("questionNumber", questionNumber);
-                newIntent.putExtra("categoryName", categoryName);
+                newIntent.putExtra("categoryID", categoryID);
                 if (answersNumberEdt.getText().toString().length() == 0) {
                     newIntent.putExtra("answersNumberEdt", "4");
                     startActivity(newIntent);
@@ -156,54 +152,43 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
      * то необходимо удалить название из БД и поменять количество тестов,
      * содержащихся в БД.
      */
-    private void removeNameTestFromDataBase() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("tests").document("tests_names");
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name" + Integer.valueOf(keyNameTest - 1).toString(), FieldValue.delete());
-        docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                //Toast.makeText(QuestionsCreatingActivity.this, "удалили название", Toast.LENGTH_SHORT).show();
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error removing nameTest", e);
-                        //Toast.makeText(QuestionsCreatingActivity.this, "не удалось удалить", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        Map<String, Object> dataNumb = new HashMap<>();
-        dataNumb.put("testsNumber", keyNameTest - 1);
-        db.collection("tests").document("tests")
-                .update(dataNumb)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error updating testsNumber", e);
-                    }
-                });
-
-        db.collection("tests").document(nameTest)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(QuestionsCreatingActivity.this, "Тест был успешно удален",
-                                Toast.LENGTH_SHORT).show();
+//    private void removeNameTestFromDataBase() {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        DocumentReference docRef = db.collection("tests").document("tests_names");
+//
+//        Map<String, Object> updates = new HashMap<>();
+//        updates.put("name" + Integer.valueOf(keyNameTest - 1).toString(), FieldValue.delete());
+//        docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+//            @Override
+//            public void onComplete(@NonNull Task<Void> task) {
+//                //Toast.makeText(QuestionsCreatingActivity.this, "удалили название", Toast.LENGTH_SHORT).show();
+//            }
+//        })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "Error removing nameTest", e);
+//                        //Toast.makeText(QuestionsCreatingActivity.this, "не удалось удалить", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//
+//        db.collection("tests").document(nameTest)
+//                .delete()
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Toast.makeText(QuestionsCreatingActivity.this, "Тест был успешно удален",
+//                                Toast.LENGTH_SHORT).show();
 //                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(QuestionsCreatingActivity.this, "Не удалось удалить тест",
-                                Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(QuestionsCreatingActivity.this, "Не удалось удалить тест",
+//                                Toast.LENGTH_SHORT).show();
 //                                Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-    }
+//                    }
+//                });
+//    }
 }

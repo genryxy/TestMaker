@@ -31,10 +31,11 @@ import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
+import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
-import com.example.testcreator.Model.UserResults;
+import com.example.testcreator.Model.ResultTestFirebase;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,9 +45,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
@@ -72,7 +76,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-        setTitle(Common.selectedCategory.getName());
+        setTitle(Common.getNameCategoryByID(Common.selectedCategory));
 
         if (getIntent().hasExtra("isAnswerModeView")) {
             if (getIntent().getStringExtra("isAnswerModeView").equals("true")) {
@@ -81,6 +85,74 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
         // Получить вопросы из БД и установить их.
         getAndSetupQuestions();
+    }
+
+    /**
+     * Метод для получения вопросов из БД и их вывода на экран.
+     */
+    private void getAndSetupQuestions() {
+        if (isAnswerModeView) {
+            getAndSetupQuestionFromUserResult();
+        } else {
+            getAndSetupQuestionsFromStorage();
+        }
+    }
+
+    private void getAndSetupQuestionFromUserResult() {
+        OnlineDBHelper.getInstance(this)
+                .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
+                    @Override
+                    public void setQuestionList(List<QuestionModel> questionList) {
+                        Common.questionLst.clear();
+                        Common.questionLst = questionList;
+                        addQuestionToCommonAnswerSheetAdapter();
+                        // Устанавливаем в коллбэке вопросы.
+                        setupQuestion();
+                    }
+
+                    @Override
+                    public void setUserAnswerList(List<CurrentQuestion> answerLst) {
+                        Common.answerSheetList.clear();
+                        Common.answerSheetList = answerLst;
+                    }
+                });
+    }
+
+    private void getAndSetupQuestionsFromStorage() {
+        // Подгружаем вопросы по категории или по названию теста.
+        // В зависимости от способа перехода пользователя сюда.
+        if (Common.selectedTest != null) {
+            OnlineDBHelper.getInstance(this)
+                    .getQuestionsByTest(new MyCallBack() {
+                        @Override
+                        public void setQuestionList(List<QuestionModel> questionList) {
+                            Common.questionLst.clear();
+                            Common.questionLst = questionList;
+                            addQuestionToCommonAnswerSheetAdapter();
+                            // Устанавливаем в коллбэке вопросы.
+                            setupQuestion();
+                        }
+                    }, Common.selectedTest);
+        } else {
+            if (!Common.isOnlineMode) {
+                Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
+                addQuestionToCommonAnswerSheetAdapter();
+                setupQuestion();
+            } else {
+                OnlineDBHelper.getInstance(this)
+                        .getQuestionsByCategory(new MyCallBack() {
+                            @Override
+                            public void setQuestionList(List<QuestionModel> questionList) {
+                                Common.questionLst.clear();
+                                Common.questionLst = questionList;
+                                addQuestionToCommonAnswerSheetAdapter();
+                                // Устанавливаем в коллбэке вопросы.
+                                setupQuestion();
+                            }
+                        }, Common.selectedCategory);
+
+            }
+        }
     }
 
     /**
@@ -146,40 +218,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
         final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
-                questionLst, answerSheetList, Common.selectedTest.getName(),
-                Common.selectedCategory.getName(), getFinalResult(), String.valueOf(Common.wrongAnswerCount));
-        final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
-
-        final DocumentReference docIdRef = db.collection("users").document(keyUser);
-        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // Если у пользователя ещё не было пройденных тестов,
-                    // то создаём экземпляр класса UserResults и добавляем его.
-                    // Иначе просто добавляем в существующую коллекцию.
-                    if (document != null && document.exists()) {
-                        docIdRef.update("resultTestsLst", FieldValue.arrayUnion(resultTest));
-                    } else {
-                        UserResults userResults = new UserResults();
-                        userResults.getResultTestsLst().add(resultTest);
-
-                        docIdRef.set(userResults)
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error adding document", e);
-                                        Toast.makeText(QuestionActivity.this,
-                                                "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else {
-                    Log.d(TAG, "Failed with: ", task.getException());
-                }
-            }
-        });
+                questionLst, answerSheetList, Common.selectedTest,
+                Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
+        OnlineDBHelper.getInstance(this).saveResultToDatabase(resultTest);
     }
 
     private String getFinalResult() {
@@ -227,39 +268,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         Common.countDownTimer.start();
     }
 
-    /**
-     * Метод для получения вопросов из БД и их вывода на экран.
-     */
-    private void getAndSetupQuestions() {
-        if (!isAnswerModeView) {
-            if (!Common.isOnlineMode) {
-                Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
-                addQuestionToCommonAnswerSheetAdapter();
-                setupQuestion();
-            } else {
-                OnlineDBHelper.getInstance(this)
-                        .getQuestionsByCategory(new MyCallBack() {
-                            @Override
-                            public void setQuestionList(List<QuestionModel> questionList) {
-                                Common.questionLst.clear();
-                                Common.questionLst = questionList;
-                                addQuestionToCommonAnswerSheetAdapter();
-                                // Устанавливаем в коллбэке вопросы.
-                                setupQuestion();
-                            }
-                        }, Common.selectedCategory.getId());
-            }
-        } else {
-            setupQuestion();
-        }
-    }
-
     private void addQuestionToCommonAnswerSheetAdapter() {
         if (Common.questionLst.size() == 0) {
             new MaterialStyledDialog.Builder(this)
                     .setTitle("Opppps!")
                     .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
-                    .setDescription("We don't have any question in " + Common.selectedCategory.getName())
+                    .setDescription("We don't have any question in " + Common.getNameCategoryByID(Common.selectedCategory))
                     .setPositiveText("Ok")
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
