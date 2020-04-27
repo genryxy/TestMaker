@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.QuestionActivity;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -54,13 +55,11 @@ public class DBHelper extends SQLiteAssetHelper {
         return categories;
     }
 
-    /**
-     * Get 30 questions from DB by category
-     */
     public List<QuestionModel> getQuestionsByCategory(int categoryID) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d ORDER BY RANDOM() LIMIT 30", categoryID), null);
+        Cursor cursor = db.rawQuery(String.format("SELECT * FROM Question WHERE CategoryId = %d LIMIT %d",
+                categoryID, QuestionActivity.NUMBER_QUESTION), null);
         List<QuestionModel> questions = new ArrayList<>();
         String answer;
         if (cursor.moveToFirst()) {

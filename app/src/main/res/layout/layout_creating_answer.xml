@@ -21,13 +21,13 @@
         android:layout_weight="13"
         android:ems="10"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
-        android:text="@string/answerText" />
+        android:hint="@string/answerText"
+        android:inputType="textMultiLine" />
 
     <ImageButton
         android:id="@+id/deleteItemBtn"
-        android:background="@drawable/ic_delete_forever"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="44" />
+        android:layout_weight="44"
+        android:background="@drawable/ic_delete_forever" />
 </LinearLayout>

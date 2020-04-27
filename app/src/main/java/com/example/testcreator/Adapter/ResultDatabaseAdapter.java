@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
@@ -50,34 +51,12 @@ public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAd
             holder.nameTestViewTxt.setText(userResult.getNameTest());
         }
 
-        holder.categoryTestViewTxt.setText(Common.getNameCategoryByID(userResult.getCategoryID()));
-        holder.timeTestTxt.setText(convertToNormalForm(userResult.getDuration()));
+        holder.categoryTestViewTxt.setText(Utils.getNameCategoryByID(userResult.getCategoryID()));
+        holder.timeTestTxt.setText(Utils.convertToNormalForm(Long.valueOf(userResult.getDuration())));
         holder.resultTestTxt.setText(userResult.getFinalScore());
     }
 
-    /**
-     * Конвертирует миллисекунды в нормальное представление времени.
-     *
-     * @param duration Продолжительность в миллисекундах.
-     * @return чч:мм:сс (если чч == 0, то часы опускаются).
-     */
-    private String convertToNormalForm(String duration) {
-        long millis = Long.valueOf(duration);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-
-        StringBuilder resTime = new StringBuilder();
-        if (hours != 0) {
-            resTime.append(String.format("%02d:", hours));
-        }
-        resTime.append(String.format("%02d:%02d", minutes, seconds));
-        return resTime.toString();
-    }
-
-    @Override
+        @Override
     public int getItemCount() {
         return resultTests.size();
     }

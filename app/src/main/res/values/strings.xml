@@ -20,6 +20,7 @@
     <string name="menu_logout">Выход</string>
     <string name="nameTest">Название теста</string>
     <string name="continueCreating">Продолжить создание</string>
+    <string name="inputNewCategory">Новая тема</string>
     <string name="questionText">Формулировка вопроса</string>
     <string name="selectTypeAnswer">Выберите тип ответа на вопрос</string>
     <string name="typeOneOrManyAnswer">Один или несколько правильных ответов</string>
@@ -41,6 +42,8 @@
     <string name="time">Время</string>
     <string name="result">Итог</string>
     <string name="theme">Тема: </string>
+    <string name="onlineMode">Онлайн-режим</string>
+    <string name="shuffleMode">Перемешать вопросы</string>
     <string name="clickToPick">Нажмите, чтобы выбрать картинку </string>
 
     <!-- TODO: Remove or change this placeholder text -->

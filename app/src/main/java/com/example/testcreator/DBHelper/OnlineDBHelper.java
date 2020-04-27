@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Interface.ThemesCallBack;
+import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.CategoryFirebase;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionFirebase;
@@ -31,13 +33,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.base.MoreObjects;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -48,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
-import io.opencensus.common.ToDoubleFunction;
 
 public class OnlineDBHelper implements FireBaseConnections {
 
@@ -85,7 +83,7 @@ public class OnlineDBHelper implements FireBaseConnections {
             }
         }
 
-        categoryName = Common.getNameCategoryByID(categoryID);
+        categoryName = Utils.getNameCategoryByID(categoryID);
         db.collection("themes")
                 .document(categoryName)
                 .get()
@@ -313,7 +311,7 @@ public class OnlineDBHelper implements FireBaseConnections {
      *                      относится к вопросу (формулировка, тема вопроса, ответы,
      *                      тип вопроса).
      */
-    public void saveQuestionByCategoryAndTest(final DocumentReference docRef, final QuestionModel questionModel) {
+    public void saveQuestionDB(final DocumentReference docRef, final QuestionModel questionModel) {
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -344,7 +342,15 @@ public class OnlineDBHelper implements FireBaseConnections {
         });
     }
 
-    public void saveTestInfo(final String name, final String pathToImg, final int categoryID) {
+    /**
+     * Метод для сохранения информации о созданном тесте в БД по переданной ссылке.
+     *
+     * @param name       Название теста.
+     * @param pathToImg  Строка, содержащая путь до картинки, которая является "логотипом"
+     *                   теста. null - если нет картинки
+     * @param categoryID Число, показывающее к какой категории относится созданный тест.
+     */
+    public void saveTestInfoDB(final String name, final String pathToImg, final int categoryID) {
         final DocumentReference docRef = db.collection("tests").document("testInfo");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -377,7 +383,12 @@ public class OnlineDBHelper implements FireBaseConnections {
         });
     }
 
-    public void saveResultToDatabase(final ResultTest resultTest) {
+    /**
+     * Метод для сохранения результатов прохождения теста пользователем в БД.
+     *
+     * @param resultTest Класс для хранения результата за конкретный тест, пройденный пользователем.
+     */
+    public void saveResultDB(final ResultTest resultTest) {
         String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         final DocumentReference docIdRef = db.collection("users").document(keyUser);
         docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -407,6 +418,37 @@ public class OnlineDBHelper implements FireBaseConnections {
                                     public void onFailure(@NonNull Exception e) {
                                         Log.w(TAG, "Error adding document", e);
                                         Toast.makeText(context, "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void saveCategoryDB(final Category newCategory) {
+        final DocumentReference docRef = db.collection("themes").document("categoryID");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
+                    // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        docRef.update("categoryList", FieldValue.arrayUnion(newCategory));
+                    } else {
+                        List<Category> categoryLst = new ArrayList<>();
+                        categoryLst.add(newCategory);
+                        CategoryFirebase categoryFirebase = new CategoryFirebase(categoryLst);
+
+                        docRef.set(categoryFirebase)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error adding document", e);
                                     }
                                 });
                     }

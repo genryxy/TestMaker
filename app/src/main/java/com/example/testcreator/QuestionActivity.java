@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +25,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Adapter.AnswerSheetAdapter;
 import com.example.testcreator.Adapter.QuestionFragmentAdapter;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.DBHelper;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
@@ -35,26 +35,19 @@ import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
-import com.example.testcreator.Model.ResultTestFirebase;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
+    public static final int NUMBER_QUESTION = 30;
     public static final String TAG = "QuestionActivity";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -76,7 +69,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-        setTitle(Common.getNameCategoryByID(Common.selectedCategory));
+        setTitle(Utils.getNameCategoryByID(Common.selectedCategory));
 
         if (getIntent().hasExtra("isAnswerModeView")) {
             if (getIntent().getStringExtra("isAnswerModeView").equals("true")) {
@@ -127,6 +120,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         @Override
                         public void setQuestionList(List<QuestionModel> questionList) {
                             Common.questionLst.clear();
+                            if (Common.isShuffleMode) {
+                                Collections.shuffle(questionList);
+                            }
                             Common.questionLst = questionList;
                             addQuestionToCommonAnswerSheetAdapter();
                             // Устанавливаем в коллбэке вопросы.
@@ -136,6 +132,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         } else {
             if (!Common.isOnlineMode) {
                 Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
+                if (Common.isShuffleMode) {
+                    Collections.shuffle(Common.questionLst);
+                }
                 addQuestionToCommonAnswerSheetAdapter();
                 setupQuestion();
             } else {
@@ -144,13 +143,21 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                             @Override
                             public void setQuestionList(List<QuestionModel> questionList) {
                                 Common.questionLst.clear();
-                                Common.questionLst = questionList;
+                                if (Common.isShuffleMode) {
+                                    Collections.shuffle(questionList);
+                                }
+                                if (questionList.size() > NUMBER_QUESTION) {
+                                    for (int i = 0; i < NUMBER_QUESTION; i++) {
+                                        Common.questionLst.add(questionList.get(i));
+                                    }
+                                } else {
+                                    Common.questionLst = questionList;
+                                }
                                 addQuestionToCommonAnswerSheetAdapter();
                                 // Устанавливаем в коллбэке вопросы.
                                 setupQuestion();
                             }
                         }, Common.selectedCategory);
-
             }
         }
     }
@@ -220,7 +227,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
                 questionLst, answerSheetList, Common.selectedTest,
                 Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
-        OnlineDBHelper.getInstance(this).saveResultToDatabase(resultTest);
+        OnlineDBHelper.getInstance(this).saveResultDB(resultTest);
     }
 
     private String getFinalResult() {
@@ -253,10 +260,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             @Override
             public void onTick(long millisUntilFinished) {
                 // Переводит в формат: мм::сс
-                timerTxt.setText(String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                        TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                                TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
+                timerTxt.setText(Utils.convertToNormalForm(millisUntilFinished));
                 timePlay -= 1000;
             }
 
@@ -273,7 +277,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             new MaterialStyledDialog.Builder(this)
                     .setTitle("Opppps!")
                     .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
-                    .setDescription("We don't have any question in " + Common.getNameCategoryByID(Common.selectedCategory))
+                    .setDescription("We don't have any question in " + Utils.getNameCategoryByID(Common.selectedCategory))
                     .setPositiveText("Ok")
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -286,7 +290,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             if (Common.answerSheetList.size() > 0) {
                 Common.answerSheetList.clear();
             }
-            // Generate 30 answer sheet items from 30 questions
             for (int i = 0; i < Common.questionLst.size(); i++) {
                 // Take index of question in List.
                 Common.answerSheetList.add(new CurrentQuestion(i, Common.AnswerType.NO_ANSWER));
@@ -321,6 +324,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             viewPager.setPageTransformer(true, new ScaleInOutTransformer());
             tabLayout.setupWithViewPager(viewPager);
             addViewPagerOnChangeListener();
+
+            Common.isShuffleMode = false;
         }
     }
 

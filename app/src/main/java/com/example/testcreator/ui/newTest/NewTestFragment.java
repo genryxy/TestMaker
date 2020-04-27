@@ -21,11 +21,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
+import com.example.testcreator.Model.Category;
 import com.example.testcreator.QuestionsCreatingActivity;
 import com.example.testcreator.R;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +42,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private final String TAG = "FAILURE NewTestFragment";
 
     private Button saveNameTestBtn;
+    private Button inputNewCategoryBtn;
     private EditText nameTestEdt;
     private ImageView imgViewLogo;
     private Uri imgUri;
@@ -71,6 +77,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                 startActivityForResult(intent, 1);
             }
         });
+        inputCategoryBtnOnClickListen();
         return root;
     }
 
@@ -101,13 +108,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private void findElementsViewById(View root) {
         nameTestEdt = root.findViewById(R.id.nameTestEdt);
         saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
+        inputNewCategoryBtn = root.findViewById(R.id.inputNewCategoryBtn);
         imgViewLogo = root.findViewById(R.id.imgViewLogo);
-    }
-
-    private String getExtension(Uri imgUri) {
-        ContentResolver resolver = getActivity().getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(resolver.getType(imgUri));
     }
 
     /**
@@ -121,7 +123,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
             public void onClick(View v) {
                 // Если пользователь выбрал фотографию.
                 if (imgUri != null) {
-                    nameImage = System.currentTimeMillis() + "." + getExtension(imgUri);
+                    nameImage = System.currentTimeMillis() + "." + Utils.getExtension(imgUri, getContext());
                     OnlineDBHelper.getInstance(getContext()).uploadImage(nameImage, imgUri);
                 }
 
@@ -147,5 +149,65 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                 }
             }
         });
+    }
+
+    private void inputCategoryBtnOnClickListen() {
+        inputNewCategoryBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View newCategoryLayout = LayoutInflater.from(getContext())
+                        .inflate(R.layout.layout_input_new_category, null);
+                final EditText inputNewCategoryEdtTxt = newCategoryLayout.findViewById(R.id.inputNewCategoryEdtTxt);
+
+                // Показываем диалог
+                new MaterialStyledDialog.Builder(getContext())
+                        .setIcon(R.drawable.ic_add_black_24dp)
+                        .autoDismiss(false)
+                        .setDescription("Пожалуйста, введите новую тему")
+                        .setCustomView(newCategoryLayout)
+                        .setNegativeText("Отменить")
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setPositiveText("Сохранить")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                checkExistingAndAdd(dialog, inputNewCategoryEdtTxt);
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+
+    private void checkExistingAndAdd(MaterialDialog dialog, EditText inputNewCategoryEdtTxt) {
+        boolean isExists = false;
+        String input = inputNewCategoryEdtTxt.getText().toString();
+        if (input.isEmpty()) {
+            inputNewCategoryEdtTxt.requestFocus();
+            inputNewCategoryEdtTxt.setError("Введите название");
+        } else {
+            for (Category category : Common.categoryLst) {
+                if (category.getName().equals(input)) {
+                    isExists = true;
+                    break;
+                }
+            }
+            if (isExists) {
+                inputNewCategoryEdtTxt.requestFocus();
+                inputNewCategoryEdtTxt.setError("Такая уже существует");
+            } else {
+                Category category = new Category(Common.categoryLst.size() + 1,
+                        inputNewCategoryEdtTxt.getText().toString(), null);
+                Common.categoryLst.add(category);
+                addSpinnerAdapter();
+                OnlineDBHelper.getInstance(getContext()).saveCategoryDB(category);
+                dialog.dismiss();
+            }
+        }
     }
 }

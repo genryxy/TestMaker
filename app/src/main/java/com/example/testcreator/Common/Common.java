@@ -41,15 +41,7 @@ public class Common {
     // Выбранные варианты ответов.
     public static TreeSet<String> selectedValues = new TreeSet<>();
     public static boolean isOnlineMode = false;
-
-    public static String getNameCategoryByID(int categoryID) {
-        for (int i = 0; i < categoryLst.size(); i++) {
-            if (categoryLst.get(i).getId() == categoryID) {
-                return categoryLst.get(i).getName();
-            }
-        }
-        return "";
-    }
+    public static boolean isShuffleMode = false;
 
     public enum AnswerType {
         NO_ANSWER,

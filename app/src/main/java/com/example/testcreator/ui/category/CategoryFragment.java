@@ -48,7 +48,6 @@ public class CategoryFragment extends Fragment {
 
         Paper.init(getContext());
         Common.isOnlineMode = Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, true);
-
         categoryRecycler = root.findViewById(R.id.categoryRecycler);
         categoryRecycler.setHasFixedSize(true);
         int spaceInPixel = 4;

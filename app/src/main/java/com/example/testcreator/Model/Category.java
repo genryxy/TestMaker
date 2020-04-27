@@ -1,5 +1,7 @@
 package com.example.testcreator.Model;
 
+import androidx.annotation.Nullable;
+
 public class Category {
     private int id;
     private String name;
@@ -35,5 +37,17 @@ public class Category {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Category)) {
+            return false;
+        }
+        Category category = (Category) obj;
+        return getName().equals(category.getName());
     }
 }

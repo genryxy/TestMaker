@@ -5,151 +5,151 @@
     android:layout_height="match_parent"
     tools:context=".QuestionFragment">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_margin="16dp"-->
-<!--        android:orientation="vertical">-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="16dp"-->
+    <!--        android:orientation="vertical">-->
 
-        <ScrollView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="15dp">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/layoutImage"
                 android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:id="@+id/imgQuestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/fragmentQuestionTextTxt"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:text="What do you choose?"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-                <FrameLayout
-                    android:id="@+id/layoutImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp">
+            <EditText
+                android:id="@+id/inputAnswerTextEdt"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="start|top"
+                android:hint="@string/answerText"
+                android:inputType="textMultiLine"
+                android:textSize="18sp"
+                android:visibility="gone" />
 
-                    <ImageView
-                        android:id="@+id/imgQuestion"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitCenter" />
-
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center" />
-
-                </FrameLayout>
-
-                <TextView
-                    android:id="@+id/fragmentQuestionTextTxt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="What do you choose?"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/inputAnswerTextEdt"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="start|top"
-                    android:inputType="textMultiLine"
-                    android:text="@string/answerText"
-                    android:textSize="18sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/rightAnswerTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="start|top"
-                    android:scrollHorizontally="false"
-                    android:text="@string/answerText"
-                    android:textSize="18sp"
-                    android:visibility="gone" />
+            <TextView
+                android:id="@+id/rightAnswerTxt"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="start|top"
+                android:scrollHorizontally="false"
+                android:text="@string/answerText"
+                android:textSize="18sp"
+                android:visibility="gone" />
 
 
-                <CheckBox
-                    android:id="@+id/checkBoxA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer A"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer A"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxB"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer B"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer B"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxC"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer C"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer C"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxD"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer D"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer D"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxE"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer E"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer E"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxF"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer F"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer F"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxG"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer G"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer G"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxH"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer H"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxH"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer H"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxI"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer I"
-                    android:textSize="18sp" />
+            <CheckBox
+                android:id="@+id/checkBoxI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer I"
+                android:textSize="18sp" />
 
-                <CheckBox
-                    android:id="@+id/checkBoxJ"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:text="Answer J"
-                    android:textSize="18sp" />
-            </LinearLayout>
-        </ScrollView>
+            <CheckBox
+                android:id="@+id/checkBoxJ"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Answer J"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </ScrollView>
 
-<!--    </LinearLayout>-->
+    <!--    </LinearLayout>-->
 </RelativeLayout>

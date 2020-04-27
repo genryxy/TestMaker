@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,10 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.Category;
+import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import java.util.List;
 
@@ -60,15 +65,42 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             cardCategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    Toast.makeText(context, "Click at category " + categories.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
-                    Common.selectedCategory = categories.get(getAdapterPosition()).getId();
-                    Common.selectedTest = null;
-                    Common.fragmentsLst.clear();
-                    Common.answerSheetList.clear();
-                    Common.rightAnswerCount = 0;
-                    Common.wrongAnswerCount = 0;
-                    Intent intent = new Intent(context, QuestionActivity.class);
-                    context.startActivity(intent);
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
+                        final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
+
+                        Category category = categories.get(getAdapterPosition());
+                        new MaterialStyledDialog.Builder(context)
+                                .setIcon(R.drawable.ic_question_answer_black_24dp)
+                                .setCustomView(shuffleLayout)
+                                .setDescription("Будет предложено не более 30 вопросов. " +
+                                        "Начать тест по категории \"" + category.getName() + "\"?")
+                                .setNegativeText("Нет")
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setPositiveText("Да")
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        Common.isShuffleMode = checkboxShuffle.isChecked();
+                                        Common.selectedCategory = categories.get(getAdapterPosition()).getId();
+                                        Common.selectedTest = null;
+                                        Common.fragmentsLst.clear();
+                                        Common.answerSheetList.clear();
+                                        Common.rightAnswerCount = 0;
+                                        Common.wrongAnswerCount = 0;
+                                        Intent intent = new Intent(context, QuestionActivity.class);
+                                        context.startActivity(intent);
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+                    }
                 }
             });
         }

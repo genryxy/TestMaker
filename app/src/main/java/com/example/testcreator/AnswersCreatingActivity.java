@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
@@ -69,7 +70,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         // Создаём список с ответами.
         lstAnswers = new ArrayList<>();
         for (int i = 0; i < answersNumber; i++) {
-            lstAnswers.add(new AnswerView(answerText, false));
+            lstAnswers.add(new AnswerView(null, false));
         }
         // Заполняем словарь.
         for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
@@ -212,7 +213,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                             "Не может быть больше 10 ответов", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    lstAnswers.add(new AnswerView(answerText, false));
+                    lstAnswers.add(new AnswerView(null, false));
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -231,18 +232,18 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         final QuestionModel questionModel = createQuestion(rightAns.second);
         String nameImage;
         if (Common.imgQuestionUri != null) {
-            nameImage = System.currentTimeMillis() + "." + getExtension(Common.imgQuestionUri);
+            nameImage = System.currentTimeMillis() + "." + Utils.getExtension(Common.imgQuestionUri, context);
             questionModel.setImageQuestion(true);
             questionModel.setQuestionImage(nameImage);
             OnlineDBHelper.getInstance(this).uploadImage(nameImage, Common.imgQuestionUri);
         }
 
         final DocumentReference docRef = db.collection("tests").document(nameTest);
-        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRef, questionModel);
+        OnlineDBHelper.getInstance(this).saveQuestionDB(docRef, questionModel);
 
         final DocumentReference docRefTheme = db.collection("themes")
-                .document(Common.getNameCategoryByID(categoryID));
-        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModel);
+                .document(Utils.getNameCategoryByID(categoryID));
+        OnlineDBHelper.getInstance(this).saveQuestionDB(docRefTheme, questionModel);
     }
 
     /**
@@ -272,7 +273,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     return;
                 }
                 saveQuestionToDB(rightAns);
-                OnlineDBHelper.getInstance(null).saveTestInfo(nameTest, nameImage, categoryID);
+                OnlineDBHelper.getInstance(null).saveTestInfoDB(nameTest, nameImage, categoryID);
                 Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
             }
@@ -305,12 +306,6 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 startActivity(newIntent);
             }
         });
-    }
-
-    private String getExtension(Uri imgUri) {
-        ContentResolver resolver = context.getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(resolver.getType(imgUri));
     }
 
     /**

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.TestInfo;
@@ -39,19 +41,13 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
     private Context context;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
         private ImageView imgTest;
         private TextView nameTestViewTxt;
         private TextView infoTestTxt;
         private TextView creatingDateTxt;
         private Context context;
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
         ViewHolder(Context context, View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
             super(itemView);
             this.context = context;
             imgTest = itemView.findViewById(R.id.testAvatarImg);
@@ -66,12 +62,14 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         public void onClick(View v) {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
+                View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
+                final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
+
                 TestInfo test = testInfos.get(position);
                 new MaterialStyledDialog.Builder(context)
                         .setIcon(R.drawable.ic_question_answer_black_24dp)
-                        .setTitle("Подтверждение")
+                        .setCustomView(shuffleLayout)
                         .setDescription("Начать тест \"" + test.getName() + "\"?")
-//                        .setCustomView(settingLayout)
                         .setNegativeText("Нет")
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -83,6 +81,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Common.isShuffleMode = checkboxShuffle.isChecked();
                                 Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
                                 Common.selectedTest = testInfos.get(getAdapterPosition()).getName();
                                 Common.fragmentsLst.clear();
@@ -103,7 +102,6 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         this.testInfos = testInfos;
     }
 
-    // Involves inflating a layout from XML and returning the holder.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -112,9 +110,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
 
         // Inflate the custom layout.
         View view = inflater.inflate(R.layout.layout_selecting_test, parent, false);
-        // Return a new holder instance.
-        ViewHolder viewHolder = new ViewHolder(context, view);
-        return viewHolder;
+        return new ViewHolder(context, view);
     }
 
     @Override
@@ -123,7 +119,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         TestInfo testInfo = testInfos.get(position);
 
         final ImageView imgTest = holder.imgTest;
-        String someInfo = Common.getNameCategoryByID(testInfo.getCategoryID()) + "\n" + testInfo.getCreator();
+        String someInfo = Utils.getNameCategoryByID(testInfo.getCategoryID()) + "\n" + testInfo.getCreator();
 
         Calendar.getInstance().setTime(testInfo.getDateCreation());
 
@@ -141,30 +137,6 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
     public int getItemCount() {
         return testInfos.size();
     }
-
-//    private void uploadImage(String nameImage)
-//    {
-//        StorageReference childRef = storageRef.child(nameImage);
-//        childRef.putFile(imgUri)
-//                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>()
-//                {
-//                    @Override
-//                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot)
-//                    {
-////                        Toast.makeText(get(), "Изображение загружено", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener()
-//                {
-//                    @Override
-//                    public void onFailure(@NonNull Exception exception)
-//                    {
-//                        Log.w(TAG, "Error CountDownLatch", exception);
-//                        Toast.makeText(getActivity(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//    }
 
     // ----------- Реализация через ListView ---------------------
 //    private Context context;
