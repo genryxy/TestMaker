@@ -41,6 +41,7 @@
     <string name="time">Время</string>
     <string name="result">Итог</string>
     <string name="theme">Тема: </string>
+    <string name="clickToPick">Нажмите, чтобы выбрать картинку </string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,10 +1,14 @@
 package com.example.testcreator;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -43,6 +47,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private String questionText;
     private int questionNumber;
     private int answersNumber;
+    private Context context = this;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Словарь, состоящий из пар (номер вопроса, вариант ответа).
@@ -106,13 +111,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      */
     private QuestionModel createQuestion(StringBuilder rightAnsBuilder) {
         processLstAnswers();
-//        Question question = new Question(questionText, typeAnswer.equals(TypeAnswer.OwnAnswer.name())
-//                ? TypeAnswer.OwnAnswer : TypeAnswer.OneOrManyAnswers, lstAnswers.size(),
-//                lstAnswersToDatabase, rightAnsNumber, rightAnsBuilder.toString());
-        QuestionModel question = new QuestionModel(questionText, null, lstAnswersToDatabase,
+        return new QuestionModel(questionText, null, lstAnswersToDatabase,
                 rightAnsBuilder.toString(), false, categoryID, typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())
                 ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
-        return question;
     }
 
     /**
@@ -219,32 +220,29 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     /**
-     * Метод для сохранения созданных вопросов в БД. Если на послендний вопрос
-     * не были даны ответы, то он не сохраняется. Об этом выводится
-     * соответствующее уведомление.
-     * Вопросы добавляются к уже существующим вопросам в выбранной категории, а
+     * Метод для сохранения созданных вопросов в БД. Вопросы добавляются к уже
+     * существующим вопросам в выбранной категории, а
      * <p>
      * также создаётся новый тест с указанным названием и составленными вопросами.
      *
      * @param rightAns Пара вида (количество правильных ответов, правильные ответы).
-     * @param isFinal  true - вызывается по нажатию на кнопку для завершения создания теста
-     *                 false - вызывается по нажатию на кнопку для перехода к созданию
-     *                 следующего вопроса.
      */
-    private void saveQuestionToDB(final Pair<Integer, StringBuilder> rightAns, boolean isFinal) {
-        if (isFinal && rightAns.first == 0) {
-            Toast.makeText(this, "Последний вопрос не был сохранён, так как для него не отмечены ответы!",
-                    Toast.LENGTH_LONG).show();
+    private void saveQuestionToDB(final Pair<Integer, StringBuilder> rightAns) {
+        final QuestionModel questionModel = createQuestion(rightAns.second);
+        String nameImage;
+        if (Common.imgQuestionUri != null) {
+            nameImage = System.currentTimeMillis() + "." + getExtension(Common.imgQuestionUri);
+            questionModel.setImageQuestion(true);
+            questionModel.setQuestionImage(nameImage);
+            OnlineDBHelper.getInstance(this).uploadImage(nameImage, Common.imgQuestionUri);
         }
 
         final DocumentReference docRef = db.collection("tests").document(nameTest);
-        final QuestionModel questionModel = createQuestion(rightAns.second);
         OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRef, questionModel);
 
         final DocumentReference docRefTheme = db.collection("themes")
                 .document(Common.getNameCategoryByID(categoryID));
-        final QuestionModel questionModelTheme = createQuestion(rightAns.second);
-        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModelTheme);
+        OnlineDBHelper.getInstance(this).saveQuestionByCategoryAndTest(docRefTheme, questionModel);
     }
 
     /**
@@ -267,7 +265,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                                     "из одного вопроса", Toast.LENGTH_LONG).show();
                     return;
                 }
-                saveQuestionToDB(rightAns, true);
+
+                if (rightAns.first == 0) {
+                    Toast.makeText(context, "Последний вопрос не был сохранён, так как для него не отмечены ответы!",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                saveQuestionToDB(rightAns);
                 OnlineDBHelper.getInstance(null).saveTestInfo(nameTest, nameImage, categoryID);
                 Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
@@ -291,7 +295,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                saveQuestionToDB(rightAns, false);
+                saveQuestionToDB(rightAns);
 
                 Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
                 newIntent.putExtra("questionNumber", questionNumber + 1);
@@ -301,6 +305,12 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 startActivity(newIntent);
             }
         });
+    }
+
+    private String getExtension(Uri imgUri) {
+        ContentResolver resolver = context.getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(resolver.getType(imgUri));
     }
 
     /**

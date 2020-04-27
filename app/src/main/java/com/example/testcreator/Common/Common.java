@@ -1,22 +1,18 @@
 package com.example.testcreator.Common;
 
-import android.content.Intent;
+import android.net.Uri;
 import android.os.CountDownTimer;
 
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
-import com.example.testcreator.Model.SelectingTestView;
 import com.example.testcreator.QuestionFragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Common {
     public static final int TOTAL_TIME = 20 * 60 * 1000;
@@ -25,6 +21,7 @@ public class Common {
     public static final String KEY_SAVE_ONLINE_MODE = "ONLINE_MODE";
 
     public static String keyGetTestByResult;
+    public static Uri imgQuestionUri;
     public static List<QuestionModel> questionLst = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
@@ -39,7 +36,6 @@ public class Common {
     public static int wrongAnswerCount = 0;
     public static int noAnswerCount = 0;
 
-    //public static StringBuilder dataQuestion = new StringBuilder();
     // Список с фрагментами, на которых находятся вопросы.
     public static List<QuestionFragment> fragmentsLst = new ArrayList<>();
     // Выбранные варианты ответов.

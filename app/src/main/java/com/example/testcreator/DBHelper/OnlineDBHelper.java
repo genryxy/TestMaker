@@ -2,11 +2,16 @@ package com.example.testcreator.DBHelper;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
@@ -26,12 +31,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.base.MoreObjects;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
+import io.opencensus.common.ToDoubleFunction;
 
 public class OnlineDBHelper implements FireBaseConnections {
 
@@ -184,47 +193,6 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
-    public void saveResultToDatabase(final ResultTest resultTest) {
-        String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
-        final DocumentReference docIdRef = db.collection("users").document(keyUser);
-        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // Если у пользователя не было пройденных тестов, то создаём экземпляр ResultTestFirebase
-                    //  и добавляем его. Иначе просто добавляем в существующую коллекцию.
-                    if (document != null && document.exists()) {
-                        ResultTestFirebase result = document.toObject(ResultTestFirebase.class);
-                        int newCount = result.getTotalCount() + 1;
-                        result.setTotalCount(newCount);
-                        resultTest.setResultID(newCount);
-                        result.getResultTestsMap().put(String.valueOf(newCount), resultTest);
-                        docIdRef.set(result);
-                    } else {
-                        Map<String, ResultTest> mapResult = new HashMap<>();
-                        resultTest.setResultID(1);
-                        mapResult.put("1", resultTest);
-                        ResultTestFirebase resultTestFirebase = new ResultTestFirebase();
-                        resultTestFirebase.setResultTestsMap(mapResult);
-                        resultTestFirebase.setTotalCount(1);
-                        docIdRef.set(resultTestFirebase)
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error adding document", e);
-                                        Toast.makeText(context, "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else {
-                    Log.d(TAG, "Failed with: ", task.getException());
-                }
-            }
-        });
-    }
-
-
     public void getCategories(final ThemesCallBack themesCallBack) {
 //        CategoryFirebase categoryFirebase = new CategoryFirebase();
 //        List<Category> cat = new ArrayList<>();
@@ -271,6 +239,46 @@ public class OnlineDBHelper implements FireBaseConnections {
                         Log.d(TAG, "Failed with: ", e.fillInStackTrace());
                     }
                 });
+    }
+
+    public void uploadImage(String nameImage, Uri imgUri) {
+        StorageReference childRef = storageRef.child(nameImage);
+        childRef.putFile(imgUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(context, "Изображение загружено", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.w(TAG, "Error CountDownLatch", exception);
+                        Toast.makeText(context, "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void getImageByName(String pathToImg, final ImageView img, final ProgressBar progressBar) {
+        storageRef.child(pathToImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide.with(context)
+                        .load(uri)
+                        .into(img);
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(context, "failure", Toast.LENGTH_SHORT).show();
+                if (progressBar != null) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     public void putNamesTestToSet() {
@@ -359,6 +367,46 @@ public class OnlineDBHelper implements FireBaseConnections {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.w(TAG, "Error adding document", e);
+                                    }
+                                });
+                    }
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void saveResultToDatabase(final ResultTest resultTest) {
+        String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
+        final DocumentReference docIdRef = db.collection("users").document(keyUser);
+        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Если у пользователя не было пройденных тестов, то создаём экземпляр ResultTestFirebase
+                    //  и добавляем его. Иначе просто добавляем в существующую коллекцию.
+                    if (document != null && document.exists()) {
+                        ResultTestFirebase result = document.toObject(ResultTestFirebase.class);
+                        int newCount = result.getTotalCount() + 1;
+                        result.setTotalCount(newCount);
+                        resultTest.setResultID(newCount);
+                        result.getResultTestsMap().put(String.valueOf(newCount), resultTest);
+                        docIdRef.set(result);
+                    } else {
+                        Map<String, ResultTest> mapResult = new HashMap<>();
+                        resultTest.setResultID(1);
+                        mapResult.put("1", resultTest);
+                        ResultTestFirebase resultTestFirebase = new ResultTestFirebase();
+                        resultTestFirebase.setResultTestsMap(mapResult);
+                        resultTestFirebase.setTotalCount(1);
+                        docIdRef.set(resultTestFirebase)
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error adding document", e);
+                                        Toast.makeText(context, "Возникла ошибка при добавлении", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }

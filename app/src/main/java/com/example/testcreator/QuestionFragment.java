@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.IQuestion;
 import com.example.testcreator.Model.CurrentQuestion;
@@ -80,18 +82,23 @@ public class QuestionFragment extends Fragment implements IQuestion {
             // Если вопрос с картинкой, то показываем значок загрузки во время
             // загрузки изображения, иначе делаем невидимым layout с картинкой.
             if (question.isImageQuestion()) {
-                ImageView imgQuestion = itemView.findViewById(R.id.imgQuestion);
-                Picasso.get().load(question.getQuestionImage()).into(imgQuestion, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
-                    }
+                final ImageView imgQuestion = itemView.findViewById(R.id.imgQuestion);
+                // 17, так как при сохранении в FireBase длина имени файла == 17
+                if (question.getQuestionImage().length() != 17) {
+                    Picasso.get().load(question.getQuestionImage()).into(imgQuestion, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            progressBar.setVisibility(View.GONE);
+                        }
 
-                    @Override
-                    public void onError(Exception e) {
-                        Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onError(Exception e) {
+                            Toast.makeText(getContext(), "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    OnlineDBHelper.getInstance(getContext()).getImageByName(question.getQuestionImage(), imgQuestion, progressBar);
+                }
             } else {
                 layoutImage.setVisibility(View.GONE);
             }

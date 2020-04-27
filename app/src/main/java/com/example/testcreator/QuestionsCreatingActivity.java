@@ -1,31 +1,24 @@
 package com.example.testcreator;
 
-import androidx.annotation.NonNull;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.Enum.NumberAnswerEnum;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class QuestionsCreatingActivity extends AppCompatActivity {
     public final String TAG = "FAILUREQuestionActivity";
@@ -38,6 +31,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     private EditText questionTextEdt;
     private EditText answersNumberEdt;
     private Button startCreatingAnswersBtn;
+    private ImageView imgViewQuestion;
     private NumberAnswerEnum typeAnswer = NumberAnswerEnum.OneOrManyAnswers;
     private int questionNumber = 1;
 
@@ -55,6 +49,26 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
             questionNumber = prevIntent.getIntExtra("questionNumber", 1);
         String tmp = questionNumber + " вопрос";
         numberQuestionTxt.setText(tmp);
+
+        Common.imgQuestionUri = null;
+        imgViewQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Common.imgQuestionUri = data.getData();
+            imgViewQuestion.setImageURI(Common.imgQuestionUri);
+        }
     }
 
     @Override
@@ -65,7 +79,6 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 startActivity(new Intent(QuestionsCreatingActivity.this, MainActivity.class));
-                //QuestionsCreatingActivity.super.onBackPressed();
             }
         });
         builder.setNegativeButton("Остаться", new DialogInterface.OnClickListener() {
@@ -83,6 +96,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         questionTextEdt = findViewById(R.id.questionTextEdt);
         answersNumberEdt = findViewById(R.id.answersNumberEdt);
         startCreatingAnswersBtn = findViewById(R.id.startCreatingAnswersBtn);
+        imgViewQuestion = findViewById(R.id.imgViewQuestion);
         // Номер вопроса, который создаётся.
         numberQuestionTxt = findViewById(R.id.numberQuestionTxt);
     }
@@ -146,49 +160,4 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
             }
         });
     }
-
-    /**
-     * Если пользователь решил вернуться назад во время создания вопроса,
-     * то необходимо удалить название из БД и поменять количество тестов,
-     * содержащихся в БД.
-     */
-//    private void removeNameTestFromDataBase() {
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        DocumentReference docRef = db.collection("tests").document("tests_names");
-//
-//        Map<String, Object> updates = new HashMap<>();
-//        updates.put("name" + Integer.valueOf(keyNameTest - 1).toString(), FieldValue.delete());
-//        docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(@NonNull Task<Void> task) {
-//                //Toast.makeText(QuestionsCreatingActivity.this, "удалили название", Toast.LENGTH_SHORT).show();
-//            }
-//        })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "Error removing nameTest", e);
-//                        //Toast.makeText(QuestionsCreatingActivity.this, "не удалось удалить", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//        db.collection("tests").document(nameTest)
-//                .delete()
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Toast.makeText(QuestionsCreatingActivity.this, "Тест был успешно удален",
-//                                Toast.LENGTH_SHORT).show();
-//                                Log.d(TAG, "DocumentSnapshot successfully deleted!");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Toast.makeText(QuestionsCreatingActivity.this, "Не удалось удалить тест",
-//                                Toast.LENGTH_SHORT).show();
-//                                Log.w(TAG, "Error deleting document", e);
-//                    }
-//                });
-//    }
 }

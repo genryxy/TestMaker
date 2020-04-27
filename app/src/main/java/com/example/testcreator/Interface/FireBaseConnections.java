@@ -10,7 +10,5 @@ import com.google.firebase.storage.StorageReference;
 public interface FireBaseConnections
 {
     FirebaseAuth authFrbs = FirebaseAuth.getInstance();
-    DatabaseReference refFrbs = FirebaseDatabase.getInstance().getReference();
-    FirebaseDatabase dataFrbdInstance = FirebaseDatabase.getInstance();
     StorageReference storageRef = FirebaseStorage.getInstance().getReference("images");
 }

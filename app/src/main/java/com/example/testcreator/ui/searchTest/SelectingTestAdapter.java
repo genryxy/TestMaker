@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.QuestionActivity;
@@ -132,20 +133,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         imgTest.setImageResource(R.drawable.ic_launcher_foreground);
 
         if (testInfo.getPathToImg() != null) {
-            storageRef.child(testInfo.getPathToImg()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    // Got the download URL
-                    Glide.with(context)
-                            .load(uri)
-                            .into(imgTest);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-
-                }
-            });
+            OnlineDBHelper.getInstance(context).getImageByName(testInfo.getPathToImg(), imgTest, null);
         }
     }
 
