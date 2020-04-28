@@ -26,6 +26,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Adapter.AnswerSheetAdapter;
 import com.example.testcreator.Adapter.QuestionFragmentAdapter;
+import com.example.testcreator.Adapter.ResultDBAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.DBHelper;
@@ -44,10 +45,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
@@ -90,7 +89,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      * Метод для получения вопросов из БД и их вывода на экран.
      */
     private void getAndSetupQuestions() {
-        dialog = Utils.showLoadingDialog(this);
         if (isAnswerModeView) {
             getAndSetupQuestionFromUserResult();
         } else {
@@ -99,26 +97,47 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     }
 
     private void getAndSetupQuestionFromUserResult() {
-        OnlineDBHelper.getInstance(this)
-                .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
-                    @Override
-                    public void setQuestionList(List<Integer> questionsIDLst) {
-                        Common.questionLst.clear();
-                        getQuestionsByIDAndSet(questionsIDLst);
-                    }
-
-                    @Override
-                    public void setUserAnswerList(List<CurrentQuestion> answerLst) {
-                        Common.answerSheetList.clear();
-                        Common.answerSheetList = answerLst;
-                    }
-                }, dialog);
+        dialog = Utils.showLoadingDialog(context);
+        if (Common.isOnlineMode) {
+            OnlineDBHelper.getInstance(this)
+                    .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
+                        @Override
+                        public void setQuestionListAndAnswer(List<Integer> questionsIDLst, final List<CurrentQuestion> answerLst) {
+                            Common.questionLst.clear();
+                            OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+                                @Override
+                                public void setQuestionList(List<QuestionModel> questionsLst) {
+                                    Common.questionLst = questionsLst;
+                                    // Устанавливаем в коллбэке вопросы.
+                                    setupQuestion();
+                                    Common.answerSheetList.clear();
+                                    Common.answerSheetList = answerLst;
+                                    addQuestionToCommonAnswerSheetAdapter();
+                                }
+                            });
+                        }
+                    }, dialog);
+        } else {
+            // Ответы пользователя хранятся в онлайн БД!
+            OnlineDBHelper.getInstance(this)
+                    .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
+                        @Override
+                        public void setQuestionListAndAnswer(List<Integer> questionsIDLst, List<CurrentQuestion> answerLst) {
+                            Common.questionLst = DBHelper.getInstance(context).getQuestionsByID(Common.questionIDLst);
+                            setupQuestion();
+                            Common.answerSheetList.clear();
+                            Common.answerSheetList = answerLst;
+                            addQuestionToCommonAnswerSheetAdapter();
+                        }
+                    }, dialog);
+        }
     }
 
     private void getAndSetupQuestionsFromStorage() {
         // Подгружаем вопросы по категории или по названию теста.
         // В зависимости от способа перехода пользователя на Activity.
         if (Common.selectedTest != null) {
+            dialog = Utils.showLoadingDialog(this);
             OnlineDBHelper.getInstance(this)
                     .getQuestionsByTest(new MyCallBack() {
                         @Override
@@ -127,7 +146,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                             if (Common.isShuffleMode) {
                                 Collections.shuffle(questionsIDLst);
                             }
-                            getQuestionsByIDAndSet(questionsIDLst);
+                            getQuestionsOnlineByIDAndSet(questionsIDLst);
                         }
                     }, Common.selectedTest, dialog);
         } else {
@@ -140,6 +159,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 addQuestionToCommonAnswerSheetAdapter();
                 setupQuestion();
             } else {
+                dialog = Utils.showLoadingDialog(this);
                 // Если включен онлайн-режим, то подгружаем из FireBase.
                 OnlineDBHelper.getInstance(this)
                         .getQuestionsByCategory(new MyCallBack() {
@@ -157,14 +177,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                 } else {
                                     tmpIDLst = questionsIDLst;
                                 }
-                                getQuestionsByIDAndSet(tmpIDLst);
+                                getQuestionsOnlineByIDAndSet(tmpIDLst);
                             }
                         }, Common.selectedCategory, dialog);
             }
         }
     }
 
-    private void getQuestionsByIDAndSet(List<Integer> questionsIDLst) {
+    private void getQuestionsOnlineByIDAndSet(List<Integer> questionsIDLst) {
         OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
             @Override
             public void setQuestionList(List<QuestionModel> questionsLst) {
@@ -222,6 +242,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             for (QuestionFragment frag : Common.fragmentsLst) {
                 frag.setWasAnswered(true);
             }
+            if (Common.countDownTimer != null) {
+                Common.countDownTimer.cancel();
+            }
             writeResultToDatabase();
         }
 
@@ -246,7 +269,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         String duration = String.valueOf(Common.TOTAL_TIME - timePlay);
 
         final ResultTest resultTest = new ResultTest(duration, questionsIDLst, answerSheetList,
-                Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
+                Common.selectedTest, Common.selectedCategory, getFinalResult(),
+                Common.wrongAnswerCount, Common.isOnlineMode);
 
         final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, getFinalResult(),
                 Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
@@ -311,9 +335,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         }
                     }).show();
         } else {
-            if (Common.answerSheetList.size() > 0) {
-                Common.answerSheetList.clear();
-            }
             for (int i = 0; i < Common.questionLst.size(); i++) {
                 // Take index of question in List.
                 Common.answerSheetList.add(new CurrentQuestion(i, Common.AnswerType.NO_ANSWER));

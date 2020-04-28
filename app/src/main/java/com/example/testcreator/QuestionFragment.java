@@ -93,7 +93,6 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
                         @Override
                         public void onError(Exception e) {
-                            Toast.makeText(getContext(), "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {

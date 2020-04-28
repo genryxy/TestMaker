@@ -14,8 +14,6 @@ import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.QuestionIdCallBack;
-import com.example.testcreator.Interface.ResultCallBack;
-import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
@@ -85,7 +83,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
         public void onClick(View v) {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                ResultTest resultTest = resultTests.get(position);
+                final ResultTest resultTest = resultTests.get(position);
                 // Чтобы понимать какие вопросы загружать
                 Common.selectedTest = resultTest.getNameTest();
                 Common.selectedCategory = resultTest.getCategoryID();
@@ -98,16 +96,11 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
                 Common.rightAnswerCount = rightAnswer;
                 Common.wrongAnswerCount = wrongAnswer;
                 Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
-
-                OnlineDBHelper.getInstance(context).getQuestionsByID(resultTest.getQuestionsIDLst(), new QuestionIdCallBack() {
-                    @Override
-                    public void setQuestionList(List<QuestionModel> questionsLst) {
-                        Common.questionLst = questionsLst;
-                        Intent intent = new Intent(context, QuestionActivity.class);
-                        intent.putExtra("isAnswerModeView", "true");
-                        context.startActivity(intent);
-                    }
-                });
+                Common.questionIDLst = resultTest.getQuestionsIDLst();
+                Common.isOnlineMode = resultTest.isOnlineMode();
+                Intent intent = new Intent(context, QuestionActivity.class);
+                intent.putExtra("isAnswerModeView", "true");
+                context.startActivity(intent);
             }
         }
     }

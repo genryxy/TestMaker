@@ -6,7 +6,5 @@ import com.example.testcreator.Model.QuestionModel;
 import java.util.List;
 
 public interface ResultCallBack {
-    void setQuestionList(List<Integer> questionsIDLst);
-
-    void setUserAnswerList(List<CurrentQuestion> answerLst);
+    void setQuestionListAndAnswer(List<Integer> questionsIDLst, List<CurrentQuestion> answerLst);
 }

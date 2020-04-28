@@ -24,11 +24,12 @@ public class ResultTest {
     private String finalScore;
     private int wrongAnswer;
     private int resultID;
+    private boolean isOnlineMode;
 
     public ResultTest() {}
 
     public ResultTest(String duration, List<Integer> questionsIDLst, List<CurrentQuestion> answerSheetLst,
-                      String nameTest, int categoryID, String finalScore, int wrongAnswer) {
+                      String nameTest, int categoryID, String finalScore, int wrongAnswer, boolean isOnlineMode) {
         Duration = duration;
         this.questionsIDLst = questionsIDLst;
         this.answerSheetLst = answerSheetLst;
@@ -36,6 +37,7 @@ public class ResultTest {
         this.categoryID = categoryID;
         this.finalScore = finalScore;
         this.wrongAnswer = wrongAnswer;
+        this.isOnlineMode = isOnlineMode;
     }
 
     public String getDuration() {
@@ -100,5 +102,13 @@ public class ResultTest {
 
     public void setResultID(int resultID) {
         this.resultID = resultID;
+    }
+
+    public boolean isOnlineMode() {
+        return isOnlineMode;
+    }
+
+    public void setOnlineMode(boolean onlineMode) {
+        isOnlineMode = onlineMode;
     }
 }
