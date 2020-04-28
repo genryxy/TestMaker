@@ -10,8 +10,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.testcreator.Adapter.ResultAllAdapter;
+import com.example.testcreator.Adapter.ResultDBAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Interface.FireBaseConnections;
@@ -24,11 +27,12 @@ import com.example.testcreator.Model.CategoryFirebase;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionFirebase;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Model.ResultAll;
+import com.example.testcreator.Model.ResultAllFirebase;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.Model.ResultTestFirebase;
 import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.Model.TestInfoFirebase;
-import com.example.testcreator.QuestionActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -45,8 +49,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import dmax.dialog.SpotsDialog;
 
 public class OnlineDBHelper implements FireBaseConnections {
 
@@ -71,18 +73,7 @@ public class OnlineDBHelper implements FireBaseConnections {
         this.db = FirebaseFirestore.getInstance();
     }
 
-    public void getQuestionsByCategory(final MyCallBack myCallBack, final int categoryID) {
-        final AlertDialog dialog = new SpotsDialog.Builder()
-                .setContext(context)
-                .setCancelable(false)
-                .build();
-
-        if (!((QuestionActivity) context).isFinishing()) {
-            if (!dialog.isShowing()) {
-                dialog.show();
-            }
-        }
-
+    public void getQuestionsByCategory(final MyCallBack myCallBack, final int categoryID, final AlertDialog dialog) {
         categoryName = Utils.getNameCategoryByID(categoryID);
         db.collection("themes")
                 .document(categoryName)
@@ -111,18 +102,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
-    public void getQuestionsByTest(final MyCallBack myCallBack, final String nameTest) {
-        final AlertDialog dialog = new SpotsDialog.Builder()
-                .setContext(context)
-                .setCancelable(false)
-                .build();
-
-        if (!((QuestionActivity) context).isFinishing()) {
-            if (!dialog.isShowing()) {
-                dialog.show();
-            }
-        }
-
+    public void getQuestionsByTest(final MyCallBack myCallBack, final String nameTest, final AlertDialog dialog) {
         db.collection("tests")
                 .document(nameTest)
                 .get()
@@ -150,17 +130,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
-    public void getQuestionsByResult(final String key, final ResultCallBack resCallBack) {
-        final AlertDialog dialog = new SpotsDialog.Builder()
-                .setContext(context)
-                .setCancelable(false)
-                .build();
-
-        if (!((QuestionActivity) context).isFinishing()) {
-            if (!dialog.isShowing()) {
-                dialog.show();
-            }
-        }
+    public void getQuestionsByResult(final String key, final ResultCallBack resCallBack, final AlertDialog dialog) {
         final String keyName = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
 
         db.collection("users")
@@ -303,6 +273,70 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    public void getResultByUserKey(final RecyclerView resultDBRecycler, final AlertDialog dialog) {
+        final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
+        DocumentReference docRef = db.collection("users").document(keyUser);
+        docRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ResultTestFirebase resultTestFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        if (resultTestFirebase == null) {
+                            Toast.makeText(context, "Вы ещё не проходили тесты!", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        ResultDBAdapter adapter = new ResultDBAdapter(context,
+                                new ArrayList<>(resultTestFirebase.getResultTestsMap().values()));
+                        resultDBRecycler.setAdapter(adapter);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error getting document", e);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Toast.makeText(context, "Не удалось загрузить результаты", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void getResultByNameTest(final String nameTest, final RecyclerView resultAllRecycler, final AlertDialog dialog) {
+        DocumentReference docRef = db.collection("results").document(nameTest);
+        docRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        ResultAllFirebase resAllFb = documentSnapshot.toObject(ResultAllFirebase.class);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        if (resAllFb == null) {
+                            Toast.makeText(context, "Этот тест никто не проходил!", Toast.LENGTH_SHORT).show();
+                            resAllFb = new ResultAllFirebase();
+                            resAllFb.setResultAllList(new ArrayList<ResultAll>());
+                        }
+                        ResultAllAdapter adapter = new ResultAllAdapter(context, resAllFb.getResultAllList());
+                        resultAllRecycler.setAdapter(adapter);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error getting document", e);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Toast.makeText(context, "Не удалось загрузить результаты", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
     /**
      * Метод для сохранения вопроса в БД по переданной ссылке.
      *
@@ -387,8 +421,9 @@ public class OnlineDBHelper implements FireBaseConnections {
      * Метод для сохранения результатов прохождения теста пользователем в БД.
      *
      * @param resultTest Класс для хранения результата за конкретный тест, пройденный пользователем.
+     * @param resultAll
      */
-    public void saveResultDB(final ResultTest resultTest) {
+    public void saveResultDB(final ResultTest resultTest, final ResultAll resultAll) {
         String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         final DocumentReference docIdRef = db.collection("users").document(keyUser);
         docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -426,6 +461,36 @@ public class OnlineDBHelper implements FireBaseConnections {
                 }
             }
         });
+        if (Common.selectedTest != null) {
+            final DocumentReference docRef = db.collection("results").document(Common.selectedTest);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        // Если ещё нет ни одного результата, то создаём экземпляр класса ResultAll
+                        // и добавляем его. Иначе просто добавляем результат в существующую коллекцию.
+                        if (document != null && document.exists()) {
+                            docRef.update("resultAllList", FieldValue.arrayUnion(resultAll));
+                        } else {
+                            List<ResultAll> resultAlls = new ArrayList<>();
+                            resultAlls.add(resultAll);
+                            ResultAllFirebase resAllFb = new ResultAllFirebase(resultAlls);
+
+                            docRef.set(resAllFb)
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error adding document", e);
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.d(TAG, "Failed with: ", task.getException());
+                    }
+                }
+            });
+        }
     }
 
     public void saveCategoryDB(final Category newCategory) {
@@ -435,7 +500,7 @@ public class OnlineDBHelper implements FireBaseConnections {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
+                    // Если ещё нет ни одного вопроса в тесте, то создаём экземпляр класса QuestionFireBase
                     // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
                     if (document != null && document.exists()) {
                         docRef.update("categoryList", FieldValue.arrayUnion(newCategory));

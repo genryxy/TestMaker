@@ -13,9 +13,6 @@ public class SpinnerOnItemSelectedListener implements AdapterView.OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//        Toast.makeText(parent.getContext(),
-//                "OnItemSelectedListener : " + parent.getItemAtPosition(position).toString(),
-//                Toast.LENGTH_SHORT).show();
         themesName.delete(0, themesName.length());
         themesName.append(parent.getItemAtPosition(position).toString());
     }

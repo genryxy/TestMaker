@@ -1,11 +1,14 @@
 package com.example.testcreator.Common;
 
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 import java.util.concurrent.TimeUnit;
+
+import dmax.dialog.SpotsDialog;
 
 public class Utils {
     public static String getExtension(Uri imgUri, Context context) {
@@ -43,5 +46,18 @@ public class Utils {
             }
         }
         return "";
+    }
+
+    public static AlertDialog showLoadingDialog(Context context) {
+        AlertDialog dialog = new SpotsDialog.Builder()
+                .setContext(context)
+                .setMessage("loading ...")
+                .setCancelable(false)
+                .build();
+
+        if (!dialog.isShowing()) {
+            dialog.show();
+        }
+        return dialog;
     }
 }

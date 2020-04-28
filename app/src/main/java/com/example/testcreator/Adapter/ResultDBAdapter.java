@@ -17,18 +17,17 @@ import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**
  * Класс-адаптер для вывода результатов прохождения тестов пользователем.
  */
-public class ResultDatabaseAdapter extends RecyclerView.Adapter<ResultDatabaseAdapter.MyViewHolder> {
+public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyViewHolder> {
 
     private Context context;
     private List<ResultTest> resultTests;
 
-    public ResultDatabaseAdapter(Context context, List<ResultTest> resultTests) {
+    public ResultDBAdapter(Context context, List<ResultTest> resultTests) {
         this.context = context;
         this.resultTests = resultTests;
     }

@@ -10,7 +10,7 @@
             android:title="@string/menu_add_test" />
         <item
             android:id="@+id/nav_statistic"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_insert_chart_black_24dp"
             android:title="@string/menu_statistic" />
         <item
             android:id="@+id/nav_selecting_test"
@@ -26,8 +26,8 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_manage"
-                android:title="@string/menu_share" />
+                android:icon="@drawable/ic_people_outline_black_24dp"
+                android:title="@string/menu_compare" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"

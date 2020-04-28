@@ -11,7 +11,7 @@
     <string name="menu_add_test">Добавить тест</string>
     <string name="menu_search_test">Искать тест</string>
     <string name="menu_pick_theme">Выбрать тему теста</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_compare">Результаты всех</string>
     <string name="menu_send">Send</string>
     <string name="emailHint">Email</string>
     <string name="pswdHint">Пароль</string>

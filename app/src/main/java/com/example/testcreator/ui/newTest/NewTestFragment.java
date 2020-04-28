@@ -87,7 +87,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
             themesLstStr.add(Common.categoryLst.get(i).getName());
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_dropdown_item, themesLstStr);
+                R.layout.layout_spinner_item, themesLstStr);
         themesSpinner.setAdapter(adapter);
     }
 

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
         android:id="@+id/nameTestTxt"
         android:layout_width="match_parent"
@@ -54,42 +55,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn" />
 
-    <Spinner
-        android:id="@+id/themesSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:minWidth="100dp"
-        android:popupBackground="#EDEDED"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn" />
-
-    <ImageView
-        android:id="@+id/imgViewLogo"
-        android:layout_width="283dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:clickable="true"
-        android:contentDescription="@string/wallpaperTest"
-        android:focusable="true"
-        android:maxHeight="500dp"
-        android:minHeight="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/wallpaperTest"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/themesSpinner" />
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -101,5 +66,58 @@
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn" />
+
+    <Spinner
+        android:id="@+id/themesSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:minWidth="100dp"
+        android:popupBackground="#EDEDED"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn"
+        tools:listitem="@layout/layout_spinner_item" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/imgViewLogo"
+                android:layout_width="283dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:clickable="true"
+                android:contentDescription="@string/wallpaperTest"
+                android:focusable="true"
+                android:maxHeight="500dp"
+                android:minHeight="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/wallpaperTest"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/themesSpinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

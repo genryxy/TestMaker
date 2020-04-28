@@ -1,6 +1,7 @@
 package com.example.testcreator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -34,6 +35,7 @@ import com.example.testcreator.Interface.MyCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.Model.ResultAll;
 import com.example.testcreator.Model.ResultTest;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.tabs.TabLayout;
@@ -64,6 +66,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      * Метод для получения вопросов из БД и их вывода на экран.
      */
     private void getAndSetupQuestions() {
+        dialog = Utils.showLoadingDialog(this);
         if (isAnswerModeView) {
             getAndSetupQuestionFromUserResult();
         } else {
@@ -108,12 +112,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         Common.answerSheetList.clear();
                         Common.answerSheetList = answerLst;
                     }
-                });
+                }, dialog);
     }
 
     private void getAndSetupQuestionsFromStorage() {
         // Подгружаем вопросы по категории или по названию теста.
-        // В зависимости от способа перехода пользователя сюда.
+        // В зависимости от способа перехода пользователя на Activity.
         if (Common.selectedTest != null) {
             OnlineDBHelper.getInstance(this)
                     .getQuestionsByTest(new MyCallBack() {
@@ -128,8 +132,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                             // Устанавливаем в коллбэке вопросы.
                             setupQuestion();
                         }
-                    }, Common.selectedTest);
+                    }, Common.selectedTest, dialog);
         } else {
+            // Если выключен онлайн-режим, то подгружаем из локальной БД.
             if (!Common.isOnlineMode) {
                 Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
                 if (Common.isShuffleMode) {
@@ -138,6 +143,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 addQuestionToCommonAnswerSheetAdapter();
                 setupQuestion();
             } else {
+                // Если включен онлайн-режим, то подгружаем из FireBase.
                 OnlineDBHelper.getInstance(this)
                         .getQuestionsByCategory(new MyCallBack() {
                             @Override
@@ -157,7 +163,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                                 // Устанавливаем в коллбэке вопросы.
                                 setupQuestion();
                             }
-                        }, Common.selectedCategory);
+                        }, Common.selectedCategory, dialog);
             }
         }
     }
@@ -224,10 +230,15 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private void writeResultToDatabase() {
         List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
-        final ResultTest resultTest = new ResultTest(String.valueOf(Common.TOTAL_TIME - timePlay),
-                questionLst, answerSheetList, Common.selectedTest,
-                Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
-        OnlineDBHelper.getInstance(this).saveResultDB(resultTest);
+        String duration = String.valueOf(Common.TOTAL_TIME - timePlay);
+
+        final ResultTest resultTest = new ResultTest(duration, questionLst, answerSheetList,
+                Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
+
+        final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, getFinalResult(),
+                Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
+
+        OnlineDBHelper.getInstance(this).saveResultDB(resultTest, resultAll);
     }
 
     private String getFinalResult() {

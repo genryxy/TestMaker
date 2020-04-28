@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Model.SelectingTestView;
@@ -41,7 +42,7 @@ public class SelectingTestFragment extends Fragment {
 //            }
 //        });
 
-        showLoadingDialog();
+        dialog = Utils.showLoadingDialog(getContext());
         final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
         testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         OnlineDBHelper.getInstance(getContext())
@@ -57,17 +58,5 @@ public class SelectingTestFragment extends Fragment {
                 });
 
         return root;
-    }
-
-    private void showLoadingDialog() {
-        dialog = new SpotsDialog.Builder()
-                .setContext(getContext())
-                .setMessage("loading ...")
-                .setCancelable(false)
-                .build();
-
-        if (!dialog.isShowing()) {
-            dialog.show();
-        }
     }
 }

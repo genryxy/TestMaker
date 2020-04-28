@@ -16,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.ThemesCallBack;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         toolbar.setTitle("Quiz 2020");
         setSupportActionBar(toolbar);
 
-        showLoadingDialog();
+        dialog = Utils.showLoadingDialog(this);
         OnlineDBHelper.getInstance(this).getCategories(new ThemesCallBack() {
             @Override
             public void setThemes(List<Category> themesLst) {
@@ -92,18 +93,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
 //        transaction = getSupportFragmentManager().beginTransaction();
 //        transaction.add(R.id.nav_host_fragment, selectingTestFragment);
 //        transaction.commit();
-    }
-
-    private void showLoadingDialog() {
-        dialog = new SpotsDialog.Builder()
-                .setContext(this)
-                .setMessage("loading ...")
-                .setCancelable(false)
-                .build();
-
-        if (!dialog.isShowing()) {
-            dialog.show();
-        }
     }
 
     @Override
