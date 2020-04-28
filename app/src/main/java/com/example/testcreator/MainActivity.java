@@ -27,8 +27,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-import dmax.dialog.SpotsDialog;
-
 public class MainActivity extends AppCompatActivity implements FireBaseConnections {
     public final String TAG = "FAILURE MainActivity";
 
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_statistic, R.id.nav_new_test, R.id.nav_selecting_test,
-                R.id.nav_category, R.id.nav_share, R.id.nav_send, R.id.nav_logout)
+                R.id.nav_category, R.id.nav_compare, R.id.nav_info, R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

@@ -30,16 +30,16 @@
         tools:layout="@layout/fragment_category" />
 
     <fragment
-        android:id="@+id/nav_share"
+        android:id="@+id/nav_compare"
         android:name="com.example.testcreator.ui.compare.CompareFragment"
         android:label="@string/menu_compare"
         tools:layout="@layout/fragment_compare" />
 
     <fragment
-        android:id="@+id/nav_send"
-        android:name="com.example.testcreator.ui.send.SendFragment"
-        android:label="@string/menu_send"
-        tools:layout="@layout/fragment_send" />
+        android:id="@+id/nav_info"
+        android:name="com.example.testcreator.ui.info.InfoFragment"
+        android:label="@string/menu_info"
+        tools:layout="@layout/fragment_info" />
 
     <fragment
         android:id="@+id/nav_logout"

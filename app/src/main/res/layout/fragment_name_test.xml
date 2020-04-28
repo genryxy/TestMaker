@@ -69,11 +69,11 @@
 
     <Spinner
         android:id="@+id/themesSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:minWidth="100dp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="15dp"
+        android:minHeight="35dp"
         android:popupBackground="#EDEDED"
         app:layout_constraintStart_toEndOf="@+id/textView3"
         app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn"

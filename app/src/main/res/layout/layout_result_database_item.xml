@@ -23,12 +23,14 @@
                 android:id="@+id/nameTestViewTxt"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:textColor="@android:color/black"
                 android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/categoryTestViewTxt"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
+                android:textColor="@android:color/black"
                 android:textSize="20sp" />
 
         </LinearLayout>
@@ -50,10 +52,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@color/md_btn_selected"
                 android:layout_marginBottom="8dp"
+                android:background="@color/md_btn_selected"
                 android:text="12/25"
                 android:textAlignment="center"
+                android:textColor="@android:color/black"
                 android:textSize="20sp" />
 
             <TextView
@@ -69,6 +72,7 @@
                 android:background="@color/md_btn_selected"
                 android:text="10:25"
                 android:textAlignment="center"
+                android:textColor="@android:color/black"
                 android:textSize="20sp" />
         </LinearLayout>
 
