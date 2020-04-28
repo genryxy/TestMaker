@@ -331,7 +331,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 checkbox.setTextColor(Color.BLACK);
             }
         } else {
-            inputAnswerTextEdt.setText("текст ответа");
+            inputAnswerTextEdt.setText("");
+            inputAnswerTextEdt.setEnabled(true);
+            rightAnswerTxt.setVisibility(View.GONE);
         }
     }
 

@@ -102,15 +102,18 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         OnlineDBHelper.getInstance(this)
                 .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
                     @Override
-                    public void setQuestionList(List<Integer> questionsIDLst) {
-                        Common.questionLst.clear();
-                        getQuestionsByIDAndSet(questionsIDLst);
-                    }
+                    public void setQuestionList(List<Integer> questionsIDLst, final List<CurrentQuestion> answerLst) {
+                        OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+                            @Override
+                            public void setQuestionList(List<QuestionModel> questionsLst) {
 
-                    @Override
-                    public void setUserAnswerList(List<CurrentQuestion> answerLst) {
-                        Common.answerSheetList.clear();
-                        Common.answerSheetList = answerLst;
+                                Common.questionLst = questionsLst;
+                                addQuestionToCommonAnswerSheetAdapter();
+                                // Устанавливаем в коллбэке вопросы.
+                                Common.answerSheetList = answerLst;
+                                setupQuestion();
+                            }
+                        });
                     }
                 }, dialog);
     }
@@ -301,7 +304,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             new MaterialStyledDialog.Builder(this)
                     .setTitle("Opppps!")
                     .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
-                    .setDescription("We don't have any question in " + Utils.getNameCategoryByID(Common.selectedCategory))
+                    .setDescription("Нет вопросов в категории " + Utils.getNameCategoryByID(Common.selectedCategory) + "\"")
                     .setPositiveText("Ok")
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
