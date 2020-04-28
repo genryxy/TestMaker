@@ -168,7 +168,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 rightAnsBuilder.deleteCharAt(rightAnsBuilder.length() - 1);
             }
         } else {
-            rightAnsBuilder.append(lstAnswers.get(0).getAnswerText());
+            if (lstAnswers.size() > 0) {
+                rightAnsBuilder.append(lstAnswers.get(0).getAnswerText());
+            }
             if (rightAnsBuilder.toString().length() > 0
                     && !rightAnsBuilder.toString().toLowerCase().equals("текст ответа")) {
                 rightAnsNumber++;

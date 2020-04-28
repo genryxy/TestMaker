@@ -229,7 +229,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
         // Сравниваем правильные ответы с ответами пользователя.
         if (!TextUtils.isEmpty(resStr)) {
-            String rightAnswer = question.getCorrectAnswer();
+            String rightAnswer = question.getCorrectAnswer().toLowerCase();
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
                 rightAnswer = rightAnswer.toLowerCase().trim();
             }
