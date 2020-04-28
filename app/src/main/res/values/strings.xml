@@ -16,6 +16,8 @@
     <string name="emailHint">Email</string>
     <string name="pswdHint">Пароль</string>
     <string name="signUp">Зарегистрироваться</string>
+    <string name="haveAccount">Уже есть аккаунт? Войдите через него</string>
+    <string name="notHaveAccount">Нет аккаунта? Зарегистрироваться</string>
     <string name="signIn">Войти</string>
     <string name="menu_logout">Выход</string>
     <string name="nameTest">Название теста</string>
