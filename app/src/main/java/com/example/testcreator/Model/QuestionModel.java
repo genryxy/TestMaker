@@ -9,6 +9,7 @@ import java.util.List;
 public class QuestionModel {
     public static final int NUMBER_ANSWER = 10;
 
+    private int questionID;
     private String questionText;
     private String questionImage;
     private List<String> allAnswer = new ArrayList<>();
@@ -85,7 +86,15 @@ public class QuestionModel {
         this.typeAnswer = typeAnswer;
     }
 
-    //    public void setAllAnswer(List<String> allAnswer) {
-//        this.allAnswer = allAnswer;
-//    }
+    public void setAllAnswer(List<String> allAnswer) {
+        this.allAnswer = allAnswer;
+    }
+
+    public int getQuestionID() {
+        return questionID;
+    }
+
+    public void setQuestionID(int questionID) {
+        this.questionID = questionID;
+    }
 }

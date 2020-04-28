@@ -14,7 +14,7 @@ public class ResultTest {
     /**
      * Список вопросов, которые были в тесте.
      */
-    private List<QuestionModel> questionLst;
+    private List<Integer> questionsIDLst;
     /**
      * Список с ответами пользователя на вопросы.
      */
@@ -27,10 +27,10 @@ public class ResultTest {
 
     public ResultTest() {}
 
-    public ResultTest(String duration, List<QuestionModel> questionLst, List<CurrentQuestion> answerSheetLst,
+    public ResultTest(String duration, List<Integer> questionsIDLst, List<CurrentQuestion> answerSheetLst,
                       String nameTest, int categoryID, String finalScore, int wrongAnswer) {
         Duration = duration;
-        this.questionLst = questionLst;
+        this.questionsIDLst = questionsIDLst;
         this.answerSheetLst = answerSheetLst;
         this.nameTest = nameTest;
         this.categoryID = categoryID;
@@ -46,12 +46,12 @@ public class ResultTest {
         Duration = duration;
     }
 
-    public List<QuestionModel> getQuestionLst() {
-        return questionLst;
+    public List<Integer> getQuestionsIDLst() {
+        return questionsIDLst;
     }
 
-    public void setQuestionLst(List<QuestionModel> questionLst) {
-        this.questionLst = questionLst;
+    public void setQuestionsIDLst(List<Integer> questionsIDLst) {
+        this.questionsIDLst = questionsIDLst;
     }
 
     public List<CurrentQuestion> getAnswerSheetLst() {

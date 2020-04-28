@@ -110,7 +110,6 @@ public class CategoryFragment extends Fragment {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-
                         if (Common.isOnlineMode != checkBoxOnlineMode.isChecked()) {
                             Common.isOnlineMode = checkBoxOnlineMode.isChecked();
                             setAdapterDependingMode(Common.isOnlineMode);

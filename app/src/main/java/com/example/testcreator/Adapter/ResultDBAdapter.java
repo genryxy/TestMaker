@@ -12,6 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
+import com.example.testcreator.DBHelper.OnlineDBHelper;
+import com.example.testcreator.Interface.QuestionIdCallBack;
+import com.example.testcreator.Interface.ResultCallBack;
+import com.example.testcreator.Model.CurrentQuestion;
+import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
@@ -55,7 +60,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
         holder.resultTestTxt.setText(userResult.getFinalScore());
     }
 
-        @Override
+    @Override
     public int getItemCount() {
         return resultTests.size();
     }
@@ -87,16 +92,22 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
                 Common.keyGetTestByResult = String.valueOf(resultTest.getResultID());
 
                 Common.fragmentsLst.clear();
-                Common.questionLst = resultTest.getQuestionLst();
                 Common.answerSheetList = resultTest.getAnswerSheetLst();
                 int rightAnswer = Integer.valueOf(resultTest.getFinalScore().split("/")[0]);
                 int wrongAnswer = Integer.valueOf(resultTest.getWrongAnswer());
                 Common.rightAnswerCount = rightAnswer;
                 Common.wrongAnswerCount = wrongAnswer;
                 Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
-                Intent intent = new Intent(context, QuestionActivity.class);
-                intent.putExtra("isAnswerModeView", "true");
-                context.startActivity(intent);
+
+                OnlineDBHelper.getInstance(context).getQuestionsByID(resultTest.getQuestionsIDLst(), new QuestionIdCallBack() {
+                    @Override
+                    public void setQuestionList(List<QuestionModel> questionsLst) {
+                        Common.questionLst = questionsLst;
+                        Intent intent = new Intent(context, QuestionActivity.class);
+                        intent.putExtra("isAnswerModeView", "true");
+                        context.startActivity(intent);
+                    }
+                });
             }
         }
     }

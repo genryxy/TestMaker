@@ -19,6 +19,7 @@ import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
+import com.example.testcreator.Interface.QuestionIdCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Interface.ThemesCallBack;
@@ -26,6 +27,7 @@ import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.CategoryFirebase;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionFirebase;
+import com.example.testcreator.Model.QuestionIDFirebase;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultAll;
 import com.example.testcreator.Model.ResultAllFirebase;
@@ -81,12 +83,12 @@ public class OnlineDBHelper implements FireBaseConnections {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
+                        QuestionIDFirebase questionFirebase = documentSnapshot.toObject(QuestionIDFirebase.class);
 
-                        if (questionFirebase != null && questionFirebase.getQuestions() != null) {
-                            myCallBack.setQuestionList(questionFirebase.getQuestions());
+                        if (questionFirebase != null && questionFirebase.getQuestionsID() != null) {
+                            myCallBack.setQuestionList(questionFirebase.getQuestionsID());
                         } else {
-                            myCallBack.setQuestionList(new ArrayList<QuestionModel>());
+                            myCallBack.setQuestionList(new ArrayList<Integer>());
                         }
 
                         if (dialog.isShowing()) {
@@ -109,12 +111,12 @@ public class OnlineDBHelper implements FireBaseConnections {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
+                        QuestionIDFirebase questionFirebase = documentSnapshot.toObject(QuestionIDFirebase.class);
 
-                        if (questionFirebase != null && questionFirebase.getQuestions() != null) {
-                            myCallBack.setQuestionList(questionFirebase.getQuestions());
+                        if (questionFirebase != null && questionFirebase.getQuestionsID() != null) {
+                            myCallBack.setQuestionList(questionFirebase.getQuestionsID());
                         } else {
-                            myCallBack.setQuestionList(new ArrayList<QuestionModel>());
+                            myCallBack.setQuestionList(new ArrayList<Integer>());
                         }
 
                         if (dialog.isShowing()) {
@@ -139,15 +141,14 @@ public class OnlineDBHelper implements FireBaseConnections {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        ResultTestFirebase resFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
+                        final ResultTestFirebase resFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
                         if (resFirebase != null && resFirebase.getTotalCount() != 0) {
-                            resCallBack.setQuestionList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getQuestionLst()));
+                            resCallBack.setQuestionList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getQuestionsIDLst()));
                             resCallBack.setUserAnswerList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getAnswerSheetLst()));
                         } else {
-                            resCallBack.setQuestionList(new ArrayList<QuestionModel>());
+                            resCallBack.setQuestionList(new ArrayList<Integer>());
                             resCallBack.setUserAnswerList(new ArrayList<CurrentQuestion>());
                         }
-
                         if (dialog.isShowing()) {
                             dialog.dismiss();
                         }
@@ -157,6 +158,22 @@ public class OnlineDBHelper implements FireBaseConnections {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void getQuestionsByID(final List<Integer> questionsIDLst, final QuestionIdCallBack idCallBack) {
+        db.collection("questions").document("questionsAll")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        QuestionFirebase questionFirebase = documentSnapshot.toObject(QuestionFirebase.class);
+                        List<QuestionModel> questionsLst = new ArrayList<>();
+                        for (Integer id : questionsIDLst) {
+                            questionsLst.add(questionFirebase.getQuestions().get(id));
+                        }
+                        idCallBack.setQuestionList(questionsLst);
                     }
                 });
     }
@@ -258,7 +275,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         TestInfoFirebase testInfoFirebase = documentSnapshot.toObject(TestInfoFirebase.class);
-                        if (testInfoFirebase != null) {
+                        if (testInfoFirebase != null && testInfoFirebase.getTestInfos() != null) {
                             for (TestInfo test : testInfoFirebase.getTestInfos()) {
                                 Common.namesTestSet.add(test.getName());
                             }
@@ -345,23 +362,66 @@ public class OnlineDBHelper implements FireBaseConnections {
      *                      относится к вопросу (формулировка, тема вопроса, ответы,
      *                      тип вопроса).
      */
-    public void saveQuestionDB(final DocumentReference docRef, final QuestionModel questionModel) {
+    public void saveQuestionModelDB(final DocumentReference docRef, final QuestionModel questionModel, final String nameTest) {
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    QuestionFirebase questionFirebase = document.toObject(QuestionFirebase.class);
                     QuestionModel question = questionModel;
-                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
+                    if (questionFirebase == null || questionFirebase.getQuestions() == null) {
+                        questionFirebase = new QuestionFirebase();
+                        List<QuestionModel> questionsLst = new ArrayList<>();
+                        questionFirebase.setQuestions(questionsLst);
+                    }
+                    // Нумерация начинается с нуля.
+                    question.setQuestionID(questionFirebase.getQuestions().size());
+                    questionFirebase.getQuestions().add(question);
+                    docRef.set(questionFirebase)
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error adding document", e);
+                                }
+                            });
+
+                    final DocumentReference docRefTheme = db.collection("themes")
+                            .document(Utils.getNameCategoryByID(question.getCategoryID()));
+                    saveQuestionIDDB(docRefTheme, question.getQuestionID());
+
+                    final DocumentReference docRefName = db.collection("tests")
+                            .document(nameTest);
+                    saveQuestionIDDB(docRefName, question.getQuestionID());
+                } else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
+    }
+
+    /**
+     * Метод для сохранения вопроса в БД по переданной ссылке.
+     *
+     * @param docRef     Ссылка на документ в таблице, в который нужно сохранять.
+     * @param questionID ID добавляемого вопроса.
+     */
+    private void saveQuestionIDDB(final DocumentReference docRef, final Integer questionID) {
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionIDFirebase
                     // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
                     if (document != null && document.exists()) {
-                        docRef.update("questions", FieldValue.arrayUnion(question));
+                        docRef.update("questionsID", FieldValue.arrayUnion(questionID));
                     } else {
-                        List<QuestionModel> questions = new ArrayList<>();
-                        questions.add(question);
-                        QuestionFirebase questionsFirebase = new QuestionFirebase(questions);
+                        List<Integer> questionsID = new ArrayList<>();
+                        questionsID.add(questionID);
+                        QuestionIDFirebase idFirebase = new QuestionIDFirebase(questionsID);
 
-                        docRef.set(questionsFirebase)
+                        docRef.set(idFirebase)
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {

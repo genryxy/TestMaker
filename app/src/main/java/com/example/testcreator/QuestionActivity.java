@@ -2,6 +2,7 @@ package com.example.testcreator;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -32,6 +33,7 @@ import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
+import com.example.testcreator.Interface.QuestionIdCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
@@ -67,6 +69,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private AlertDialog dialog;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +102,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         OnlineDBHelper.getInstance(this)
                 .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
                     @Override
-                    public void setQuestionList(List<QuestionModel> questionList) {
+                    public void setQuestionList(List<Integer> questionsIDLst) {
                         Common.questionLst.clear();
-                        Common.questionLst = questionList;
-                        addQuestionToCommonAnswerSheetAdapter();
-                        // Устанавливаем в коллбэке вопросы.
-                        setupQuestion();
+                        getQuestionsByIDAndSet(questionsIDLst);
                     }
 
                     @Override
@@ -122,15 +122,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             OnlineDBHelper.getInstance(this)
                     .getQuestionsByTest(new MyCallBack() {
                         @Override
-                        public void setQuestionList(List<QuestionModel> questionList) {
+                        public void setQuestionList(List<Integer> questionsIDLst) {
                             Common.questionLst.clear();
                             if (Common.isShuffleMode) {
-                                Collections.shuffle(questionList);
+                                Collections.shuffle(questionsIDLst);
                             }
-                            Common.questionLst = questionList;
-                            addQuestionToCommonAnswerSheetAdapter();
-                            // Устанавливаем в коллбэке вопросы.
-                            setupQuestion();
+                            getQuestionsByIDAndSet(questionsIDLst);
                         }
                     }, Common.selectedTest, dialog);
         } else {
@@ -147,25 +144,36 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 OnlineDBHelper.getInstance(this)
                         .getQuestionsByCategory(new MyCallBack() {
                             @Override
-                            public void setQuestionList(List<QuestionModel> questionList) {
+                            public void setQuestionList(List<Integer> questionsIDLst) {
                                 Common.questionLst.clear();
                                 if (Common.isShuffleMode) {
-                                    Collections.shuffle(questionList);
+                                    Collections.shuffle(questionsIDLst);
                                 }
-                                if (questionList.size() > NUMBER_QUESTION) {
+                                List<Integer> tmpIDLst = new ArrayList<>();
+                                if (questionsIDLst.size() > NUMBER_QUESTION) {
                                     for (int i = 0; i < NUMBER_QUESTION; i++) {
-                                        Common.questionLst.add(questionList.get(i));
+                                        tmpIDLst.add(questionsIDLst.get(i));
                                     }
                                 } else {
-                                    Common.questionLst = questionList;
+                                    tmpIDLst = questionsIDLst;
                                 }
-                                addQuestionToCommonAnswerSheetAdapter();
-                                // Устанавливаем в коллбэке вопросы.
-                                setupQuestion();
+                                getQuestionsByIDAndSet(tmpIDLst);
                             }
                         }, Common.selectedCategory, dialog);
             }
         }
+    }
+
+    private void getQuestionsByIDAndSet(List<Integer> questionsIDLst) {
+        OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+            @Override
+            public void setQuestionList(List<QuestionModel> questionsLst) {
+                Common.questionLst = questionsLst;
+                addQuestionToCommonAnswerSheetAdapter();
+                // Устанавливаем в коллбэке вопросы.
+                setupQuestion();
+            }
+        });
     }
 
     /**
@@ -228,11 +236,16 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      * Метод для записи результатов прохождения теста в БД.
      */
     private void writeResultToDatabase() {
-        List<QuestionModel> questionLst = new ArrayList<>(Common.questionLst);
+
+        List<Integer> questionsIDLst = new ArrayList<>();
+        for (QuestionModel question : Common.questionLst) {
+            questionsIDLst.add(question.getQuestionID());
+        }
+
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
         String duration = String.valueOf(Common.TOTAL_TIME - timePlay);
 
-        final ResultTest resultTest = new ResultTest(duration, questionLst, answerSheetList,
+        final ResultTest resultTest = new ResultTest(duration, questionsIDLst, answerSheetList,
                 Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
 
         final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, getFinalResult(),

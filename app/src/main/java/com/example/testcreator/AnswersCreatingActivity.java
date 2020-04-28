@@ -1,14 +1,11 @@
 package com.example.testcreator;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -238,12 +235,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             OnlineDBHelper.getInstance(this).uploadImage(nameImage, Common.imgQuestionUri);
         }
 
-        final DocumentReference docRef = db.collection("tests").document(nameTest);
-        OnlineDBHelper.getInstance(this).saveQuestionDB(docRef, questionModel);
-
-        final DocumentReference docRefTheme = db.collection("themes")
-                .document(Utils.getNameCategoryByID(categoryID));
-        OnlineDBHelper.getInstance(this).saveQuestionDB(docRefTheme, questionModel);
+        final DocumentReference docRef = db.collection("questions").document("questionsAll");
+        OnlineDBHelper.getInstance(this).saveQuestionModelDB(docRef, questionModel, nameTest);
     }
 
     /**

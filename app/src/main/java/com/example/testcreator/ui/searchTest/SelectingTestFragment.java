@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -49,6 +50,10 @@ public class SelectingTestFragment extends Fragment {
                 .getTestInfos(new TestInfoCallBack() {
                     @Override
                     public void setInfosToAdapter(List<TestInfo> testInfos) {
+                        if (testInfos == null) {
+                            testInfos = new ArrayList<>();
+                            Toast.makeText(getContext(), "Нет тестов в базе!", Toast.LENGTH_LONG).show();
+                        }
                         SelectingTestAdapter adapter = new SelectingTestAdapter(testInfos);
                         testsRecycler.setAdapter(adapter);
                         if (dialog.isShowing()) {
