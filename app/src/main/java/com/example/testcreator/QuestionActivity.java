@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     private RecyclerView answerSheetView;
     private AnswerSheetAdapter answerSheetAdapter;
+    private QuestionFragmentAdapter adapter;
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
@@ -90,7 +92,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      * Метод для получения вопросов из БД и их вывода на экран.
      */
     private void getAndSetupQuestions() {
-        dialog = Utils.showLoadingDialog(this);
         if (isAnswerModeView) {
             getAndSetupQuestionFromUserResult();
         } else {
@@ -99,29 +100,46 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     }
 
     private void getAndSetupQuestionFromUserResult() {
-        OnlineDBHelper.getInstance(this)
-                .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
-                    @Override
-                    public void setQuestionList(List<Integer> questionsIDLst, final List<CurrentQuestion> answerLst) {
-                        OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
-                            @Override
-                            public void setQuestionList(List<QuestionModel> questionsLst) {
-
-                                Common.questionLst = questionsLst;
-                                addQuestionToCommonAnswerSheetAdapter();
-                                // Устанавливаем в коллбэке вопросы.
-                                Common.answerSheetList = answerLst;
-                                setupQuestion();
-                            }
-                        });
-                    }
-                }, dialog);
+        if (Common.isOnlineMode) {
+            dialog = Utils.showLoadingDialog(this);
+            OnlineDBHelper.getInstance(this)
+                    .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
+                        @Override
+                        public void setQuestionList(List<Integer> questionsIDLst, final List<CurrentQuestion> answerLst) {
+                            OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+                                @Override
+                                public void setQuestionList(List<QuestionModel> questionsLst) {
+                                    Common.questionLst = questionsLst;
+                                    addQuestionToCommonAnswerSheetAdapter();
+                                    // Устанавливаем в коллбэке вопросы.
+                                    Common.answerSheetList = answerLst;
+                                    setupQuestion();
+                                }
+                            });
+                        }
+                    }, dialog);
+        } else {
+            dialog = Utils.showLoadingDialog(this);
+            // Ответы пользователя хранятся в онлайн БД!
+            OnlineDBHelper.getInstance(this)
+                    .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
+                        @Override
+                        public void setQuestionList(List<Integer> questionsIDLst, List<CurrentQuestion> answerLst) {
+                            Common.questionLst = DBHelper.getInstance(context).getQuestionsByID(Common.questionIDLst);
+                            addQuestionToCommonAnswerSheetAdapter();
+                            // Устанавливаем в коллбэке вопросы.
+                            Common.answerSheetList = answerLst;
+                            setupQuestion();
+                        }
+                    }, dialog);
+        }
     }
 
     private void getAndSetupQuestionsFromStorage() {
         // Подгружаем вопросы по категории или по названию теста.
         // В зависимости от способа перехода пользователя на Activity.
         if (Common.selectedTest != null) {
+            dialog = Utils.showLoadingDialog(this);
             OnlineDBHelper.getInstance(this)
                     .getQuestionsByTest(new MyCallBack() {
                         @Override
@@ -143,6 +161,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 addQuestionToCommonAnswerSheetAdapter();
                 setupQuestion();
             } else {
+                dialog = Utils.showLoadingDialog(this);
                 // Если включен онлайн-режим, то подгружаем из FireBase.
                 OnlineDBHelper.getInstance(this)
                         .getQuestionsByCategory(new MyCallBack() {
@@ -226,11 +245,11 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 frag.setWasAnswered(true);
             }
             writeResultToDatabase();
+            Common.timer = Common.TOTAL_TIME - timePlay;
         }
 
         // Перейти к новому activity с ожиданием ответа от него.
         Intent intent = new Intent(QuestionActivity.this, ResultActivity.class);
-        Common.timer = Common.TOTAL_TIME - timePlay;
         Common.noAnswerCount = Common.questionLst.size() - (Common.rightAnswerCount + Common.wrongAnswerCount);
         startActivityForResult(intent, CODE_GET_RESULT);
     }
@@ -249,7 +268,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         String duration = String.valueOf(Common.TOTAL_TIME - timePlay);
 
         final ResultTest resultTest = new ResultTest(duration, questionsIDLst, answerSheetList,
-                Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount);
+                Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount,
+                Common.isOnlineMode || Common.selectedTest != null);
 
         final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, getFinalResult(),
                 Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
@@ -266,6 +286,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
      * Необходимо, чтобы потом отображать вопросы в viewPager.
      */
     private void generateFragmentList() {
+        Common.fragmentsLst.clear();
         for (int i = 0; i < Common.questionLst.size(); i++) {
             QuestionFragment questionFragment = new QuestionFragment(i);
             if (isAnswerModeView) {
@@ -344,8 +365,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
             setAnswerSheetViewAdapter();
             generateFragmentList();
-            QuestionFragmentAdapter adapter = new QuestionFragmentAdapter(
-                    getSupportFragmentManager(), this, Common.fragmentsLst);
+            adapter = new QuestionFragmentAdapter(getSupportFragmentManager(),
+                    this, Common.fragmentsLst);
             viewPager.setAdapter(adapter);
             // Добавим эффект при смене вопроса.
             viewPager.setPageTransformer(true, new ScaleInOutTransformer());
@@ -533,33 +554,20 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 if (action == null || TextUtils.isEmpty(action)) {
                     int questionNum = data.getIntExtra(Common.KEY_BACK_FROM_RESULT, -1);
                     viewPager.setCurrentItem(questionNum);
-
                     isAnswerModeView = true;
                     if (Common.countDownTimer != null) {
                         Common.countDownTimer.cancel();
                     }
                     setVisibilityOfNumberAnswers(false);
                 } else if (action.equals("doQuizAgain")) {
-                    viewPager.setCurrentItem(0);
-
-                    isAnswerModeView = false;
-                    countTimer();
-                    setVisibilityOfNumberAnswers(true);
-
-                    for (CurrentQuestion question : Common.answerSheetList) {
-                        question.setType(Common.AnswerType.NO_ANSWER);
-                    }
-                    answerSheetAdapter.notifyDataSetChanged();
-                    for (QuestionFragment fragment : Common.fragmentsLst) {
-                        fragment.resetQuestion();
-                        fragment.setWasAnswered(false);
-                    }
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;
                     Common.noAnswerCount = 0;
                     Common.selectedValues.clear();
-                    questionWrongTxt.setText("0");
-                    questionRightTxt.setText(getFinalResult());
+                    Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
+                    // Удаляем все активити
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                     Toast.makeText(this, "Новая попытка", Toast.LENGTH_SHORT).show();
                 }
             }

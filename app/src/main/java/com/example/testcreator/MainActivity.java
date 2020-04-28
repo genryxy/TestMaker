@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Quiz 2020");
+        toolbar.setTitle("Test Creator");
         setSupportActionBar(toolbar);
 
         dialog = Utils.showLoadingDialog(this);
@@ -55,14 +55,14 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         });
         OnlineDBHelper.getInstance(this).putNamesTestToSet();
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

@@ -21,6 +21,7 @@ import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 
@@ -98,16 +99,23 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
                 Common.rightAnswerCount = rightAnswer;
                 Common.wrongAnswerCount = wrongAnswer;
                 Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
+                Common.timer = Integer.valueOf(resultTest.getDuration());
 
-                OnlineDBHelper.getInstance(context).getQuestionsByID(resultTest.getQuestionsIDLst(), new QuestionIdCallBack() {
-                    @Override
-                    public void setQuestionList(List<QuestionModel> questionsLst) {
-                        Common.questionLst = questionsLst;
-                        Intent intent = new Intent(context, QuestionActivity.class);
-                        intent.putExtra("isAnswerModeView", "true");
-                        context.startActivity(intent);
-                    }
-                });
+                Common.questionIDLst = resultTest.getQuestionsIDLst();
+                Common.isOnlineMode = resultTest.getIsOnlineMode();
+                Intent intent = new Intent(context, QuestionActivity.class);
+                intent.putExtra("isAnswerModeView", "true");
+                context.startActivity(intent);
+
+//                OnlineDBHelper.getInstance(context).getQuestionsByID(resultTest.getQuestionsIDLst(), new QuestionIdCallBack() {
+//                    @Override
+//                    public void setQuestionList(List<QuestionModel> questionsLst) {
+//                        Common.questionLst = questionsLst;
+//                        Intent intent = new Intent(context, QuestionActivity.class);
+//                        intent.putExtra("isAnswerModeView", "true");
+//                        context.startActivity(intent);
+//                    }
+//                });
             }
         }
     }

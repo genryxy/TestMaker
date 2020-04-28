@@ -53,6 +53,10 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
     private boolean wasAnswered = false;
 
+    public List<CheckBox> getAllCheckbox() {
+        return allCheckbox;
+    }
+
     public QuestionFragment() {
         // Для работы требуется пустой конструктор
     }
@@ -214,7 +218,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 }
             }
         } else {
-            resStr.append(inputAnswerTextEdt.getText().toString().toLowerCase());
+            resStr.append(inputAnswerTextEdt.getText().toString().toLowerCase().trim());
             if (resStr.toString().length() == 0) {
                 resStr.append("текст ответа");
             }
@@ -227,9 +231,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
         if (!TextUtils.isEmpty(resStr)) {
             String rightAnswer = question.getCorrectAnswer();
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
-                rightAnswer = rightAnswer.toLowerCase();
+                rightAnswer = rightAnswer.toLowerCase().trim();
             }
-            if (resStr.toString().equals(rightAnswer)) {
+            if (resStr.toString().toLowerCase().trim().equals(rightAnswer)) {
                 currentQuestion.setType(Common.AnswerType.RIGHT_ANSWER);
             } else {
                 currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);
