@@ -21,6 +21,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class StatisticFragment extends Fragment implements FireBaseConnections {
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private StatisticViewModel statisticViewModel;
     private AlertDialog dialog;
 
@@ -44,6 +46,7 @@ public class StatisticFragment extends Fragment implements FireBaseConnections {
         resultDBRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
         resultDBRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         OnlineDBHelper.getInstance(getContext()).getResultByUserKey(resultDBRecycler, dialog);
+
         return root;
     }
 }

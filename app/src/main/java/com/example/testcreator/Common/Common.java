@@ -23,7 +23,6 @@ public class Common {
     public static String keyGetTestByResult;
     public static Uri imgQuestionUri;
     public static List<QuestionModel> questionLst = new ArrayList<>();
-    public static List<Integer> questionIDLst = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetListFiltered = new ArrayList<>();
     public static int selectedCategory = 1;

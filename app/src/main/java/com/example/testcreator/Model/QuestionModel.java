@@ -33,18 +33,6 @@ public class QuestionModel {
         this.typeAnswer = typeAnswer;
     }
 
-    public QuestionModel(int questionID, String questionText, String questionImage, List<String> allAnswer,
-                         String correctAnswer, boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer) {
-        this.questionID = questionID;
-        this.questionText = questionText;
-        this.questionImage = questionImage;
-        this.allAnswer = allAnswer;
-        this.correctAnswer = correctAnswer;
-        this.isImageQuestion = isImageQuestion;
-        this.categoryID = categoryID;
-        this.typeAnswer = typeAnswer;
-    }
-
     public String getQuestionText() {
         return questionText;
     }

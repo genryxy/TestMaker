@@ -143,11 +143,11 @@ public class OnlineDBHelper implements FireBaseConnections {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         final ResultTestFirebase resFirebase = documentSnapshot.toObject(ResultTestFirebase.class);
                         if (resFirebase != null && resFirebase.getTotalCount() != 0) {
-                            resCallBack.setQuestionListAndAnswer(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getQuestionsIDLst()),
-                                    new ArrayList<>(resFirebase.getResultTestsMap().get(key).getAnswerSheetLst()));
+                            resCallBack.setQuestionList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getQuestionsIDLst()));
+                            resCallBack.setUserAnswerList(new ArrayList<>(resFirebase.getResultTestsMap().get(key).getAnswerSheetLst()));
                         } else {
-                            resCallBack.setQuestionListAndAnswer(new ArrayList<Integer>(),
-                                    new ArrayList<CurrentQuestion>());
+                            resCallBack.setQuestionList(new ArrayList<Integer>());
+                            resCallBack.setUserAnswerList(new ArrayList<CurrentQuestion>());
                         }
                         if (dialog.isShowing()) {
                             dialog.dismiss();
