@@ -230,6 +230,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
         // Сравниваем правильные ответы с ответами пользователя.
         if (!TextUtils.isEmpty(resStr)) {
             String rightAnswer = question.getCorrectAnswer().toLowerCase();
+            // Если ответ в свободной форме, то заносим значение в правильный ответ.
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
                 rightAnswer = rightAnswer.toLowerCase().trim();
             }
@@ -239,7 +240,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);
             }
         }
-        currentQuestion.setUserAnswer(resStr.toString());
+        currentQuestion.setUserAnswer(inputAnswerTextEdt.getText().toString());
 
         Common.selectedValues.clear();
         return currentQuestion;

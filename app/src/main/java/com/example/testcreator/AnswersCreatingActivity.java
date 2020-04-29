@@ -255,14 +255,31 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 Pair<Integer, StringBuilder> rightAns = saveRightAnswers();
                 // Если создаётся не первый вопрос, то вызвать нажатие
                 // на кнопку для создания следующего вопроса.
-                if (questionNumber == 1 && rightAns.first == 0) {
+                if (questionNumber == 1 && rightAns.first == 0 && !typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Нужно отметить правильный ответ, чтобы добавить тест " +
                                     "из одного вопроса", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                if (rightAns.first == 0) {
+                boolean isFilledAns = rightAns.second.toString().length() == 0
+                        || rightAns.second.toString().equals("null");
+
+                if (questionNumber == 1 && isFilledAns && typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
+                    Toast.makeText(AnswersCreatingActivity.this,
+                            "Нужно заполнить правильный ответ, чтобы добавить тест " +
+                                    "из одного вопроса", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name()) && isFilledAns) {
+                    Toast.makeText(AnswersCreatingActivity.this,
+                            "Последний вопрос не был сохранён, так как для него не введен правильный ответ!",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (rightAns.first == 0 && !typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
                     Toast.makeText(context, "Последний вопрос не был сохранён, так как для него не отмечены ответы!",
                             Toast.LENGTH_LONG).show();
                     return;
@@ -286,9 +303,15 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             @Override
             public void onClick(View v) {
                 final Pair<Integer, StringBuilder> rightAns = saveRightAnswers();
-                if (rightAns.first == 0) {
+                if (rightAns.first == 0 && !typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Нужно отметить правильный ответ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name()) && (rightAns.second.toString().length() == 0
+                        || rightAns.second.toString().equals("null"))) {
+                    Toast.makeText(AnswersCreatingActivity.this,
+                            "Нужно заполнить поле с ответом", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 saveQuestionToDB(rightAns);
