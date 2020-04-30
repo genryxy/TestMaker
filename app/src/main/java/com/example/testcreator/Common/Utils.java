@@ -6,11 +6,20 @@ import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
+import com.example.testcreator.Model.QuestionModel;
+
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
 
 public class Utils {
+    public static boolean[] selectedAnswer = new boolean[QuestionModel.NUMBER_ANSWER];
+
+    static {
+        Arrays.fill(selectedAnswer, false);
+    }
+
     public static String getExtension(Uri imgUri, Context context) {
         ContentResolver resolver = context.getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();

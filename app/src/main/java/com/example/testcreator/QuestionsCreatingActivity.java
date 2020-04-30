@@ -1,13 +1,9 @@
 package com.example.testcreator;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,7 +28,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     private EditText answersNumberEdt;
     private Button startCreatingAnswersBtn;
     private ImageView imgViewQuestion;
-    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.OneOrManyAnswers;
+    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.ManyAnswers;
     private int questionNumber = 1;
 
     @Override
@@ -111,8 +107,12 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 answersNumberEdt.setText("4");
                 switch (checkedId) {
-                    case R.id.oneOrManyAnsRadioBtn:
-                        typeAnswer = NumberAnswerEnum.OneOrManyAnswers;
+                    case R.id.oneAnsRadioBtn:
+                        typeAnswer = NumberAnswerEnum.OneAnswer;
+                        answersNumberEdt.setEnabled(true);
+                        break;
+                    case R.id.manyAnsRadioBtn:
+                        typeAnswer = NumberAnswerEnum.ManyAnswers;
                         answersNumberEdt.setEnabled(true);
                         break;
                     case R.id.ownAnsRadioBtn:

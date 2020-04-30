@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,6 @@ import java.util.Map;
 public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections {
 
     public static final String TAG = "AnswersCreatingActivity";
-
-    private final String answerText = "Текст ответа";
 
     private Button addNewVariantBtn;
     private Button createNextQuestionBtn;
@@ -63,6 +62,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         ListView lstView = findViewById(R.id.answersLstView);
         findElementsViewById();
         getInfoFromPreviousIntent();
+        Arrays.fill(Utils.selectedAnswer, false);
 
         // Создаём список с ответами.
         lstAnswers = new ArrayList<>();
@@ -75,7 +75,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         }
 
         final AnswerViewListAdapter adapter = new AnswerViewListAdapter
-                (this, R.layout.layout_creating_answer, lstAnswers);
+                (this, R.layout.layout_creating_answer, lstAnswers, typeAnswer);
         lstView.setAdapter(adapter);
 
         addNewVariantBtnClickListen(adapter);
@@ -109,9 +109,14 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      */
     private QuestionModel createQuestion(StringBuilder rightAnsBuilder) {
         processLstAnswers();
+        NumberAnswerEnum type = NumberAnswerEnum.OneAnswer;
+        if (typeAnswer.equals(NumberAnswerEnum.ManyAnswers.name())) {
+            type = NumberAnswerEnum.ManyAnswers;
+        } else if (typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
+            type = NumberAnswerEnum.OwnAnswer;
+        }
         return new QuestionModel(questionText, null, lstAnswersToDatabase,
-                rightAnsBuilder.toString(), false, categoryID, typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())
-                ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
+                rightAnsBuilder.toString(), false, categoryID, type);
     }
 
     /**
@@ -120,7 +125,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      * заглавной буквы латинского алфавита, которая означает номер ответа.
      * Потом следует точка. Ещё в каждом вопросе должно быть 10 вариантов ответа
      * для правильного вывода возможных ответов на вопрос, поэтому дозаполняем
-     * оставшиеся варианты ответов строкой "Z".
+     * оставшиеся варианты ответов строкой null.
      * Для отображения ответов при заполнении используется класс AnswerView, но
      * в базе данных достаточно только формулировки ответа, поэтому переносим
      * все ответы в другой список, использующий встроенный класс String.
@@ -130,7 +135,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
      */
     private void processLstAnswers() {
         lstAnswersToDatabase = new ArrayList<>();
-        if (typeAnswer.equals(NumberAnswerEnum.OneOrManyAnswers.name())) {
+        if (typeAnswer.equals(NumberAnswerEnum.ManyAnswers.name())
+                || typeAnswer.equals(NumberAnswerEnum.OneAnswer.name())) {
             String tmp;
             int size = lstAnswers.size();
             for (int i = 0; i < size; i++) {
@@ -140,7 +146,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
 
             // Теперь дозаполним оставшиеся ответы.
             for (int i = size; i < lettersMap.size(); i++) {
-                lstAnswersToDatabase.add("Z");
+                lstAnswersToDatabase.add(null);
             }
         }
     }
@@ -155,7 +161,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private Pair<Integer, StringBuilder> saveRightAnswers() {
         int rightAnsNumber = 0;
         StringBuilder rightAnsBuilder = new StringBuilder();
-        if (typeAnswer.equals(NumberAnswerEnum.OneOrManyAnswers.name())) {
+        if (typeAnswer.equals(NumberAnswerEnum.ManyAnswers.name())
+                || typeAnswer.equals(NumberAnswerEnum.OneAnswer.name())) {
             for (int i = 0; i < lstAnswers.size(); i++) {
                 if (lstAnswers.get(i).getSelected()) {
                     rightAnsNumber++;
@@ -172,7 +179,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 rightAnsBuilder.append(lstAnswers.get(0).getAnswerText());
             }
             if (rightAnsBuilder.toString().length() > 0
-                    && !rightAnsBuilder.toString().toLowerCase().equals("текст ответа")) {
+                    && !rightAnsBuilder.toString().toLowerCase().equals("null")) {
                 rightAnsNumber++;
             }
         }

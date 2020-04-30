@@ -25,7 +25,8 @@
     <string name="inputNewCategory">Новая тема</string>
     <string name="questionText">Формулировка вопроса</string>
     <string name="selectTypeAnswer">Выберите тип ответа на вопрос</string>
-    <string name="typeOneOrManyAnswer">Один или несколько правильных ответов</string>
+    <string name="typeOneAnswer">Один правильный ответ</string>
+    <string name="typeManyAnswer">Несколько правильных ответов</string>
     <string name="typeOwnAnswer">Ответ в свободной форме</string>
     <string name="answersNumber">Количество вариантов ответов (не более 10)</string>
     <string name="startCreatingAnswers">Перейти к созданию ответов</string>
@@ -46,6 +47,17 @@
     <string name="theme">Тема: </string>
     <string name="onlineMode">Онлайн-режим</string>
     <string name="shuffleMode">Перемешать вопросы</string>
+    <string name="shuffleAnswerMode">Перемешать ответы</string>
     <string name="clickToPick">Нажмите, чтобы выбрать картинку </string>
     <string name="catPicture">Картинка с котиком</string>
+    <string name="answerA">Ответ A</string>
+    <string name="answerB">Ответ B</string>
+    <string name="answerC">Ответ C</string>
+    <string name="answerD">Ответ D</string>
+    <string name="answerE">Ответ E</string>
+    <string name="answerF">Ответ F</string>
+    <string name="answerG">Ответ G</string>
+    <string name="answerH">Ответ H</string>
+    <string name="answerI">Ответ I</string>
+    <string name="answerJ">Ответ J</string>
 </resources>

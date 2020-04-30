@@ -64,6 +64,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
             if (position != RecyclerView.NO_POSITION) {
                 View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
                 final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
+                final CheckBox checkboxShuffleAnswer= shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
 
                 TestInfo test = testInfos.get(position);
                 new MaterialStyledDialog.Builder(context)
@@ -82,6 +83,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 Common.isShuffleMode = checkboxShuffle.isChecked();
+                                Common.isIsShuffleAnswerMode = checkboxShuffleAnswer.isChecked();
                                 Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
                                 Common.selectedTest = testInfos.get(getAdapterPosition()).getName();
                                 Common.fragmentsLst.clear();

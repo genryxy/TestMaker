@@ -64,18 +64,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:checkedButton="@id/oneOrManyAnsRadioBtn"
+            android:checkedButton="@id/oneAnsRadioBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.22"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/selectTypeAnswerTxt">
 
             <RadioButton
-                android:id="@+id/oneOrManyAnsRadioBtn"
+                android:id="@+id/oneAnsRadioBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="@string/typeOneOrManyAnswer" />
+                android:text="@string/typeOneAnswer" />
+
+            <RadioButton
+                android:id="@+id/manyAnsRadioBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/typeManyAnswer" />
 
             <RadioButton
                 android:id="@+id/ownAnsRadioBtn"
@@ -120,20 +127,37 @@
             app:layout_constraintTop_toBottomOf="@+id/answersNumberEdt"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ImageView
-            android:id="@+id/imgViewQuestion"
-            android:layout_width="283dp"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:clickable="true"
-            android:contentDescription="@string/clickToPick"
-            android:focusable="true"
-            android:maxHeight="500dp"
-            android:minHeight="100dp"
+            android:layout_marginTop="15dp"
+            android:padding="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn"
-            app:layout_constraintVertical_bias="1.0"
-            app:srcCompat="@android:drawable/ic_menu_camera" />
+            app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+
+                <ImageView
+                    android:id="@+id/imgViewQuestion"
+                    android:layout_width="283dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:clickable="true"
+                    android:contentDescription="@string/clickToPick"
+                    android:focusable="true"
+                    android:maxHeight="500dp"
+                    android:minHeight="100dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn"
+                    app:layout_constraintVertical_bias="1.0"
+                    app:srcCompat="@android:drawable/ic_menu_camera" />
+            </LinearLayout>
+
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

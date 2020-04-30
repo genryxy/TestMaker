@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer A"
+                android:text="@string/answerA"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -76,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer B"
+                android:text="@string/answerB"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer C"
+                android:text="@string/answerC"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer D"
+                android:text="@string/answerD"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer E"
+                android:text="@string/answerE"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer F"
+                android:text="@string/answerF"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer G"
+                android:text="@string/answerG"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -124,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer H"
+                android:text="@string/answerH"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -132,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer I"
+                android:text="@string/answerI"
                 android:textSize="18sp" />
 
             <CheckBox
@@ -140,8 +140,96 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
-                android:text="Answer J"
+                android:text="@string/answerJ"
                 android:textSize="18sp" />
+
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/radioA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerA"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerB"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerC"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerD"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerE"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioF"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerF"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioG"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerG"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioH"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerH"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioI"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerI"
+                    android:textSize="18sp" />
+
+                <RadioButton
+                    android:id="@+id/radioJ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:text="@string/answerJ"
+                    android:textSize="18sp" />
+            </RadioGroup>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

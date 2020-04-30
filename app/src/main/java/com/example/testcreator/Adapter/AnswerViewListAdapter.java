@@ -10,13 +10,18 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.testcreator.Common.Utils;
+import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.R;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,12 +33,15 @@ import java.util.List;
 public class AnswerViewListAdapter extends ArrayAdapter<AnswerView> {
     private Context context;
     private int resource;
+    private String typeAnswer;
 
 
-    public AnswerViewListAdapter(@NonNull Context context, int resource, @NonNull List<AnswerView> objects) {
+    public AnswerViewListAdapter(@NonNull Context context, int resource, @NonNull List<AnswerView> objects,
+                                 String typeAnswer) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
+        this.typeAnswer = typeAnswer;
     }
 
     @NonNull
@@ -77,7 +85,18 @@ public class AnswerViewListAdapter extends ArrayAdapter<AnswerView> {
                 if (txtChoice.isChecked()) {
                     txtChoice.setChecked(false);
                     getItem(position).setSelected(false);
+                    Utils.selectedAnswer[position] = false;
                 } else {
+                    if (typeAnswer.equals(NumberAnswerEnum.OneAnswer.name())) {
+                        for (int i = 0; i < Utils.selectedAnswer.length; i++) {
+                            if (Utils.selectedAnswer[i]) {
+                                Toast.makeText(context, "Ответ уже выбран! Уберите галочку у выделенного",
+                                        Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        }
+                        Utils.selectedAnswer[position] = true;
+                    }
                     txtChoice.setChecked(true);
                     getItem(position).setSelected(true);
                 }

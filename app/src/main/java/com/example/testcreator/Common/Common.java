@@ -43,6 +43,7 @@ public class Common {
     public static TreeSet<String> selectedValues = new TreeSet<>();
     public static boolean isOnlineMode = false;
     public static boolean isShuffleMode = false;
+    public static boolean isIsShuffleAnswerMode = false;
 
     public enum AnswerType {
         NO_ANSWER,

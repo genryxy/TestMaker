@@ -78,7 +78,6 @@ public class QuestionModel {
     }
 
     public List<String> getAllAnswer() {
-        Collections.sort(allAnswer);
         return allAnswer;
     }
 

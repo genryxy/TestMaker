@@ -13,7 +13,6 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 public class DBHelper extends SQLiteAssetHelper {
@@ -112,7 +111,7 @@ public class DBHelper extends SQLiteAssetHelper {
                 cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 1,
                 cursor.getInt(cursor.getColumnIndex("CategoryID")),
                 ans.equals(NumberAnswerEnum.OwnAnswer.name())
-                        ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.OneOrManyAnswers);
+                        ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.ManyAnswers);
     }
 }
 

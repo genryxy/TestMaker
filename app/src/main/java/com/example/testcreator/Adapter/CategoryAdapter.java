@@ -69,6 +69,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                     if (position != RecyclerView.NO_POSITION) {
                         View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
                         final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
+                        final CheckBox checkboxShuffleAnswer = shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
 
                         Category category = categories.get(getAdapterPosition());
                         new MaterialStyledDialog.Builder(context)
@@ -88,6 +89,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                         Common.isShuffleMode = checkboxShuffle.isChecked();
+                                        Common.isIsShuffleAnswerMode = checkboxShuffleAnswer.isChecked();
                                         Common.selectedCategory = categories.get(getAdapterPosition()).getId();
                                         Common.selectedTest = null;
                                         Common.fragmentsLst.clear();

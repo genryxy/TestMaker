@@ -1,6 +1,5 @@
 package com.example.testcreator.Enum;
 
-public enum NumberAnswerEnum
-{
-    OneOrManyAnswers, OwnAnswer
+public enum NumberAnswerEnum {
+    OneAnswer, ManyAnswers, OwnAnswer
 }
