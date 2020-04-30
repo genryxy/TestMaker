@@ -222,22 +222,25 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         if (!isAnswerModeView) {
             int position = viewPager.getCurrentItem();
             QuestionFragment questionFragment = Common.fragmentsLst.get(position);
-            CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
-            Common.answerSheetList.set(position, questionState);
-            // Оповестить об изменении цвета.
-            answerSheetAdapter.notifyDataSetChanged();
-
-            countCorrectAnswer();
-            questionRightTxt.setText(getFinalResult());
-            questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+            // Если на этот вопрос ещё не отвечали.
+            if (!questionFragment.isWasAnswered()) {
+                CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
+                Common.answerSheetList.set(position, questionState);
+                // Оповестить об изменении цвета.
+                answerSheetAdapter.notifyDataSetChanged();
+                countCorrectAnswer();
+                questionRightTxt.setText(getFinalResult());
+                questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
+            }
 
             // Устанавливаем правильные ответы, потому что если откроют этот
             // же вопрос при просмотре результатов первым, то они не выделятся,
             // потому что не произойдёт смена позиции ViewPager.
             Common.fragmentsLst.get(position).showCorrectAnswers();
             Common.fragmentsLst.get(position).disableAnswers();
-            // Проходимся по всем фрагментам и устанавливаем правильные ответы,
-            // чтобы корректно отображались правильные ответы при просмотре ответов.
+            // Проходимся по всем фрагментам и устанавливаем флаг, о том, что
+            // пользователь отвечал на данный вопрос, чтобы корректно
+            // отображались правильные ответы при просмотре ответов.
             for (QuestionFragment frag : Common.fragmentsLst) {
                 frag.setWasAnswered(true);
             }
@@ -296,15 +299,17 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         // Теперь обработаем вопросы в скопированной коллекции.
         for (CurrentQuestion question : answerSheetList) {
             StringBuilder newUserAns = new StringBuilder();
-            for (int i = 0; i < question.getUserAnswer().length(); i++) {
-                String ch = String.valueOf(question.getUserAnswer().charAt(i));
-                if (question.getDictTransitionAns().containsKey(ch)) {
-                    newUserAns.append(question.getDictTransitionAns().get(ch)).append(",");
-                } else {
-                    newUserAns.append(ch).append(",");
+            if (question.getUserAnswer() != null) {
+                for (int i = 0; i < question.getUserAnswer().length(); i++) {
+                    String ch = String.valueOf(question.getUserAnswer().charAt(i));
+                    if (question.getDictTransitionAns().containsKey(ch)) {
+                        newUserAns.append(question.getDictTransitionAns().get(ch)).append(",");
+                    } else {
+                        newUserAns.append(ch).append(",");
+                    }
                 }
+                question.setUserAnswer(newUserAns.substring(0, newUserAns.length() - 1));
             }
-            question.setUserAnswer(newUserAns.substring(0, newUserAns.length() - 1));
         }
         return answerSheetList;
     }
@@ -501,9 +506,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     @Override
     protected void onDestroy() {
-        if (Common.countDownTimer != null) {
-            Common.countDownTimer.cancel();
-        }
         Common.selectedValues.clear();
         super.onDestroy();
     }
@@ -594,6 +596,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 } else if (action.equals("doQuizAgain")) {
                     if (Common.countDownTimer != null) {
                         Common.countDownTimer.cancel();
+
                     }
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;

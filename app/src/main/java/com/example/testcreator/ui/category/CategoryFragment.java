@@ -89,7 +89,7 @@ public class CategoryFragment extends Fragment {
         final CheckBox checkBoxOnlineMode = settingLayout.findViewById(R.id.checkBoxOnlineMode);
 
         // Загружаем данные из Paper. Если не доступно, то инициализируем дефолтовым значением.
-        checkBoxOnlineMode.setChecked(Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, false));
+        checkBoxOnlineMode.setChecked(Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, true));
 
         // Показываем диалог
         new MaterialStyledDialog.Builder(getContext())

@@ -33,6 +33,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -252,6 +253,13 @@ public class QuestionFragment extends Fragment implements IQuestion {
                     }
                 }
             }
+            // Нужно отсортировать правильные ответы, потому что сейчас могут быть не по алфавиту.
+            String[] letters = newAnsw.toString().split(",");
+            Arrays.sort(letters);
+            newAnsw.delete(0, newAnsw.length());
+            for (String symb : letters) {
+                newAnsw.append(symb).append(",");
+            }
             // (length - 1), чтобы не было висячей запятой
             question.setCorrectAnswer(newAnsw.substring(0, newAnsw.length() - 1));
             Collections.sort(filledAnswers);
@@ -331,17 +339,18 @@ public class QuestionFragment extends Fragment implements IQuestion {
 
         // Сравниваем правильные ответы с ответами пользователя.
         if (!TextUtils.isEmpty(resStr)) {
-            String rightAnswer = question.getCorrectAnswer().toLowerCase();
+            String rightAnswer = question.getCorrectAnswer();
             // Если ответ в свободной форме, то заносим значение в правильный ответ.
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
                 rightAnswer = rightAnswer.toLowerCase().trim();
                 currentQuestion.setUserAnswer(inputAnswerTextEdt.getText().toString());
             } else {
+
                 // Устанавливаем словарь переходов.
                 currentQuestion.setDictTransitionAns(dictTransitionAns);
                 currentQuestion.setUserAnswer(resStr.toString());
             }
-            if (resStr.toString().toLowerCase().trim().equals(rightAnswer)) {
+            if (resStr.toString().toLowerCase().trim().equals(rightAnswer.toLowerCase())) {
                 currentQuestion.setType(Common.AnswerType.RIGHT_ANSWER);
             } else {
                 currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);

@@ -41,7 +41,7 @@ public class Common {
     public static List<QuestionFragment> fragmentsLst = new ArrayList<>();
     // Выбранные варианты ответов.
     public static TreeSet<String> selectedValues = new TreeSet<>();
-    public static boolean isOnlineMode = false;
+    public static boolean isOnlineMode = true;
     public static boolean isShuffleQuestionMode = false;
     public static boolean isIsShuffleAnswerMode = false;
 
