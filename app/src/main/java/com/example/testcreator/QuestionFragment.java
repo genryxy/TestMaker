@@ -342,11 +342,13 @@ public class QuestionFragment extends Fragment implements IQuestion {
             String rightAnswer = question.getCorrectAnswer();
             // Если ответ в свободной форме, то заносим значение в правильный ответ.
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
+                // Не учитываем регистр и пробелы между словами.
                 rightAnswer = rightAnswer.toLowerCase().trim();
+                rightAnswer = rightAnswer.replace(" ", "");
+                resStr = new StringBuilder(resStr.toString().replace(" ", ""));
                 currentQuestion.setUserAnswer(inputAnswerTextEdt.getText().toString());
             } else {
-
-                // Устанавливаем словарь переходов.
+                // Устанавливаем словарь переходов одних ответов в другие.
                 currentQuestion.setDictTransitionAns(dictTransitionAns);
                 currentQuestion.setUserAnswer(resStr.toString());
             }
