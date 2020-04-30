@@ -98,7 +98,7 @@ public class DBHelper extends SQLiteAssetHelper {
         List<String> allAnswer = new ArrayList<>(QuestionModel.NUMBER_ANSWER);
         for (int i = 0; i < QuestionModel.NUMBER_ANSWER; i++) {
             answer = cursor.getString(cursor.getColumnIndex("Answer" + (char) ('A' + i)));
-            allAnswer.add(answer != null ? answer : "Z");
+            allAnswer.add(answer);
         }
         String ans = cursor.getString(cursor.getColumnIndex("TypeAnswer"));
 

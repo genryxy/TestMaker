@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
@@ -39,6 +40,9 @@ public class StatisticFragment extends Fragment implements FireBaseConnections {
 //                textView.setText(s);
 //            }
 //        });
+        // Очищаем установленные ранее значения.
+        Common.isIsShuffleAnswerMode = false;
+        Common.isShuffleQuestionMode = false;
 
         dialog = Utils.showLoadingDialog(getContext());
         int spaceInPixel = 4;

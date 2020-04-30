@@ -2,21 +2,18 @@ package com.example.testcreator.ui.searchTest;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.bumptech.glide.Glide;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
@@ -25,13 +22,10 @@ import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
         //ListAdapter<SelectingTestView, SelectingTestRecyclerView.ViewHolder>
@@ -82,7 +76,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                Common.isShuffleMode = checkboxShuffle.isChecked();
+                                Common.isShuffleQuestionMode = checkboxShuffle.isChecked();
                                 Common.isIsShuffleAnswerMode = checkboxShuffleAnswer.isChecked();
                                 Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
                                 Common.selectedTest = testInfos.get(getAdapterPosition()).getName();

@@ -9,11 +9,17 @@ import android.webkit.MimeTypeMap;
 import com.example.testcreator.Model.QuestionModel;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
 
 public class Utils {
+    /**
+     * Массив, чтобы следить за количеством отмеченных вариантов ответов
+     * при составлении ответов в режиме OneAnswer.
+     */
     public static boolean[] selectedAnswer = new boolean[QuestionModel.NUMBER_ANSWER];
 
     static {

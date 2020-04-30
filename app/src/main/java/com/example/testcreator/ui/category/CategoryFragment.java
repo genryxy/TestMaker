@@ -22,13 +22,8 @@ import com.example.testcreator.Adapter.CategoryAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.DBHelper.DBHelper;
-import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Interface.ThemesCallBack;
-import com.example.testcreator.Model.Category;
 import com.example.testcreator.R;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
-
-import java.util.List;
 
 import io.paperdb.Paper;
 
@@ -45,6 +40,9 @@ public class CategoryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_category, container, false);
 //        final TextView textView = root.findViewById(R.id.text_home);
         setHasOptionsMenu(true);
+        // Очищаем установленные ранее значения.
+        Common.isIsShuffleAnswerMode = false;
+        Common.isShuffleQuestionMode = false;
 
         Paper.init(getContext());
         Common.isOnlineMode = Paper.book().read(Common.KEY_SAVE_ONLINE_MODE, true);

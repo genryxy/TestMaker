@@ -42,7 +42,7 @@ public class Common {
     // Выбранные варианты ответов.
     public static TreeSet<String> selectedValues = new TreeSet<>();
     public static boolean isOnlineMode = false;
-    public static boolean isShuffleMode = false;
+    public static boolean isShuffleQuestionMode = false;
     public static boolean isIsShuffleAnswerMode = false;
 
     public enum AnswerType {

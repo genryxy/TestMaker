@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -17,7 +16,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.Category;
-import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
@@ -88,7 +86,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        Common.isShuffleMode = checkboxShuffle.isChecked();
+                                        Common.isShuffleQuestionMode = checkboxShuffle.isChecked();
                                         Common.isIsShuffleAnswerMode = checkboxShuffleAnswer.isChecked();
                                         Common.selectedCategory = categories.get(getAdapterPosition()).getId();
                                         Common.selectedTest = null;

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Enum.NumberAnswerEnum;
 import com.example.testcreator.Interface.IQuestion;
@@ -33,7 +34,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,6 +53,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private RadioGroup radioGroup;
     private List<CheckBox> allCheckbox = new ArrayList<>();
     private List<RadioButton> allRadioBtn = new ArrayList<>();
+    private Map<String, String> dictTransitionAns = new HashMap<>();
 
     private QuestionModel question;
     private int questionIndex = -1;
@@ -224,21 +228,31 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 answerLetters.add(String.valueOf((char) ('A' + i)));
             }
             Collections.shuffle(answerLetters);
+            // Нужно подогнать ответы исходной коллекции к ответам коллекции
+            // с перемешанными вопросами.
             StringBuilder newAnsw = new StringBuilder();
             for (int i = 0; i < filledAnswers.size(); i++) {
                 String currAns = filledAnswers.get(i);
+                // Если буква, отвечающая за вариант ответа, не совпадает с буквой
+                // на текущей позиции из коллекции с перемешанными буквами
                 if (!String.valueOf(currAns.charAt(0)).equals(answerLetters.get(i))) {
+                    // Добавляем в словарь, чтобы потом правильно показывать ответы пользователя.
+                    dictTransitionAns.put(answerLetters.get(i), String.valueOf(currAns.charAt(0)));
+                    // Если этот ответ является правильным, то заносим его в новый ответ.
                     if (question.getCorrectAnswer().contains(String.valueOf(currAns.charAt(0)))) {
                         newAnsw.append(answerLetters.get(i)).append(",");
                     }
                     String newStr = answerLetters.get(i) + currAns.substring(1);
                     filledAnswers.set(i, newStr);
                 } else {
+                    // Если совпадает с перемешанным и содержится в ответе, то просто переносим
+                    // в новый ответ.
                     if (question.getCorrectAnswer().contains(String.valueOf(currAns.charAt(0)))) {
                         newAnsw.append(answerLetters.get(i)).append(",");
                     }
                 }
             }
+            // (length - 1), чтобы не было висячей запятой
             question.setCorrectAnswer(newAnsw.substring(0, newAnsw.length() - 1));
             Collections.sort(filledAnswers);
         }
@@ -281,36 +295,6 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 }
             }
         });
-
-//            // Add logic here
-//
-//                switch(index)
-//
-//            {
-//                case 0: // first button
-//
-//                    Toast.makeText(getApplicationContext(), "Selected button number " + index, 500).show();
-//                    break;
-//                case 1: // secondbutton
-//
-//                    Toast.makeText(getApplicationContext(), "Selected button number " + index, 500).show();
-//                    break;
-//            }
-//        }
-//        for (final RadioButton btn : allRadioBtn) {
-//            btn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                @Override
-//                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                    if (!wasAnswered) {
-//                        if (isChecked) {
-//                            Common.selectedValues.add(btn.getText().toString());
-//                        } else {
-//                            Common.selectedValues.remove(btn.getText().toString());
-//                        }
-//                    }
-//                }
-//            });
-//        }
     }
 
     @Override
@@ -337,7 +321,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
             }
         } else {
             resStr.append(inputAnswerTextEdt.getText().toString().toLowerCase().trim());
-            if (resStr.toString().length() == 0) {
+            if (resStr.toString().length() == 0 || resStr.toString().equals("null")) {
                 resStr.append("текст ответа");
             }
         }
@@ -351,6 +335,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
             // Если ответ в свободной форме, то заносим значение в правильный ответ.
             if (question.getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
                 rightAnswer = rightAnswer.toLowerCase().trim();
+                currentQuestion.setUserAnswer(inputAnswerTextEdt.getText().toString());
+            } else {
+                // Устанавливаем словарь переходов.
+                currentQuestion.setDictTransitionAns(dictTransitionAns);
+                currentQuestion.setUserAnswer(resStr.toString());
             }
             if (resStr.toString().toLowerCase().trim().equals(rightAnswer)) {
                 currentQuestion.setType(Common.AnswerType.RIGHT_ANSWER);
@@ -358,7 +347,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);
             }
         }
-        currentQuestion.setUserAnswer(inputAnswerTextEdt.getText().toString());
+
 
         Common.selectedValues.clear();
         return currentQuestion;

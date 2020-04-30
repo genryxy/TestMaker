@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,10 +44,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
@@ -145,7 +142,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                         @Override
                         public void setQuestionList(List<Integer> questionsIDLst) {
                             Common.questionLst.clear();
-                            if (Common.isShuffleMode) {
+                            if (Common.isShuffleQuestionMode) {
                                 Collections.shuffle(questionsIDLst);
                             }
                             getQuestionsByIDAndSet(questionsIDLst);
@@ -155,7 +152,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             // Если выключен онлайн-режим, то подгружаем из локальной БД.
             if (!Common.isOnlineMode) {
                 Common.questionLst = DBHelper.getInstance(this).getQuestionsByCategory(Common.selectedCategory);
-                if (Common.isShuffleMode) {
+                if (Common.isShuffleQuestionMode) {
                     Collections.shuffle(Common.questionLst);
                 }
                 addQuestionToCommonAnswerSheetAdapter();
@@ -168,7 +165,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                             @Override
                             public void setQuestionList(List<Integer> questionsIDLst) {
                                 Common.questionLst.clear();
-                                if (Common.isShuffleMode) {
+                                if (Common.isShuffleQuestionMode) {
                                     Collections.shuffle(questionsIDLst);
                                 }
                                 List<Integer> tmpIDLst = new ArrayList<>();
@@ -246,6 +243,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             }
             writeResultToDatabase();
             Common.timer = Common.TOTAL_TIME - timePlay;
+            if (Common.countDownTimer != null) {
+                Common.countDownTimer.cancel();
+            }
         }
 
         // Перейти к новому activity с ожиданием ответа от него.
@@ -266,6 +266,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
         List<CurrentQuestion> answerSheetList = new ArrayList<>(Common.answerSheetList);
         String duration = String.valueOf(Common.TOTAL_TIME - timePlay);
+        if (Common.isIsShuffleAnswerMode) {
+            answerSheetList = changeUserAnswerAfterShuffleAnswer();
+        }
 
         final ResultTest resultTest = new ResultTest(duration, questionsIDLst, answerSheetList,
                 Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount,
@@ -275,6 +278,35 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
 
         OnlineDBHelper.getInstance(this).saveResultDB(resultTest, resultAll);
+    }
+
+    /**
+     * Метода для обеспечения совпадения выбранных вариантов ответов пользователя
+     * с вариантами ответов на соотвествующих позициях в БД. Несовпадение может
+     * возникнуть в случае перемешивания вариантов ответов при прохождении теста.
+     */
+    private List<CurrentQuestion> changeUserAnswerAfterShuffleAnswer() {
+        List<CurrentQuestion> answerSheetList = new ArrayList<>();
+        // Перекопируем состояния вопросов из Common.answerSheetList
+        for (int i = 0; i < Common.answerSheetList.size(); i++) {
+            CurrentQuestion curr = Common.answerSheetList.get(i);
+            answerSheetList.add(new CurrentQuestion(curr.getQuestionIndex(), curr.getType(),
+                    curr.getUserAnswer(), curr.getDictTransitionAns()));
+        }
+        // Теперь обработаем вопросы в скопированной коллекции.
+        for (CurrentQuestion question : answerSheetList) {
+            StringBuilder newUserAns = new StringBuilder();
+            for (int i = 0; i < question.getUserAnswer().length(); i++) {
+                String ch = String.valueOf(question.getUserAnswer().charAt(i));
+                if (question.getDictTransitionAns().containsKey(ch)) {
+                    newUserAns.append(question.getDictTransitionAns().get(ch)).append(",");
+                } else {
+                    newUserAns.append(ch).append(",");
+                }
+            }
+            question.setUserAnswer(newUserAns.substring(0, newUserAns.length() - 1));
+        }
+        return answerSheetList;
     }
 
     private String getFinalResult() {
@@ -325,7 +357,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             new MaterialStyledDialog.Builder(this)
                     .setTitle("Opppps!")
                     .setIcon(R.drawable.ic_sentiment_dissatisfied_black_24dp)
-                    .setDescription("Нет вопросов в категории " + Utils.getNameCategoryByID(Common.selectedCategory) + "\"")
+                    .setDescription("Нет вопросов в выбранной категории!")
                     .setPositiveText("Ok")
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -373,7 +405,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             tabLayout.setupWithViewPager(viewPager);
             addViewPagerOnChangeListener();
 
-            Common.isShuffleMode = false;
+            Common.isShuffleQuestionMode = false;
         }
     }
 
@@ -560,6 +592,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     }
                     setVisibilityOfNumberAnswers(false);
                 } else if (action.equals("doQuizAgain")) {
+                    if (Common.countDownTimer != null) {
+                        Common.countDownTimer.cancel();
+                    }
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;
                     Common.noAnswerCount = 0;
