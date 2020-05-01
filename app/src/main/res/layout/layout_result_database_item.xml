@@ -4,12 +4,14 @@
     android:layout_height="wrap_content"
     android:background="?android:selectableItemBackground"
     android:descendantFocusability="blocksDescendants"
+    android:maxHeight="180dp"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
+        android:maxHeight="180dp"
         android:orientation="horizontal"
         android:weightSum="7">
 
@@ -17,27 +19,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="2">
 
             <TextView
                 android:id="@+id/nameTestViewTxt"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.98"
+                android:padding="5dp"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.04"
+                android:background="#EDEDED" />
 
             <TextView
                 android:id="@+id/categoryTestViewTxt"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.98"
+                android:padding="5dp"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="180dp"
             android:layout_weight="5"
             android:orientation="vertical">
 
@@ -54,7 +69,7 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"
                 android:background="@color/md_btn_selected"
-                android:text="12/25"
+                android:text="@string/exampleResult"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -74,6 +89,22 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/point"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/questionPointResTxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/md_btn_selected"
+                android:text="@string/exampleResult"
+                android:textAlignment="center"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -81,7 +112,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="#EDEDED"
+        android:background="#ADADAD"
         android:paddingTop="20dp" />
 
 </LinearLayout>

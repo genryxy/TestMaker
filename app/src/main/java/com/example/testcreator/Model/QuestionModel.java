@@ -17,13 +17,14 @@ public class QuestionModel {
     private boolean isImageQuestion;
     private int categoryID;
     private NumberAnswerEnum typeAnswer;
+    private int questionPoint;
 
     public QuestionModel() {
         allAnswer.clear();
     }
 
     public QuestionModel(String questionText, String questionImage, List<String> allAnswer, String correctAnswer,
-                         boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer) {
+                         boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer, int questionPoint) {
         this.questionText = questionText;
         this.questionImage = questionImage;
         this.allAnswer = allAnswer;
@@ -31,10 +32,11 @@ public class QuestionModel {
         this.isImageQuestion = isImageQuestion;
         this.categoryID = categoryID;
         this.typeAnswer = typeAnswer;
+        this.questionPoint = questionPoint;
     }
 
     public QuestionModel(int questionID, String questionText, String questionImage, List<String> allAnswer,
-                         String correctAnswer, boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer) {
+                         String correctAnswer, boolean isImageQuestion, int categoryID, NumberAnswerEnum typeAnswer, int questionPoint) {
         this.questionID = questionID;
         this.questionText = questionText;
         this.questionImage = questionImage;
@@ -43,6 +45,7 @@ public class QuestionModel {
         this.isImageQuestion = isImageQuestion;
         this.categoryID = categoryID;
         this.typeAnswer = typeAnswer;
+        this.questionPoint = questionPoint;
     }
 
     public String getQuestionText() {
@@ -107,5 +110,13 @@ public class QuestionModel {
 
     public void setQuestionID(int questionID) {
         this.questionID = questionID;
+    }
+
+    public int getQuestionPoint() {
+        return questionPoint;
+    }
+
+    public void setQuestionPoint(int questionPoint) {
+        this.questionPoint = questionPoint;
     }
 }

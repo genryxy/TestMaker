@@ -21,7 +21,6 @@ public class Common {
     public static final String KEY_SAVE_ONLINE_MODE = "ONLINE_MODE";
 
     public static String keyGetTestByResult;
-    public static Uri imgQuestionUri;
     public static List<QuestionModel> questionLst = new ArrayList<>();
     public static List<Integer> questionIDLst = new ArrayList<>();
     public static List<CurrentQuestion> answerSheetList = new ArrayList<>();
@@ -34,6 +33,7 @@ public class Common {
 
     public static int timer = 0;
     public static int rightAnswerCount = 0;
+    public static int userPointCount = 0;
     public static int wrongAnswerCount = 0;
     public static int noAnswerCount = 0;
 

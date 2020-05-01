@@ -27,9 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
-        //ListAdapter<SelectingTestView, SelectingTestRecyclerView.ViewHolder>
-        RecyclerView.Adapter<SelectingTestAdapter.ViewHolder> implements FireBaseConnections {
+public class SelectingTestAdapter extends RecyclerView.Adapter<SelectingTestAdapter.ViewHolder>
+        implements FireBaseConnections {
 
     private List<TestInfo> testInfos;
     private Context context;
@@ -58,7 +57,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
             if (position != RecyclerView.NO_POSITION) {
                 View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
                 final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
-                final CheckBox checkboxShuffleAnswer= shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
+                final CheckBox checkboxShuffleAnswer = shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
 
                 TestInfo test = testInfos.get(position);
                 new MaterialStyledDialog.Builder(context)
@@ -83,6 +82,7 @@ public class SelectingTestAdapter extends /*ArrayAdapter<SelectingTestView>*/
                                 Common.fragmentsLst.clear();
                                 Common.answerSheetList.clear();
                                 Common.rightAnswerCount = 0;
+                                Common.userPointCount = 0;
                                 Common.wrongAnswerCount = 0;
                                 Intent intent = new Intent(context, QuestionActivity.class);
                                 context.startActivity(intent);

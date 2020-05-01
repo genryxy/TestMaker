@@ -22,14 +22,15 @@ public class ResultTest {
     private String nameTest;
     private int categoryID;
     private String finalScore;
+    private String finalPoint;
     private int wrongAnswer;
     private int resultID;
     private boolean isOnlineMode;
 
     public ResultTest() {}
 
-    public ResultTest(String duration, List<Integer> questionsIDLst, List<CurrentQuestion> answerSheetLst,
-                      String nameTest, int categoryID, String finalScore, int wrongAnswer, boolean isOnlineMode) {
+    public ResultTest(String duration, List<Integer> questionsIDLst, List<CurrentQuestion> answerSheetLst, String nameTest,
+                      int categoryID, String finalScore, int wrongAnswer, boolean isOnlineMode, String finalPoint) {
         Duration = duration;
         this.questionsIDLst = questionsIDLst;
         this.answerSheetLst = answerSheetLst;
@@ -38,6 +39,7 @@ public class ResultTest {
         this.finalScore = finalScore;
         this.wrongAnswer = wrongAnswer;
         this.isOnlineMode = isOnlineMode;
+        this.finalPoint = finalPoint;
     }
 
     public String getDuration() {
@@ -110,5 +112,13 @@ public class ResultTest {
 
     public void setIsOnlineMode(boolean isOnlineMode) {
         this.isOnlineMode = isOnlineMode;
+    }
+
+    public String getFinalPoint() {
+        return finalPoint;
+    }
+
+    public void setFinalPoint(String finalPoint) {
+        this.finalPoint = finalPoint;
     }
 }

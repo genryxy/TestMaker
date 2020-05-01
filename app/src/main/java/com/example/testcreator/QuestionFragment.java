@@ -47,6 +47,7 @@ import java.util.Map;
 public class QuestionFragment extends Fragment implements IQuestion {
 
     private TextView questionTextTxt;
+    private TextView fragmentPointTxt;
     private FrameLayout layoutImage;
     private ProgressBar progressBar;
     private EditText inputAnswerTextEdt;
@@ -60,6 +61,8 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private int questionIndex = -1;
 
     private boolean wasAnswered = false;
+    // Чтобы знать нужно ли перемешивать ответы при открытии страницы.
+    private boolean isFirst = true;
 
     public List<CheckBox> getAllCheckbox() {
         return allCheckbox;
@@ -170,6 +173,7 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private void findElementsViewById(View itemView) {
         allCheckbox.clear();
         questionTextTxt = itemView.findViewById(R.id.fragmentQuestionTextTxt);
+        fragmentPointTxt = itemView.findViewById(R.id.fragmentPointTxt);
         inputAnswerTextEdt = itemView.findViewById(R.id.inputAnswerTextEdt);
         rightAnswerTxt = itemView.findViewById(R.id.rightAnswerTxt);
         radioGroup = itemView.findViewById(R.id.radioGroup);
@@ -203,6 +207,8 @@ public class QuestionFragment extends Fragment implements IQuestion {
      */
     private void setTextToTextView() {
         questionTextTxt.setText(question.getQuestionText());
+        String weightTask = "Вопрос весит " + question.getQuestionPoint() + " балл(-а/-ов)";
+        fragmentPointTxt.setText(weightTask);
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
             List<String> filledAnswers = getAndShuffleAnswer();
             for (int i = 0; i < filledAnswers.size(); i++) {
@@ -223,7 +229,8 @@ public class QuestionFragment extends Fragment implements IQuestion {
             if (ans != null)
                 filledAnswers.add(ans);
         }
-        if (Common.isIsShuffleAnswerMode) {
+        if (Common.isIsShuffleAnswerMode && isFirst) {
+            isFirst = false;
             List<String> answerLetters = new ArrayList<>();
             for (int i = 0; i < filledAnswers.size(); i++) {
                 answerLetters.add(String.valueOf((char) ('A' + i)));
@@ -263,6 +270,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
             // (length - 1), чтобы не было висячей запятой
             question.setCorrectAnswer(newAnsw.substring(0, newAnsw.length() - 1));
             Collections.sort(filledAnswers);
+            for (int i = 0; i < filledAnswers.size(); i++) {
+                question.getAllAnswer().set(i, filledAnswers.get(i));
+            }
         }
         return filledAnswers;
     }
@@ -293,12 +303,13 @@ public class QuestionFragment extends Fragment implements IQuestion {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-                View checkedBtn = radioGroup.findViewById(checkedId);
-                for (RadioButton btn : allRadioBtn) {
-                    if (btn.getId() == checkedBtn.getId()) {
-                        Common.selectedValues.clear();
-                        Common.selectedValues.add(btn.getText().toString());
+                if (!wasAnswered) {
+                    View checkedBtn = radioGroup.findViewById(checkedId);
+                    for (RadioButton btn : allRadioBtn) {
+                        if (btn.getId() == checkedBtn.getId()) {
+                            Common.selectedValues.clear();
+                            Common.selectedValues.add(btn.getText().toString());
+                        }
                     }
                 }
             }
@@ -358,7 +369,6 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);
             }
         }
-
 
         Common.selectedValues.clear();
         return currentQuestion;

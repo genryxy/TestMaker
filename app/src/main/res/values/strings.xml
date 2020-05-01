@@ -29,6 +29,7 @@
     <string name="typeManyAnswer">Несколько правильных ответов</string>
     <string name="typeOwnAnswer">Ответ в свободной форме</string>
     <string name="answersNumber">Количество вариантов ответов (не более 10)</string>
+    <string name="questionPoint">Баллов за вопрос (от 1 до 10)</string>
     <string name="startCreatingAnswers">Перейти к созданию ответов</string>
     <string name="exampleAnswersNumber">4</string>
     <string name="addNewVariant">Добавить вариант ответа</string>
@@ -43,7 +44,9 @@
     <string name="viewAnswers">Посмотреть ответы</string>
     <string name="doQuizAgain">Пройти тест снова</string>
     <string name="time">Время</string>
-    <string name="result">Итог</string>
+    <string name="point">Баллов</string>
+    <string name="result">Вопросов</string>
+    <string name="exampleResult">12/25</string>
     <string name="theme">Тема: </string>
     <string name="onlineMode">Онлайн-режим</string>
     <string name="shuffleMode">Перемешать вопросы</string>

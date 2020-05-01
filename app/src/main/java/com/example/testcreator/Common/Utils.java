@@ -22,6 +22,9 @@ public class Utils {
      */
     public static boolean[] selectedAnswer = new boolean[QuestionModel.NUMBER_ANSWER];
 
+    public static Uri imgQuestionUri;
+
+
     static {
         Arrays.fill(selectedAnswer, false);
     }
@@ -74,5 +77,17 @@ public class Utils {
             dialog.show();
         }
         return dialog;
+    }
+
+    public static String getFinalResult() {
+        return String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size());
+    }
+
+    public static String getFinalPoint() {
+        int totalPoint = 0;
+        for (QuestionModel question : Common.questionLst) {
+            totalPoint += question.getQuestionPoint();
+        }
+        return String.format("%d/%d", Common.userPointCount, totalPoint);
     }
 }

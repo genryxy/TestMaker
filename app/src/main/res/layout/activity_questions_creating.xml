@@ -95,10 +95,9 @@
             android:id="@+id/answersNumberTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="20dp"
             android:text="@string/answersNumber"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.225"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/typeAnswerRadioGroup" />
 
@@ -116,48 +115,65 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/answersNumberTxt" />
 
+        <TextView
+            android:id="@+id/questionPointTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/questionPoint"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/answersNumberEdt" />
+
+        <Spinner
+            android:id="@+id/questionPointSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:dropDownWidth="match_parent"
+            android:minWidth="20dp"
+            android:minHeight="25dp"
+            app:layout_constraintStart_toEndOf="@+id/questionPointTxt"
+            app:layout_constraintTop_toBottomOf="@+id/answersNumberEdt"
+            tools:listitem="@layout/layout_spinner_item" />
+
         <Button
             android:id="@+id/startCreatingAnswersBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:text="@string/startCreatingAnswers"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/answersNumberEdt"
+            app:layout_constraintTop_toBottomOf="@+id/questionPointSpinner"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ScrollView
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:padding="15dp"
+            android:layout_gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/imgViewQuestion"
+                android:layout_width="283dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:contentDescription="@string/clickToPick"
+                android:focusable="true"
+                android:maxHeight="500dp"
+                android:minHeight="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn"
+                app:layout_constraintVertical_bias="1.0"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+        </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/imgViewQuestion"
-                    android:layout_width="283dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:clickable="true"
-                    android:contentDescription="@string/clickToPick"
-                    android:focusable="true"
-                    android:maxHeight="500dp"
-                    android:minHeight="100dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/startCreatingAnswersBtn"
-                    app:layout_constraintVertical_bias="1.0"
-                    app:srcCompat="@android:drawable/ic_menu_camera" />
-            </LinearLayout>
-
-        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

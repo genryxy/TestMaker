@@ -101,6 +101,12 @@ public class DBHelper extends SQLiteAssetHelper {
             allAnswer.add(answer);
         }
         String ans = cursor.getString(cursor.getColumnIndex("TypeAnswer"));
+        NumberAnswerEnum type = NumberAnswerEnum.OneAnswer;
+        if (ans.equals(NumberAnswerEnum.ManyAnswers.name())) {
+            type = NumberAnswerEnum.ManyAnswers;
+        } else if (ans.equals(NumberAnswerEnum.OwnAnswer.name())) {
+            type = NumberAnswerEnum.OwnAnswer;
+        }
 
         return new QuestionModel(
                 cursor.getInt(cursor.getColumnIndex("ID")),
@@ -110,8 +116,7 @@ public class DBHelper extends SQLiteAssetHelper {
                 cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
                 cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 1,
                 cursor.getInt(cursor.getColumnIndex("CategoryID")),
-                ans.equals(NumberAnswerEnum.OwnAnswer.name())
-                        ? NumberAnswerEnum.OwnAnswer : NumberAnswerEnum.ManyAnswers);
+                type, 1);
     }
 }
 

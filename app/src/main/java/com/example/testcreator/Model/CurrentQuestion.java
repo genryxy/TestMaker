@@ -23,7 +23,8 @@ public class CurrentQuestion {
         this.type = type;
     }
 
-    public CurrentQuestion(int questionIndex, Common.AnswerType type, String userAnswer, Map<String, String> dictTransitionAns) {
+    public CurrentQuestion(int questionIndex, Common.AnswerType type, String userAnswer,
+                           Map<String, String> dictTransitionAns) {
         this.questionIndex = questionIndex;
         this.type = type;
         this.userAnswer = userAnswer;

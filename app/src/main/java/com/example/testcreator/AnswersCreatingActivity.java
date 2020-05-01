@@ -44,6 +44,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private String questionText;
     private int questionNumber;
     private int answersNumber;
+    private int questionPoint;
     private Context context = this;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -116,7 +117,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
             type = NumberAnswerEnum.OwnAnswer;
         }
         return new QuestionModel(questionText, null, lstAnswersToDatabase,
-                rightAnsBuilder.toString(), false, categoryID, type);
+                rightAnsBuilder.toString(), false, categoryID, type, questionPoint);
     }
 
     /**
@@ -198,6 +199,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
         categoryID = prevIntent.getIntExtra("categoryID", 1);
+        questionPoint = prevIntent.getIntExtra("questionPoint", 1);
     }
 
     /**
@@ -237,11 +239,11 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private void saveQuestionToDB(final Pair<Integer, StringBuilder> rightAns) {
         final QuestionModel questionModel = createQuestion(rightAns.second);
         String nameImage;
-        if (Common.imgQuestionUri != null) {
-            nameImage = System.currentTimeMillis() + "." + Utils.getExtension(Common.imgQuestionUri, context);
+        if (Utils.imgQuestionUri != null) {
+            nameImage = System.currentTimeMillis() + "." + Utils.getExtension(Utils.imgQuestionUri, context);
             questionModel.setImageQuestion(true);
             questionModel.setQuestionImage(nameImage);
-            OnlineDBHelper.getInstance(this).uploadImage(nameImage, Common.imgQuestionUri);
+            OnlineDBHelper.getInstance(this).uploadImage(nameImage, Utils.imgQuestionUri);
         }
 
         final DocumentReference docRef = db.collection("questions").document("questionsAll");

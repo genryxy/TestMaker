@@ -24,7 +24,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Adapter.ResultGridAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Model.CurrentQuestion;
+import com.example.testcreator.Model.QuestionModel;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import java.util.concurrent.TimeUnit;
@@ -34,6 +36,7 @@ public class ResultActivity extends AppCompatActivity {
     private TextView timeTxt;
     private TextView resultTxt;
     private TextView rightAnswerTxt;
+    private TextView userPointTxt;
     private Button filterTotalBtn;
     private Button filterRightAnswerBtn;
     private Button filterWrongAnswerBtn;
@@ -82,15 +85,19 @@ public class ResultActivity extends AppCompatActivity {
         timeTxt.setText(String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(Common.timer),
                 TimeUnit.MILLISECONDS.toSeconds(Common.timer) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(Common.timer))));
-        rightAnswerTxt.setText(new StringBuilder().append(Common.rightAnswerCount)
-                .append("/").append(Common.questionLst.size()));
+        rightAnswerTxt.setText(Utils.getFinalResult());
+        userPointTxt.setText(Utils.getFinalPoint());
         filterTotalBtn.setText(new StringBuilder().append(Common.questionLst.size()));
         filterRightAnswerBtn.setText(new StringBuilder().append(Common.rightAnswerCount));
         filterWrongAnswerBtn.setText(new StringBuilder().append(Common.wrongAnswerCount));
         filterNoAnswerBtn.setText(new StringBuilder().append(Common.noAnswerCount));
 
         // Считаем результат.
-        int percent = (Common.rightAnswerCount * 100 / Common.questionLst.size());
+        int totalPoint = 0;
+        for (QuestionModel question : Common.questionLst) {
+            totalPoint += question.getQuestionPoint();
+        }
+        int percent = (Common.userPointCount * 100 / totalPoint);
         if (percent > 80) {
             resultTxt.setText("Отлично");
         } else if (percent > 65) {
@@ -159,6 +166,7 @@ public class ResultActivity extends AppCompatActivity {
 
     private void findElementsViewById() {
         timeTxt = findViewById(R.id.timeTxt);
+        userPointTxt = findViewById(R.id.userPointTxt);
         resultTxt = findViewById(R.id.resultTxt);
         rightAnswerTxt = findViewById(R.id.rightAnswerTxt);
         filterTotalBtn = findViewById(R.id.filterTotalBtn);

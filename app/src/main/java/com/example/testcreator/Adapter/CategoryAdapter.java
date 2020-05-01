@@ -93,6 +93,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                                         Common.fragmentsLst.clear();
                                         Common.answerSheetList.clear();
                                         Common.rightAnswerCount = 0;
+                                        Common.userPointCount = 0;
                                         Common.wrongAnswerCount = 0;
                                         Intent intent = new Intent(context, QuestionActivity.class);
                                         context.startActivity(intent);

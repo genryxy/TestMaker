@@ -12,16 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
-import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Interface.QuestionIdCallBack;
-import com.example.testcreator.Interface.ResultCallBack;
-import com.example.testcreator.Model.CurrentQuestion;
-import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.Model.ResultTest;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
 
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 
@@ -59,6 +53,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
         holder.categoryTestViewTxt.setText(Utils.getNameCategoryByID(userResult.getCategoryID()));
         holder.timeTestTxt.setText(Utils.convertToNormalForm(Long.valueOf(userResult.getDuration())));
         holder.resultTestTxt.setText(userResult.getFinalScore());
+        holder.questionPointTxt.setText(userResult.getFinalPoint());
     }
 
     @Override
@@ -71,6 +66,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
         private TextView categoryTestViewTxt;
         private TextView resultTestTxt;
         private TextView timeTestTxt;
+        private TextView questionPointTxt;
 
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,6 +74,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
             categoryTestViewTxt = itemView.findViewById(R.id.categoryTestViewTxt);
             resultTestTxt = itemView.findViewById(R.id.resultTestTxt);
             timeTestTxt = itemView.findViewById(R.id.timeTestTxt);
+            questionPointTxt = itemView.findViewById(R.id.questionPointResTxt);
             // Attach a click listener to the entire row view
             itemView.setOnClickListener(this);
         }
@@ -98,6 +95,7 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
                 int wrongAnswer = Integer.valueOf(resultTest.getWrongAnswer());
                 Common.rightAnswerCount = rightAnswer;
                 Common.wrongAnswerCount = wrongAnswer;
+                Common.userPointCount = Integer.valueOf(resultTest.getFinalPoint().split("/")[0]);
                 Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
                 Common.timer = Integer.valueOf(resultTest.getDuration());
 
@@ -106,16 +104,6 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
                 Intent intent = new Intent(context, QuestionActivity.class);
                 intent.putExtra("isAnswerModeView", "true");
                 context.startActivity(intent);
-
-//                OnlineDBHelper.getInstance(context).getQuestionsByID(resultTest.getQuestionsIDLst(), new QuestionIdCallBack() {
-//                    @Override
-//                    public void setQuestionList(List<QuestionModel> questionsLst) {
-//                        Common.questionLst = questionsLst;
-//                        Intent intent = new Intent(context, QuestionActivity.class);
-//                        intent.putExtra("isAnswerModeView", "true");
-//                        context.startActivity(intent);
-//                    }
-//                });
             }
         }
     }

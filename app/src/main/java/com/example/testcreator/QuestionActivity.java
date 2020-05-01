@@ -45,7 +45,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
+
+import okhttp3.internal.Util;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
@@ -225,11 +228,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             // Если на этот вопрос ещё не отвечали.
             if (!questionFragment.isWasAnswered()) {
                 CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
+                if (questionState.getType().equals(Common.AnswerType.RIGHT_ANSWER)) {
+                    Common.userPointCount += Common.questionLst.get(position).getQuestionPoint();
+                }
                 Common.answerSheetList.set(position, questionState);
                 // Оповестить об изменении цвета.
                 answerSheetAdapter.notifyDataSetChanged();
                 countCorrectAnswer();
-                questionRightTxt.setText(getFinalResult());
+                questionRightTxt.setText(Utils.getFinalResult());
                 questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
             }
 
@@ -274,10 +280,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
 
         final ResultTest resultTest = new ResultTest(duration, questionsIDLst, answerSheetList,
-                Common.selectedTest, Common.selectedCategory, getFinalResult(), Common.wrongAnswerCount,
-                Common.isOnlineMode || Common.selectedTest != null);
+                Common.selectedTest, Common.selectedCategory, Utils.getFinalResult(), Common.wrongAnswerCount,
+                Common.isOnlineMode || Common.selectedTest != null, Utils.getFinalPoint());
 
-        final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, getFinalResult(),
+        final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, Utils.getFinalResult(),
                 Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
 
         OnlineDBHelper.getInstance(this).saveResultDB(resultTest, resultAll);
@@ -312,10 +318,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             }
         }
         return answerSheetList;
-    }
-
-    private String getFinalResult() {
-        return String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size());
     }
 
     /**
@@ -398,7 +400,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 countTimer();
             }
             questionRightTxt.setVisibility(View.VISIBLE);
-            questionRightTxt.setText(getFinalResult());
+            questionRightTxt.setText(Utils.getFinalResult());
 
             setAnswerSheetViewAdapter();
             generateFragmentList();
@@ -460,13 +462,16 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     if (!questionFragment.isWasAnswered() && (Common.selectedValues.size() > 0
                             || Common.questionLst.get(prevPosition).getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer))) {
                         CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
+                        if (questionState.getType().equals(Common.AnswerType.RIGHT_ANSWER)) {
+                            Common.userPointCount += Common.questionLst.get(prevPosition).getQuestionPoint();
+                        }
                         if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
                             questionFragment.showCorrectAnswers();
                             Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
                             Common.answerSheetList.set(prevPosition, questionState);
                             answerSheetAdapter.notifyDataSetChanged();
                             countCorrectAnswer();
-                            questionRightTxt.setText(getFinalResult());
+                            questionRightTxt.setText(Utils.getFinalResult());
                             questionWrongTxt.setText(String.valueOf(Common.wrongAnswerCount));
                         }
                     }
@@ -601,6 +606,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;
                     Common.noAnswerCount = 0;
+                    Common.userPointCount = 0;
                     Common.selectedValues.clear();
                     Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
                     // Удаляем все активити
