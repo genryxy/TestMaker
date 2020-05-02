@@ -68,9 +68,6 @@ public class CompareFragment extends Fragment {
                         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                                 R.layout.layout_spinner_item, nameTestLst);
                         nameTestSpinner.setAdapter(adapter);
-//                        if (dialog.isShowing()) {
-//                            dialog.dismiss();
-//                        }
                     }
                 });
     }

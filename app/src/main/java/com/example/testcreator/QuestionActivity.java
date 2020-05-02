@@ -284,7 +284,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 Common.isOnlineMode || Common.selectedTest != null, Utils.getFinalPoint());
 
         final ResultAll resultAll = new ResultAll(Common.selectedCategory, duration, Utils.getFinalResult(),
-                Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail());
+                Common.wrongAnswerCount, authFrbs.getCurrentUser().getEmail(), Utils.getFinalPoint());
 
         OnlineDBHelper.getInstance(this).saveResultDB(resultTest, resultAll);
     }
@@ -303,18 +303,22 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     curr.getUserAnswer(), curr.getDictTransitionAns()));
         }
         // Теперь обработаем вопросы в скопированной коллекции.
-        for (CurrentQuestion question : answerSheetList) {
-            StringBuilder newUserAns = new StringBuilder();
-            if (question.getUserAnswer() != null) {
-                for (int i = 0; i < question.getUserAnswer().length(); i++) {
-                    String ch = String.valueOf(question.getUserAnswer().charAt(i));
-                    if (question.getDictTransitionAns().containsKey(ch)) {
-                        newUserAns.append(question.getDictTransitionAns().get(ch)).append(",");
-                    } else {
-                        newUserAns.append(ch).append(",");
+        for (int j = 0; j < answerSheetList.size(); j++) {
+            if (!Common.questionLst.get(j).getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer)) {
+                CurrentQuestion question = answerSheetList.get(j);
+                StringBuilder newUserAns = new StringBuilder();
+                if (question.getUserAnswer() != null) {
+                    String[] answers = question.getUserAnswer().split(",");
+                    for (int i = 0; i < answers.length; i++) {
+                        String ch = answers[i];
+                        if (question.getDictTransitionAns().containsKey(ch)) {
+                            newUserAns.append(question.getDictTransitionAns().get(ch)).append(",");
+                        } else {
+                            newUserAns.append(ch).append(",");
+                        }
                     }
+                    question.setUserAnswer(newUserAns.substring(0, newUserAns.length() - 1));
                 }
-                question.setUserAnswer(newUserAns.substring(0, newUserAns.length() - 1));
             }
         }
         return answerSheetList;

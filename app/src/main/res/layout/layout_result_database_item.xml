@@ -11,22 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="blocksDescendants"
-        android:maxHeight="180dp"
         android:orientation="horizontal"
         android:weightSum="7">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
             android:orientation="vertical"
-            android:weightSum="2">
+            android:weightSum="100">
 
             <TextView
                 android:id="@+id/nameTestViewTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.98"
+                android:layout_weight="49"
                 android:padding="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
@@ -36,14 +35,14 @@
                 android:layout_height="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
-                android:layout_weight="0.04"
+                android:layout_weight="2"
                 android:background="#EDEDED" />
 
             <TextView
                 android:id="@+id/categoryTestViewTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.98"
+                android:layout_weight="49"
                 android:padding="5dp"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
@@ -51,9 +50,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
@@ -84,6 +84,7 @@
                 android:id="@+id/timeTestTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:background="@color/md_btn_selected"
                 android:text="10:25"
                 android:textAlignment="center"
@@ -100,6 +101,7 @@
                 android:id="@+id/questionPointResTxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:background="@color/md_btn_selected"
                 android:text="@string/exampleResult"
                 android:textAlignment="center"

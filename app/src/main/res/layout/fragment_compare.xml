@@ -7,70 +7,74 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
+        android:weightSum="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="20dp">
+            android:layout_height="0dp"
+            android:layout_weight="19">
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/nameTest"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:orientation="horizontal"
+                android:paddingBottom="20dp">
 
-            <Spinner
-                android:id="@+id/nameTestSpinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="5dp"
-                android:dropDownWidth="match_parent"
-                android:minWidth="100dp"
-                android:minHeight="35dp"
-                app:layout_constraintStart_toEndOf="@+id/textView3"
-                tools:listitem="@layout/layout_spinner_item" />
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/nameTest"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+                <Spinner
+                    android:id="@+id/nameTestSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="5dp"
+                    android:dropDownWidth="match_parent"
+                    android:minWidth="100dp"
+                    android:minHeight="35dp"
+                    app:layout_constraintStart_toEndOf="@+id/textView3"
+                    tools:listitem="@layout/layout_spinner_item" />
+
+            </LinearLayout>
+        </ScrollView>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="5dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="#EDEDED"
             android:paddingTop="20dp" />
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/resultAllDBRecycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="80"
+            android:descendantFocusability="blocksDescendants"
+            android:divider="#FFFFFF"
+            android:dividerHeight="5dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="2dp"
+            android:scrollbarSize="8dp"
+            android:scrollbars="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/layout_result_database_item" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/resultAllDBRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:descendantFocusability="blocksDescendants"
-                android:divider="#FFFFFF"
-                android:dividerHeight="5dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="2dp"
-                android:scrollbarSize="8dp"
-                android:scrollbars="vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/layout_result_database_item" />
-
-        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,15 +6,17 @@ public class ResultAll {
     private String finalScore;
     private int wrongAnswer;
     private String testTaker;
+    private String finalPoint;
 
     public ResultAll() {}
 
-    public ResultAll(int categoryID, String duration, String finalScore, int wrongAnswer, String testTaker) {
+    public ResultAll(int categoryID, String duration, String finalScore, int wrongAnswer, String testTaker, String finalPoint) {
         this.categoryID = categoryID;
         Duration = duration;
         this.finalScore = finalScore;
         this.wrongAnswer = wrongAnswer;
         this.testTaker = testTaker;
+        this.finalPoint = finalPoint;
     }
 
     public int getCategoryID() {
@@ -55,5 +57,13 @@ public class ResultAll {
 
     public void setTestTaker(String testTaker) {
         this.testTaker = testTaker;
+    }
+
+    public String getFinalPoint() {
+        return finalPoint;
+    }
+
+    public void setFinalPoint(String finalPoint) {
+        this.finalPoint = finalPoint;
     }
 }

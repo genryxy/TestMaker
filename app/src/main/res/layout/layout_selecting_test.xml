@@ -16,18 +16,20 @@
 
         <ImageView
             android:id="@+id/testAvatarImg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="4"
-            android:contentDescription="@string/menu_search_test" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="2"
+            android:contentDescription="@string/menu_search_test" />
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="6"
             android:orientation="vertical"
+            android:padding="5dp"
             android:weightSum="1">
 
             <TextView
@@ -45,21 +47,16 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/creatingDateTxt"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="4">
+            android:layout_weight="2"
+            android:text="Creating date"
+            android:textAlignment="center"
+            android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/creatingDateTxt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Creating date"
-                android:textAlignment="center"
-                android:textSize="16sp" />
-        </LinearLayout>
     </LinearLayout>
 
     <View

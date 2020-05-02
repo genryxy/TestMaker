@@ -46,6 +46,7 @@ public class ResultAllAdapter extends RecyclerView.Adapter<ResultAllAdapter.MyVi
         holder.resultTestTxt.setText(userResult.getFinalScore());
         // Устанавливаем вместо названия теста id пользователя, проходившего тест.
         holder.nameTestViewTxt.setText(userResult.getTestTaker());
+        holder.questionPointResTxt.setText(userResult.getFinalPoint());
     }
 
     @Override
@@ -58,6 +59,7 @@ public class ResultAllAdapter extends RecyclerView.Adapter<ResultAllAdapter.MyVi
         private TextView categoryTestViewTxt;
         private TextView resultTestTxt;
         private TextView timeTestTxt;
+        private TextView questionPointResTxt;
 
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,6 +67,7 @@ public class ResultAllAdapter extends RecyclerView.Adapter<ResultAllAdapter.MyVi
             categoryTestViewTxt = itemView.findViewById(R.id.categoryTestViewTxt);
             resultTestTxt = itemView.findViewById(R.id.resultTestTxt);
             timeTestTxt = itemView.findViewById(R.id.timeTestTxt);
+            questionPointResTxt = itemView.findViewById(R.id.questionPointResTxt);
             // Attach a click listener to the entire row view
             itemView.setOnClickListener(this);
         }
