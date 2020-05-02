@@ -285,13 +285,13 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     Toast.makeText(AnswersCreatingActivity.this,
                             "Последний вопрос не был сохранён, так как для него не введен правильный ответ!",
                             Toast.LENGTH_LONG).show();
-                    return;
+                    startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
                 }
 
                 if (rightAns.first == 0 && !typeAnswer.equals(NumberAnswerEnum.OwnAnswer.name())) {
                     Toast.makeText(context, "Последний вопрос не был сохранён, так как для него не отмечены ответы!",
                             Toast.LENGTH_LONG).show();
-                    return;
+                    startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
                 }
                 saveQuestionToDB(rightAns);
                 OnlineDBHelper.getInstance(null).saveTestInfoDB(nameTest, nameImage, categoryID);

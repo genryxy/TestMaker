@@ -26,24 +26,23 @@
             android:id="@+id/questionTextTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
+            android:layout_marginStart="45dp"
             android:layout_marginTop="20dp"
             android:text="@string/questionText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.004"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/numberQuestionTxt" />
 
         <EditText
             android:id="@+id/questionTextEdt"
-            android:layout_width="346dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:layout_marginTop="10dp"
             android:ems="10"
             android:gravity="start|top"
             android:inputType="textMultiLine"
             android:minHeight="100dp"
-            android:text="@string/questionText"
+            android:hint="@string/questionText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/questionTextTxt" />

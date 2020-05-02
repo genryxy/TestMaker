@@ -212,12 +212,14 @@ public class QuestionFragment extends Fragment implements IQuestion {
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
             List<String> filledAnswers = getAndShuffleAnswer();
             for (int i = 0; i < filledAnswers.size(); i++) {
-                allCheckbox.get(i).setText(filledAnswers.get(i));
+                String str = filledAnswers.get(i);
+                allCheckbox.get(i).setText(str != null ? str : "");
             }
         } else if (question.getTypeAnswer().equals(NumberAnswerEnum.OneAnswer)) {
             List<String> filledAnswers = getAndShuffleAnswer();
             for (int i = 0; i < filledAnswers.size(); i++) {
-                allRadioBtn.get(i).setText(filledAnswers.get(i));
+                String str = filledAnswers.get(i);
+                allRadioBtn.get(i).setText(str != null ? str : "");
             }
         }
         rightAnswerTxt.setText(question.getCorrectAnswer());

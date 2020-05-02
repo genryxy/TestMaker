@@ -22,7 +22,7 @@
             android:title="@string/menu_pick_theme" />
     </group>
 
-    <item android:title="Communicate">
+    <item>
         <menu>
             <item
                 android:id="@+id/nav_compare"
