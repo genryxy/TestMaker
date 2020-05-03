@@ -22,29 +22,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class StatisticFragment extends Fragment implements FireBaseConnections {
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private StatisticViewModel statisticViewModel;
-    private AlertDialog dialog;
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        statisticViewModel =
-                ViewModelProviders.of(this).get(StatisticViewModel.class);
         View root = inflater.inflate(R.layout.fragment_statistic, container, false);
-//        final TextView textView = root.findViewById(R.id.text_home);
-//        statisticViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
         // Очищаем установленные ранее значения.
         Common.isIsShuffleAnswerMode = false;
         Common.isShuffleQuestionMode = false;
 
-        dialog = Utils.showLoadingDialog(getContext());
+        AlertDialog dialog = Utils.showLoadingDialog(getContext());
         int spaceInPixel = 4;
         final RecyclerView resultDBRecycler = root.findViewById(R.id.resultDatabaseRecycler);
         resultDBRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));

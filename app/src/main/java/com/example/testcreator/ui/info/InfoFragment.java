@@ -17,12 +17,8 @@ import com.example.testcreator.R;
 
 public class InfoFragment extends Fragment {
 
-    private InfoViewModel infoViewModel;
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        infoViewModel =
-                ViewModelProviders.of(this).get(InfoViewModel.class);
         View root = inflater.inflate(R.layout.fragment_info, container, false);
         final TextView devTxt = root.findViewById(R.id.developerTxt);
         String str = "О разработчике:\n" +

@@ -45,10 +45,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.List;
-
-import okhttp3.internal.Util;
 
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 

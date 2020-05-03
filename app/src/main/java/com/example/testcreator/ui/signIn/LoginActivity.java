@@ -24,8 +24,6 @@ public class LoginActivity extends AppCompatActivity implements FireBaseConnecti
 {
     private EditText emailIdEdt;
     private EditText passwordEdt;
-    private Button signInBtn;
-    private TextView signUpTxt;
     private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
@@ -36,8 +34,8 @@ public class LoginActivity extends AppCompatActivity implements FireBaseConnecti
 
         emailIdEdt = findViewById(R.id.emailEdt);
         passwordEdt = findViewById(R.id.pswdEdt);
-        signInBtn = findViewById(R.id.signInBtn);
-        signUpTxt = findViewById(R.id.signUpTxt);
+        Button signInBtn = findViewById(R.id.signInBtn);
+        TextView signUpTxt = findViewById(R.id.signUpTxt);
 
         authStateListener = new FirebaseAuth.AuthStateListener()
         {

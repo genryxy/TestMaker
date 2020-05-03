@@ -31,18 +31,14 @@ import java.util.List;
 
 public class CompareFragment extends Fragment {
 
-    private CompareViewModel compareViewModel;
     private Spinner nameTestSpinner;
-    private AlertDialog dialog;
     private List<String> nameTestLst;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        compareViewModel =
-                ViewModelProviders.of(this).get(CompareViewModel.class);
         View root = inflater.inflate(R.layout.fragment_compare, container, false);
 
-        dialog = Utils.showLoadingDialog(getContext());
+        AlertDialog dialog = Utils.showLoadingDialog(getContext());
         addSpinnerAdapter();
         int spaceInPixel = 4;
         RecyclerView resultAllDBRecycler = root.findViewById(R.id.resultAllDBRecycler);

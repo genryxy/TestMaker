@@ -52,16 +52,7 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NewTestViewModel newTestViewModel = ViewModelProviders
-                .of(this).get(NewTestViewModel.class);
         View root = inflater.inflate(R.layout.fragment_name_test, container, false);
-        final TextView nameTestTxt = root.findViewById(R.id.nameTestTxt);
-        newTestViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                nameTestTxt.setText(s);
-            }
-        });
         findElementsViewById(root);
         themesSpinner = root.findViewById(R.id.themesSpinner);
 

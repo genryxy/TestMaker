@@ -25,13 +25,10 @@ import java.util.List;
 
 public class SelectingTestFragment extends Fragment {
 
-    private SelectingTestViewModel selectingTestViewModel;
     private AlertDialog dialog;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        selectingTestViewModel =
-                ViewModelProviders.of(this).get(SelectingTestViewModel.class);
         View root = inflater.inflate(R.layout.fragment_selecting_test, container, false);
         // Очищаем установленные ранее значения.
         Common.isIsShuffleAnswerMode = false;

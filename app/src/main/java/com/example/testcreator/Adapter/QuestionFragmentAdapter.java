@@ -37,6 +37,6 @@ public class QuestionFragmentAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return new StringBuilder("Question ").append(position + 1).toString();
+        return new StringBuilder("Вопрос ").append(position + 1).toString();
     }
 }

@@ -22,8 +22,6 @@ public class SignUpActivity extends AppCompatActivity implements FireBaseConnect
 {
     private EditText emailIdEdt;
     private EditText passwordEdt;
-    private Button signUpBtn;
-    private TextView signInTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,8 +30,8 @@ public class SignUpActivity extends AppCompatActivity implements FireBaseConnect
         setContentView(R.layout.activity_sign_up);
         emailIdEdt = findViewById(R.id.emailEdt);
         passwordEdt = findViewById(R.id.pswdEdt);
-        signUpBtn = findViewById(R.id.signUpBtn);
-        signInTxt = findViewById(R.id.signInTxt);
+        Button signUpBtn = findViewById(R.id.signUpBtn);
+        TextView signInTxt = findViewById(R.id.signInTxt);
 
         signUpBtn.setOnClickListener(new View.OnClickListener()
         {

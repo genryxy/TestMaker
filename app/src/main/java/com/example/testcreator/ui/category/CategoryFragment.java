@@ -29,16 +29,12 @@ import io.paperdb.Paper;
 
 public class CategoryFragment extends Fragment {
 
-    private CategoryViewModel categoryViewModel;
     private CategoryAdapter adapter;
     private RecyclerView categoryRecycler;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        categoryViewModel =
-                ViewModelProviders.of(this).get(CategoryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_category, container, false);
-//        final TextView textView = root.findViewById(R.id.text_home);
         setHasOptionsMenu(true);
         // Очищаем установленные ранее значения.
         Common.isIsShuffleAnswerMode = false;
