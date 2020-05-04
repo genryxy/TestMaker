@@ -37,9 +37,14 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-
+/**
+ * Класс-фрагмент, отвечающий за создание нового теста. Здесь запоминается
+ * введённая пользователем информация относительно конкретного теста,
+ * а затем осуществляется переход на страницу для создания вопроса
+ * для данного теста.
+ */
 public class NewTestFragment extends Fragment implements FireBaseConnections {
-    private final String TAG = "FAILURE NewTestFragment";
+    private final String TAG = "NewTestFragment";
 
     private Button saveNameTestBtn;
     private Button inputNewCategoryBtn;
@@ -72,6 +77,10 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         return root;
     }
 
+    /**
+     * Метод для добавления элементов в выпадающий список, при помощи которого
+     * выбирается категория для вопросов в создаваемом тесте.
+     */
     private void addSpinnerAdapter() {
         List<String> themesLstStr = new ArrayList<>();
         for (int i = 0; i < Common.categoryLst.size(); i++) {
@@ -105,8 +114,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
 
     /**
      * Обработчик события нажатие на кнопку для сохранения названия теста. Если
-     * пользователь ввёл уникальное название теста, то добавляет название
-     * в БД, иначе просит повторить ввод.
+     * пользователь ввёл уникальное название теста, то добавляет название в
+     * параметры для перехода на следующую страницу, иначе просит повторить ввод.
      */
     private void saveNameTestBtnOnClickListen() {
         saveNameTestBtn.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +151,9 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         });
     }
 
+    /**
+     * Обработчик события нажатие кнопку для ввода названия новой категории.
+     */
     private void inputCategoryBtnOnClickListen() {
         inputNewCategoryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,6 +187,14 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         });
     }
 
+    /**
+     * Метод для проверки уникальности введённого пользователем названия категории.
+     * Если введено уникальное название, то добавляет эту категорию, иначе просит
+     * пользователя повторить ввод.
+     *
+     * @param dialog                 Ссылка на диалог, в котором есть поле для ввода названия категории.
+     * @param inputNewCategoryEdtTxt Ссылка на поле для ввода названия категории.
+     */
     private void checkExistingAndAdd(MaterialDialog dialog, EditText inputNewCategoryEdtTxt) {
         boolean isExists = false;
         String input = inputNewCategoryEdtTxt.getText().toString();

@@ -12,6 +12,9 @@ import com.example.testcreator.QuestionFragment;
 
 import java.util.List;
 
+/**
+ * Класс-адаптер для вывода различных фрагментов с вопросами внутри viewPager.
+ */
 public class QuestionFragmentAdapter extends FragmentPagerAdapter {
 
     private Context context;

@@ -18,6 +18,9 @@ import com.example.testcreator.ui.signIn.LoginActivity;
 import com.example.testcreator.R;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * Класс-фрагмент, предназначенный для подтверждения намерения выйти из приложения.
+ */
 public class LogoutFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

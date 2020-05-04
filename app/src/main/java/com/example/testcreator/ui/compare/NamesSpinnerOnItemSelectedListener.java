@@ -10,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 
+/**
+ * Класс для добавления конкретного действия, которое будет выполняться при нажатии на элемент
+ * в Spinner, состоящем из названий тестов. В данном случае будут загружаться результаты по тесту
+ * с данным названием.
+ */
 public class NamesSpinnerOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
     private Context context;
     private RecyclerView resultAllRecycler;

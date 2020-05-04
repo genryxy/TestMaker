@@ -30,6 +30,7 @@
     <string name="typeOwnAnswer">Ответ в свободной форме</string>
     <string name="answersNumber">Количество вариантов ответов (не более 10)</string>
     <string name="questionPoint">Баллов за вопрос (от 1 до 10)</string>
+    <string name="questionNumber">Вопрос 1</string>
     <string name="startCreatingAnswers">Перейти к созданию ответов</string>
     <string name="exampleAnswersNumber">4</string>
     <string name="addNewVariant">Добавить вариант ответа</string>

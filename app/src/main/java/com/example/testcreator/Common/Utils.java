@@ -15,6 +15,10 @@ import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
 
+/**
+ * Класс хранения методов, необходимых для выполнения различных
+ * небольших подзадач.
+ */
 public class Utils {
     /**
      * Массив, чтобы следить за количеством отмеченных вариантов ответов

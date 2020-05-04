@@ -8,16 +8,21 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.R;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
 
 import java.util.List;
 
+
+/**
+ * Класс-адаптер для удобной работы с квадратиками, цвет которых меняется
+ * в зависимости от правильности ответа на вопрос.
+ */
 public class AnswerSheetAdapter extends RecyclerView.Adapter<AnswerSheetAdapter.MyViewHolder> {
 
-    Context context;
-    List<CurrentQuestion> currentQuestionsLst;
+    private Context context;
+    private List<CurrentQuestion> currentQuestionsLst;
 
     public AnswerSheetAdapter(Context context, List<CurrentQuestion> currentQuestionsLst) {
         this.context = context;
@@ -33,9 +38,9 @@ public class AnswerSheetAdapter extends RecyclerView.Adapter<AnswerSheetAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (currentQuestionsLst.get(position).getType() == Common.AnswerType.RIGHT_ANSWER) {
+        if (currentQuestionsLst.get(position).getType() == AnswerTypeEnum.RIGHT_ANSWER) {
             holder.questionItem.setBackgroundResource(R.drawable.grid_question_right_answer);
-        } else if (currentQuestionsLst.get(position).getType() == Common.AnswerType.WRONG_ANSWER) {
+        } else if (currentQuestionsLst.get(position).getType() == AnswerTypeEnum.WRONG_ANSWER) {
             holder.questionItem.setBackgroundResource(R.drawable.grid_question_wrong_answer);
         } else {
             holder.questionItem.setBackgroundResource(R.drawable.grid_question_no_answer);

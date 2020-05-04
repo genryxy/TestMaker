@@ -1,47 +1,43 @@
 package com.example.testcreator.Model;
 
-public class SelectingTestView
-{
+/**
+ * Класс-модель для представления теста при выборе
+ * теста для прохождения.
+ */
+public class SelectingTestView {
     private String pathToImage;
     private String name;
     private String creator;
 
     public SelectingTestView() {}
 
-    public SelectingTestView(String name, String creator, String pathToImage)
-    {
+    public SelectingTestView(String name, String creator, String pathToImage) {
         this.name = name;
         this.creator = creator;
         this.pathToImage = pathToImage;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getCreator()
-    {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(String creator)
-    {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public String getPathToImage()
-    {
+    public String getPathToImage() {
         return pathToImage;
     }
 
-    public void setPathToImage(String pathToImage)
-    {
+    public void setPathToImage(String pathToImage) {
         this.pathToImage = pathToImage;
     }
 }

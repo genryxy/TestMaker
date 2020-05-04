@@ -2,6 +2,10 @@ package com.example.testcreator.Model;
 
 import androidx.annotation.Nullable;
 
+/**
+ * Класс-модель для представления категории и сохранении информации о ней внутри
+ * одного экземпляра класса.
+ */
 public class Category {
     private int id;
     private String name;

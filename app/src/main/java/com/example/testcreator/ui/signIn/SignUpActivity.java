@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 
+/**
+ * Класс Activity, предназначенный для прохождения регистрации пользователем.
+ */
 public class SignUpActivity extends AppCompatActivity implements FireBaseConnections
 {
     private EditText emailIdEdt;

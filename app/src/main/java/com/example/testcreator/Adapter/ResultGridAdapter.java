@@ -15,14 +15,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Model.CurrentQuestion;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
 import com.example.testcreator.R;
 
 import java.util.List;
 
+/**
+ * Класс для вывода результата каждого вопроса внутри прямоугольника. Прямоугольник включает
+ * информацию о номере вопроса. В зависимости от правильности ответа на вопрос и наличия
+ * ответа меняется цвет фигуры и внутрь неё добавляются различные картинки.
+ */
 public class ResultGridAdapter extends RecyclerView.Adapter<ResultGridAdapter.MyViewHolder> {
 
     private Context context;
-    private  List<CurrentQuestion> currentQuestionsLst;
+    private List<CurrentQuestion> currentQuestionsLst;
 
     public ResultGridAdapter(Context context, List<CurrentQuestion> answerSheetList) {
         this.context = context;
@@ -42,13 +48,13 @@ public class ResultGridAdapter extends RecyclerView.Adapter<ResultGridAdapter.My
         Drawable img;
 
         // Изменяем цвет на основании ответа.
-        holder.questionBtn.setText(new StringBuilder("Question ").append(currentQuestionsLst
+        holder.questionBtn.setText(new StringBuilder("Вопрос ").append(currentQuestionsLst
                 .get(position).getQuestionIndex() + 1));
-        if (currentQuestionsLst.get(position).getType() == Common.AnswerType.RIGHT_ANSWER) {
+        if (currentQuestionsLst.get(position).getType() == AnswerTypeEnum.RIGHT_ANSWER) {
             holder.questionBtn.setBackgroundColor(Color.parseColor("#ff99cc00"));
             img = context.getResources().getDrawable(R.drawable.ic_check_white_24dp, null);
             holder.questionBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);
-        } else if (currentQuestionsLst.get(position).getType() == Common.AnswerType.WRONG_ANSWER) {
+        } else if (currentQuestionsLst.get(position).getType() == AnswerTypeEnum.WRONG_ANSWER) {
             holder.questionBtn.setBackgroundColor(Color.parseColor("#ffcc0000"));
             img = context.getResources().getDrawable(R.drawable.ic_clear_white_24dp, null);
             holder.questionBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);

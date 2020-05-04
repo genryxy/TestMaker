@@ -20,7 +20,8 @@ import java.util.List;
 
 
 /**
- * Класс-адаптер для вывода результатов прохождения тестов пользователем.
+ * Класс-адаптер для вывода результатов прохождения тестов и прорешивания вопросов
+ * из категории определённым пользователем.
  */
 public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyViewHolder> {
 
@@ -75,7 +76,6 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
             resultTestTxt = itemView.findViewById(R.id.resultTestTxt);
             timeTestTxt = itemView.findViewById(R.id.timeTestTxt);
             questionPointTxt = itemView.findViewById(R.id.questionPointResTxt);
-            // Attach a click listener to the entire row view
             itemView.setOnClickListener(this);
         }
 

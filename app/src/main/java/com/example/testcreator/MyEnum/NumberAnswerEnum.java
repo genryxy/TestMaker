@@ -1,4 +1,4 @@
-package com.example.testcreator.Enum;
+package com.example.testcreator.MyEnum;
 
 public enum NumberAnswerEnum {
     OneAnswer, ManyAnswers, OwnAnswer

@@ -1,12 +1,14 @@
 package com.example.testcreator.Model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+
 /**
- * Класс для хранения результатов всех тестов, пройденных пользователем, в БД.
+ * Класс-обёртка для хранения словаря из пар вида (ключ, экземпляр класса ResultTest)
+ * в базе данных. Этот класс позволяет удобно сохранять информацию в
+ * Cloud Firestore, а также получать при чтении.
+ * Содержит результаты всех тестов, пройденных пользователем.
  */
 public class ResultTestFirebase {
     /**
@@ -18,15 +20,15 @@ public class ResultTestFirebase {
 
     public ResultTestFirebase() { }
 
-    public ResultTestFirebase(Map<String, ResultTest>  resultTestsMap) {
+    public ResultTestFirebase(Map<String, ResultTest> resultTestsMap) {
         this.resultTestsMap = resultTestsMap;
     }
 
-    public Map<String, ResultTest>  getResultTestsMap() {
+    public Map<String, ResultTest> getResultTestsMap() {
         return resultTestsMap;
     }
 
-    public void setResultTestsMap(Map<String, ResultTest>  resultTestsMap) {
+    public void setResultTestsMap(Map<String, ResultTest> resultTestsMap) {
         this.resultTestsMap = resultTestsMap;
     }
 

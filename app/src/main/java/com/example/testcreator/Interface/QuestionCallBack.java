@@ -1,14 +1,14 @@
 package com.example.testcreator.Interface;
 
-import com.example.testcreator.Model.TestInfo;
+import com.example.testcreator.Model.QuestionModel;
 
 import java.util.List;
 
 /**
  * Интерфейс для реализации метода обратного вызова для установки
  * значений коллекции, полученных из базы данных. Коллекция
- * состоит из экземпляров классов с информацией о тесте.
+ * состоит из вопросов.
  */
-public interface TestInfoCallBack {
-    void setInfosToAdapter(List<TestInfo> testInfos);
+public interface QuestionCallBack {
+    void setQuestionList(List<QuestionModel> questionsLst);
 }

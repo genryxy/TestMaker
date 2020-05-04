@@ -17,7 +17,8 @@ import com.example.testcreator.R;
 import java.util.List;
 
 /**
- * Класс-адаптер для вывода результатов прохождения тестов пользователем.
+ * Класс-адаптер для вывода результатов прохождения тестов всеми пользователями
+ * какого-то конкретного теста.
  */
 public class ResultAllAdapter extends RecyclerView.Adapter<ResultAllAdapter.MyViewHolder> {
 
@@ -54,21 +55,20 @@ public class ResultAllAdapter extends RecyclerView.Adapter<ResultAllAdapter.MyVi
         return resultAlls.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView nameTestViewTxt;
         private TextView categoryTestViewTxt;
         private TextView resultTestTxt;
         private TextView timeTestTxt;
         private TextView questionPointResTxt;
 
-        MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTestViewTxt = itemView.findViewById(R.id.nameTestViewTxt);
             categoryTestViewTxt = itemView.findViewById(R.id.categoryTestViewTxt);
             resultTestTxt = itemView.findViewById(R.id.resultTestTxt);
             timeTestTxt = itemView.findViewById(R.id.timeTestTxt);
             questionPointResTxt = itemView.findViewById(R.id.questionPointResTxt);
-            // Attach a click listener to the entire row view
             itemView.setOnClickListener(this);
         }
 

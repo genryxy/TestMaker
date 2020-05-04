@@ -2,6 +2,9 @@ package com.example.testcreator.Model;
 
 import java.util.Date;
 
+/**
+ * Класс-модель для хранения всей информации об одном созданном тесте.
+ */
 public class TestInfo {
     private String name;
     private String info;

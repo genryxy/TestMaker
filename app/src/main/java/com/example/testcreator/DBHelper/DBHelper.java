@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.testcreator.Enum.NumberAnswerEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.Model.QuestionModel;
 import com.example.testcreator.QuestionActivity;
@@ -15,6 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Класс для организации взаимодействия с локальной базой данных SQLite.
+ */
 public class DBHelper extends SQLiteAssetHelper {
     private static final String DB_NAME = "Quiz.db";
     private static final int DB_VER = 1;

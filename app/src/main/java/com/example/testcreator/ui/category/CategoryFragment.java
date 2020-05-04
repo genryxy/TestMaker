@@ -27,6 +27,11 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import io.paperdb.Paper;
 
+/**
+ * Класс-фрагмент для вывода уже существующих названий категорий.
+ * Позволяет по нажатию на определённую категорию перейти к прохождению
+ * теста, состоящего из вопросов из выбранной категории.
+ */
 public class CategoryFragment extends Fragment {
 
     private CategoryAdapter adapter;

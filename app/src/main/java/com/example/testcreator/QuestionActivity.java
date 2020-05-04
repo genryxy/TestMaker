@@ -30,10 +30,11 @@ import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.DBHelper;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Enum.NumberAnswerEnum;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
-import com.example.testcreator.Interface.QuestionIdCallBack;
+import com.example.testcreator.Interface.QuestionCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
@@ -41,19 +42,23 @@ import com.example.testcreator.Model.ResultAll;
 import com.example.testcreator.Model.ResultTest;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Класс Activity, через который осуществляется прохождение вопросов. Устанавливаются
+ * обработчики событий для ViewPager, которые позволяют проверять ответы пользователя
+ * при смене страницы. В этом классе также вызываются методы для загрузки вопросов из
+ * базы данных.
+ */
 public class QuestionActivity extends AppCompatActivity implements FireBaseConnections {
 
     public static final int NUMBER_QUESTION = 30;
     public static final String TAG = "QuestionActivity";
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static final int CODE_GET_RESULT = 9999;
 
-    private static final int CODE_GET_RESULT = 9999;
     private int timePlay = Common.TOTAL_TIME;
     private boolean isAnswerModeView = false;
 
@@ -103,7 +108,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     .getQuestionsByResult(Common.keyGetTestByResult, new ResultCallBack() {
                         @Override
                         public void setQuestionList(List<Integer> questionsIDLst, final List<CurrentQuestion> answerLst) {
-                            OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+                            OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionCallBack() {
                                 @Override
                                 public void setQuestionList(List<QuestionModel> questionsLst) {
                                     Common.questionLst = questionsLst;
@@ -184,7 +189,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     }
 
     private void getQuestionsByIDAndSet(List<Integer> questionsIDLst) {
-        OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionIdCallBack() {
+        OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionCallBack() {
             @Override
             public void setQuestionList(List<QuestionModel> questionsLst) {
                 Common.questionLst = questionsLst;
@@ -203,9 +208,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         Common.rightAnswerCount = 0;
         Common.wrongAnswerCount = 0;
         for (CurrentQuestion item : Common.answerSheetList) {
-            if (item.getType() == Common.AnswerType.RIGHT_ANSWER) {
+            if (item.getType() == AnswerTypeEnum.RIGHT_ANSWER) {
                 Common.rightAnswerCount++;
-            } else if (item.getType() == Common.AnswerType.WRONG_ANSWER) {
+            } else if (item.getType() == AnswerTypeEnum.WRONG_ANSWER) {
                 Common.wrongAnswerCount++;
             }
         }
@@ -225,7 +230,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             // Если на этот вопрос ещё не отвечали.
             if (!questionFragment.isWasAnswered()) {
                 CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
-                if (questionState.getType().equals(Common.AnswerType.RIGHT_ANSWER)) {
+                if (questionState.getType().equals(AnswerTypeEnum.RIGHT_ANSWER)) {
                     Common.userPointCount += Common.questionLst.get(position).getQuestionPoint();
                 }
                 Common.answerSheetList.set(position, questionState);
@@ -380,7 +385,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             }
             for (int i = 0; i < Common.questionLst.size(); i++) {
                 // Take index of question in List.
-                Common.answerSheetList.add(new CurrentQuestion(i, Common.AnswerType.NO_ANSWER));
+                Common.answerSheetList.add(new CurrentQuestion(i, AnswerTypeEnum.NO_ANSWER));
             }
         }
     }
@@ -463,10 +468,10 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                     if (!questionFragment.isWasAnswered() && (Common.selectedValues.size() > 0
                             || Common.questionLst.get(prevPosition).getTypeAnswer().equals(NumberAnswerEnum.OwnAnswer))) {
                         CurrentQuestion questionState = questionFragment.getAndCheckSelectedAnswer();
-                        if (questionState.getType().equals(Common.AnswerType.RIGHT_ANSWER)) {
+                        if (questionState.getType().equals(AnswerTypeEnum.RIGHT_ANSWER)) {
                             Common.userPointCount += Common.questionLst.get(prevPosition).getQuestionPoint();
                         }
-                        if (questionState.getType() != Common.AnswerType.NO_ANSWER) {
+                        if (questionState.getType() != AnswerTypeEnum.NO_ANSWER) {
                             questionFragment.showCorrectAnswers();
                             Common.fragmentsLst.get(prevPosition).setWasAnswered(true);
                             Common.answerSheetList.set(prevPosition, questionState);
@@ -602,8 +607,8 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 } else if (action.equals("doQuizAgain")) {
                     if (Common.countDownTimer != null) {
                         Common.countDownTimer.cancel();
-
                     }
+                    setVisibilityOfNumberAnswers(true);
                     Common.wrongAnswerCount = 0;
                     Common.rightAnswerCount = 0;
                     Common.noAnswerCount = 0;

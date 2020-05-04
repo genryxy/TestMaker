@@ -22,6 +22,10 @@ import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import java.util.List;
 
+/**
+ * Класс-адаптер для вывода названия категории внутри прямоугольника.
+ * Сами категории расположены в виде списка.
+ */
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHolder> {
 
     private Context context;
@@ -50,12 +54,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         return categories.size();
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         CardView cardCategory;
         TextView categoryNameTxt;
 
-        MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             cardCategory = itemView.findViewById(R.id.cardCategory);
             categoryNameTxt = itemView.findViewById(R.id.categoryNameTxt);

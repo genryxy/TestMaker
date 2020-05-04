@@ -3,13 +3,10 @@ package com.example.testcreator;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,18 +18,20 @@ import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.ThemesCallBack;
 import com.example.testcreator.Model.Category;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+/**
+ * Основной класс, который загружается при прохождении авторизации. В данном классе
+ * добавляется боковое меню, через которое осуществляется доступ к остальным функциям приложения.
+ */
 public class MainActivity extends AppCompatActivity implements FireBaseConnections {
-    public final String TAG = "FAILURE MainActivity";
+    public final String TAG = "MainActivity";
 
     private AppBarConfiguration mAppBarConfiguration;
-    private FragmentTransaction transaction;
-    private Fragment selectingTestFragment;
+//    private FragmentTransaction transaction;
+//    private Fragment selectingTestFragment;
     private AlertDialog dialog;
 
     @Override
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements FireBaseConnectio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Test Creator");
+        toolbar.setTitle("Test Maker");
         setSupportActionBar(toolbar);
 
         dialog = Utils.showLoadingDialog(this);

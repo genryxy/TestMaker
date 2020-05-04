@@ -15,6 +15,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.testcreator.R;
 
+/**
+ * Класс-фрагмент, предназначенный для вывода информации о разработчике приложения.
+ */
 public class InfoFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,

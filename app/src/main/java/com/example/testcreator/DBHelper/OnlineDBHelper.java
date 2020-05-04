@@ -19,7 +19,7 @@ import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Interface.MyCallBack;
-import com.example.testcreator.Interface.QuestionIdCallBack;
+import com.example.testcreator.Interface.QuestionCallBack;
 import com.example.testcreator.Interface.ResultCallBack;
 import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Interface.ThemesCallBack;
@@ -52,6 +52,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс для организации взаимодействия с удалённой базой данных Firebase.
+ * Хранит методы для записи в Cloud Storage и Cloud Firestore, а также для
+ * чтения из Cloud Storage и Cloud Firestore.
+ */
 public class OnlineDBHelper implements FireBaseConnections {
 
     public static final String TAG = "OnlineDBHelper";
@@ -161,7 +166,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
-    public void getQuestionsByID(final List<Integer> questionsIDLst, final QuestionIdCallBack idCallBack) {
+    public void getQuestionsByID(final List<Integer> questionsIDLst, final QuestionCallBack idCallBack) {
         db.collection("questions").document("questionsAll")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -178,16 +183,6 @@ public class OnlineDBHelper implements FireBaseConnections {
     }
 
     public void getCategories(final ThemesCallBack themesCallBack) {
-//        CategoryFirebase categoryFirebase = new CategoryFirebase();
-//        List<Category> cat = new ArrayList<>();
-//        cat.add(new Category(1, "Music", null));
-//        cat.add(new Category(2, "Geography", null));
-//        categoryFirebase.setCategoryList(cat);
-//
-//        db.collection("themes")
-//                .document("categoryID")
-//                .set(categoryFirebase);
-
         db.collection("themes")
                 .document("categoryID")
                 .get()

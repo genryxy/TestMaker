@@ -1,6 +1,5 @@
 package com.example.testcreator.Common;
 
-import android.net.Uri;
 import android.os.CountDownTimer;
 
 import com.example.testcreator.Model.Category;
@@ -14,9 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Класс для хранения общих данных, доступных из разных классов.
+ */
 public class Common {
     public static final int TOTAL_TIME = 20 * 60 * 1000;
-    public static final String KEY_GO_TO_QUESTION = "GO_TO_QUESTION";
     public static final String KEY_BACK_FROM_RESULT = "BACK_FROM_RESULT";
     public static final String KEY_SAVE_ONLINE_MODE = "ONLINE_MODE";
 
@@ -44,10 +45,4 @@ public class Common {
     public static boolean isOnlineMode = true;
     public static boolean isShuffleQuestionMode = false;
     public static boolean isIsShuffleAnswerMode = false;
-
-    public enum AnswerType {
-        NO_ANSWER,
-        WRONG_ANSWER,
-        RIGHT_ANSWER
-    }
 }

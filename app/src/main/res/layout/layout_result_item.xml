@@ -6,6 +6,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/grid_question_no_answer"
     android:drawableBottom="@drawable/ic_error_outline_white_24dp"
-    android:text="Вопрос 1"
+    android:text="@string/questionNumber"
     android:textColor="@android:color/white">
 </Button>

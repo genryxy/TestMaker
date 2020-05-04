@@ -6,6 +6,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * Класс для добавления отступа к элемента списка.
+ */
 public class SpaceDecoration extends RecyclerView.ItemDecoration {
     private int space;
 

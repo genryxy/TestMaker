@@ -9,10 +9,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.testcreator.Adapter.SelectingTestAdapter;
 import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
@@ -23,6 +23,11 @@ import com.example.testcreator.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс-фрагмент для вывода названий существующих тестов.
+ * Позволяет по нажатию на определённое название перейти к прохождению
+ * теста, состоящего из вопросов из выбранного теста.
+ */
 public class SelectingTestFragment extends Fragment {
 
     private AlertDialog dialog;

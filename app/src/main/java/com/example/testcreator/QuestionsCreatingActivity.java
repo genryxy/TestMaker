@@ -16,21 +16,26 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
-import com.example.testcreator.Enum.NumberAnswerEnum;
-import com.example.testcreator.ui.compare.NamesSpinnerOnItemSelectedListener;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс Activity, отвечающий за создание вопроса. Здесь запоминается
+ * введённая пользователем информация относительно конкретного вопроса,
+ * а затем осуществляется переход на страницу для создания вариантов
+ * ответов на вопрос.
+ */
 public class QuestionsCreatingActivity extends AppCompatActivity {
-    public final String TAG = "FAILUREQuestionActivity";
+    public final String TAG = "QuestionCreateActivity";
 
     private String nameTest;
     private String nameImage;
     private int categoryID;
     private int questionPoint = 1;
+    private int questionNumber = 1;
     private TextView numberQuestionTxt;
     private RadioGroup typeAnsRadioGroup;
     private EditText questionTextEdt;
@@ -38,8 +43,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     private Button startCreatingAnswersBtn;
     private ImageView imgViewQuestion;
     private Spinner questionPointSpinner;
-    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.ManyAnswers;
-    private int questionNumber = 1;
+    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.OneAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +113,10 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         numberQuestionTxt = findViewById(R.id.numberQuestionTxt);
     }
 
+    /**
+     * Метод для добавления элементов в выпадающий список, при помощи которого
+     * выбирается количество баллов за правильный ответ на вопрос.
+     */
     private void addQuestionPointSpinner() {
         questionPointSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -169,6 +177,10 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         categoryID = prevIntent.getIntExtra("categoryID", 1);
     }
 
+    /**
+     * Обработчик события для кнопки для перехода к созданию вариантов ответов.
+     * Добавляем параметры для перехода на следующую страницу.
+     */
     private void setCreatingAnswersBtnClickListener() {
         startCreatingAnswersBtn.setOnClickListener(new View.OnClickListener() {
             @Override

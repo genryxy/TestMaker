@@ -1,13 +1,17 @@
 package com.example.testcreator.Model;
 
-import com.example.testcreator.Common.Common;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс-модель для хранения информации о текущем вопросе: индекса вопроса,
+ * ответа пользователя, правильности ответа пользователя.
+ */
 public class CurrentQuestion {
     private int questionIndex;
-    private Common.AnswerType type = Common.AnswerType.NO_ANSWER;
+    private AnswerTypeEnum type = AnswerTypeEnum.NO_ANSWER;
     private String userAnswer;
     /**
      * Словарь, который позволяет восстановить ответы пользователя в перемешанных
@@ -18,12 +22,12 @@ public class CurrentQuestion {
 
     public CurrentQuestion() {}
 
-    public CurrentQuestion(int questionIndex, Common.AnswerType type) {
+    public CurrentQuestion(int questionIndex, AnswerTypeEnum type) {
         this.questionIndex = questionIndex;
         this.type = type;
     }
 
-    public CurrentQuestion(int questionIndex, Common.AnswerType type, String userAnswer,
+    public CurrentQuestion(int questionIndex, AnswerTypeEnum type, String userAnswer,
                            Map<String, String> dictTransitionAns) {
         this.questionIndex = questionIndex;
         this.type = type;
@@ -39,11 +43,11 @@ public class CurrentQuestion {
         this.questionIndex = questionIndex;
     }
 
-    public Common.AnswerType getType() {
+    public AnswerTypeEnum getType() {
         return type;
     }
 
-    public void setType(Common.AnswerType type) {
+    public void setType(AnswerTypeEnum type) {
         this.type = type;
     }
 

@@ -1,5 +1,9 @@
 package com.example.testcreator.Model;
 
+/**
+ * Класс-модель для представления варианта ответа при создании
+ * вариантов ответов для вопроса.
+ */
 public class AnswerView {
     private String answerText;
     private Boolean isSelected;

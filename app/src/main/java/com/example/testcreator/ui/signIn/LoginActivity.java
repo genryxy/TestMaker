@@ -20,6 +20,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * Класс Activity, предназначенный для прохождения авторизации пользователем.
+ * При первом открытии приложения и после выхода из аккаунта открывается
+ * данная страница.
+ */
 public class LoginActivity extends AppCompatActivity implements FireBaseConnections
 {
     private EditText emailIdEdt;

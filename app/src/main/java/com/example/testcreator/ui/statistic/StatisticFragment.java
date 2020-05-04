@@ -20,6 +20,11 @@ import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Класс-фрагмент для вывода информации обо все результатах прохождения авторизованным
+ * пользователем. По нажатию на конкретный результат можно посмотреть ответы, отмеченные
+ * пользователем, а также эталонные ответы.
+ */
 public class StatisticFragment extends Fragment implements FireBaseConnections {
 
     @Override

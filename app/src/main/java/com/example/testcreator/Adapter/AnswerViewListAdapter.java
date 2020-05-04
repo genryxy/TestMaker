@@ -16,19 +16,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.testcreator.Common.Utils;
-import com.example.testcreator.Enum.NumberAnswerEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.R;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Класс-адаптер для создания вариантов ответов пользователем.
- * Каждый элемент содержит CheckedTextView, EditText и ImageButton.
- * Это позволяет вводить формулировку ответа. Отмечать ответ как
- * правильный. Удалять вариант ответа при необходимости.
+ * Каждый элемент содержит CheckedTextView, EditText и ImageButton, которые
+ * получены из соответствующего layout. Это позволяет вводить формулировку
+ * ответа. Отмечать ответ как правильный. Удалять вариант ответа при необходимости.
  */
 public class AnswerViewListAdapter extends ArrayAdapter<AnswerView> {
     private Context context;

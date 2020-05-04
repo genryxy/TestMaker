@@ -1,4 +1,4 @@
-package com.example.testcreator.ui.searchTest;
+package com.example.testcreator.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Класс-адаптер для вывода информации о тестах в виде списка. Это позволяет
+ * пользователю посмотреть имеющиеся тесты и выбрать один из них.
+ */
 public class SelectingTestAdapter extends RecyclerView.Adapter<SelectingTestAdapter.ViewHolder>
         implements FireBaseConnections {
 

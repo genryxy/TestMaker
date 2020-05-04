@@ -23,10 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.testcreator.Common.Common;
-import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Enum.NumberAnswerEnum;
-import com.example.testcreator.Interface.IQuestion;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
 import com.squareup.picasso.Callback;
@@ -41,10 +40,12 @@ import java.util.Map;
 
 
 /**
- * Класс-фрагмент для представления вопроса во ViewPager.
+ * Класс-фрагмент для представления вопроса во ViewPager. Отвечает за то
+ * нужно ли выводить правильные ответы, показывать ответы пользователя,
+ * сделать неактивными кнопки, перемешать ответы перед тем, как вывести.
  * A simple {@link Fragment} subclass.
  */
-public class QuestionFragment extends Fragment implements IQuestion {
+public class QuestionFragment extends Fragment {
 
     private TextView questionTextTxt;
     private TextView fragmentPointTxt;
@@ -63,10 +64,6 @@ public class QuestionFragment extends Fragment implements IQuestion {
     private boolean wasAnswered = false;
     // Чтобы знать нужно ли перемешивать ответы при открытии страницы.
     private boolean isFirst = true;
-
-    public List<CheckBox> getAllCheckbox() {
-        return allCheckbox;
-    }
 
     public QuestionFragment() {
         // Для работы требуется пустой конструктор
@@ -318,11 +315,19 @@ public class QuestionFragment extends Fragment implements IQuestion {
         });
     }
 
-    @Override
+    /**
+     * Получает выбранные пользователем ответы. Сверяет полученные ответы с
+     * эталонным. Затем возвращает экземпляр класса CurrentQuestion в
+     * зависимости от правильности ответов пользователя.
+     *
+     * @return Возвращается экземпляр класса, который позволяет понять
+     * правильно/неправильно ответил пользователь или вообще
+     * не отвечал на данный вопрос.
+     */
     public CurrentQuestion getAndCheckSelectedAnswer() {
         // Вопрос может быть в трёх состояниях.
         // Правильный ответ, неправильный ответ, не отвечен.
-        CurrentQuestion currentQuestion = new CurrentQuestion(questionIndex, Common.AnswerType.NO_ANSWER);
+        CurrentQuestion currentQuestion = new CurrentQuestion(questionIndex, AnswerTypeEnum.NO_ANSWER);
         StringBuilder resStr = new StringBuilder();
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)
                 || question.getTypeAnswer().equals(NumberAnswerEnum.OneAnswer)) {
@@ -366,9 +371,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
                 currentQuestion.setUserAnswer(resStr.toString());
             }
             if (resStr.toString().toLowerCase().trim().equals(rightAnswer.toLowerCase())) {
-                currentQuestion.setType(Common.AnswerType.RIGHT_ANSWER);
+                currentQuestion.setType(AnswerTypeEnum.RIGHT_ANSWER);
             } else {
-                currentQuestion.setType(Common.AnswerType.WRONG_ANSWER);
+                currentQuestion.setType(AnswerTypeEnum.WRONG_ANSWER);
             }
         }
 
@@ -376,7 +381,11 @@ public class QuestionFragment extends Fragment implements IQuestion {
         return currentQuestion;
     }
 
-    @Override
+    /**
+     * Метод для вывода правильных ответов.
+     * Парсится строка с эталонными ответами, а затем вызывается метод для
+     * выделения текста ответа жирным шрифтом и для смены цвета текста.
+     */
     public void showCorrectAnswers() {
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
             // Формат: A,B
@@ -474,7 +483,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
         btn.setTextColor(Color.parseColor("#228B22"));
     }
 
-    @Override
+    /**
+     * Делает варианты ответов недоступными для выбора.
+     */
     public void disableAnswers() {
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
             for (CheckBox chckBox : allCheckbox) {
@@ -490,7 +501,9 @@ public class QuestionFragment extends Fragment implements IQuestion {
         }
     }
 
-    @Override
+    /**
+     * Сбрасывает все значения (вовзращает в начальное состояние).
+     */
     public void resetQuestion() {
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
             for (CheckBox checkbox : allCheckbox) {

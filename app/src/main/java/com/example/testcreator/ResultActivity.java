@@ -27,10 +27,17 @@ import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Model.CurrentQuestion;
 import com.example.testcreator.Model.QuestionModel;
+import com.example.testcreator.MyEnum.AnswerTypeEnum;
 import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Класс Activity, который необходим для работы со страницей, выводящейся
+ * по завершении прохождения теста. На данной странице представлена
+ * информация о результатах прохождения теста, а также выведены кнопки
+ * для перехода к конкретному вопросу.
+ */
 public class ResultActivity extends AppCompatActivity {
 
     private TextView timeTxt;
@@ -49,7 +56,7 @@ public class ResultActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Common.KEY_BACK_FROM_RESULT)) {
-                int question = intent.getIntExtra(Common.KEY_BACK_FROM_RESULT, -1);
+                int question = intent.getIntExtra(Common.KEY_BACK_FROM_RESULT, 1);
                 goBackActivityWithQuestion(question);
             }
         }
@@ -61,7 +68,6 @@ public class ResultActivity extends AppCompatActivity {
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +132,7 @@ public class ResultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
                 for (CurrentQuestion question : Common.answerSheetList) {
-                    if (question.getType() == Common.AnswerType.NO_ANSWER) {
+                    if (question.getType() == AnswerTypeEnum.NO_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }
                 }
@@ -140,7 +146,7 @@ public class ResultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
                 for (CurrentQuestion question : Common.answerSheetList) {
-                    if (question.getType() == Common.AnswerType.WRONG_ANSWER) {
+                    if (question.getType() == AnswerTypeEnum.WRONG_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }
                 }
@@ -154,7 +160,7 @@ public class ResultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Common.answerSheetListFiltered.clear();
                 for (CurrentQuestion question : Common.answerSheetList) {
-                    if (question.getType() == Common.AnswerType.RIGHT_ANSWER) {
+                    if (question.getType() == AnswerTypeEnum.RIGHT_ANSWER) {
                         Common.answerSheetListFiltered.add(question);
                     }
                 }
@@ -164,6 +170,9 @@ public class ResultActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Связывает элементы из разметки XML с полями класса.
+     */
     private void findElementsViewById() {
         timeTxt = findViewById(R.id.timeTxt);
         userPointTxt = findViewById(R.id.userPointTxt);
@@ -198,6 +207,9 @@ public class ResultActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Метод для вызова повторного прохождения теста.
+     */
     private void doQuizAgain() {
         new MaterialStyledDialog.Builder(this)
                 .setTitle("Пройти тест снова?")

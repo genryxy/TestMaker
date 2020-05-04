@@ -14,10 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.testcreator.Adapter.AnswerViewListAdapter;
-import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
-import com.example.testcreator.Enum.NumberAnswerEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 import com.example.testcreator.Interface.FireBaseConnections;
 import com.example.testcreator.Model.AnswerView;
 import com.example.testcreator.Model.QuestionModel;
@@ -30,6 +29,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity для создания вариантов ответов на вопросы.
+ * Можно перейти к созданию следующего вопроса, завершить создание теста,
+ * добавить новые варианты ответов.
+ */
 public class AnswersCreatingActivity extends AppCompatActivity implements FireBaseConnections {
 
     public static final String TAG = "AnswersCreatingActivity";
@@ -229,10 +233,9 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     }
 
     /**
-     * Метод для сохранения созданных вопросов в БД. Вопросы добавляются к уже
-     * существующим вопросам в выбранной категории, а
-     * <p>
-     * также создаётся новый тест с указанным названием и составленными вопросами.
+     * Метод для сохранения созданных вопросов в БД. Вопросы добавляются к
+     * существующим вопросам в выбранной категории, а также создаётся новый
+     * тест с указанным названием и составленными вопросами.
      *
      * @param rightAns Пара вида (количество правильных ответов, правильные ответы).
      */

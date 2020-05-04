@@ -7,28 +7,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.testcreator.Common.Common;
 import com.example.testcreator.Common.SpaceDecoration;
 import com.example.testcreator.Common.Utils;
 import com.example.testcreator.DBHelper.OnlineDBHelper;
 import com.example.testcreator.Interface.TestInfoCallBack;
 import com.example.testcreator.Model.TestInfo;
 import com.example.testcreator.R;
-import com.example.testcreator.ui.searchTest.SelectingTestAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс-фрагмент для вывода информации о результатах прохождения определённого теста
+ * всеми пользователями. Название теста можно выбирать при помощи элемента Spinner.
+ */
 public class CompareFragment extends Fragment {
 
     private Spinner nameTestSpinner;

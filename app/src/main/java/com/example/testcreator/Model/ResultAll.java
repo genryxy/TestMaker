@@ -1,5 +1,10 @@
 package com.example.testcreator.Model;
 
+/**
+ * Класс-модель для хранения результатов прохождения теста одного пользователя
+ * без выбранных ответов. Нужен для вывода результатов всех пользователей по
+ * указанному тесту.
+ */
 public class ResultAll {
     private int categoryID;
     private String Duration;

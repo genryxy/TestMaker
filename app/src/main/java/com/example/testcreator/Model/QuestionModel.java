@@ -1,11 +1,13 @@
 package com.example.testcreator.Model;
 
-import com.example.testcreator.Enum.NumberAnswerEnum;
+import com.example.testcreator.MyEnum.NumberAnswerEnum;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+/**
+ * Класс-модель для хранения всей информации об одном вопросе.
+ */
 public class QuestionModel {
     public static final int NUMBER_ANSWER = 10;
 
