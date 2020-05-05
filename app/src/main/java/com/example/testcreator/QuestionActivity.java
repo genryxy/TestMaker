@@ -101,6 +101,9 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
     }
 
+    /**
+     * Метод для получения вопросов по конкретному результату пользователя.
+     */
     private void getAndSetupQuestionFromUserResult() {
         if (Common.isOnlineMode) {
             dialog = Utils.showLoadingDialog(this);
@@ -137,8 +140,14 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
     }
 
+    /**
+     * Метод для получения ID вопросов по определённому тесту (по какому узнаём из названия)
+     * или по выбранной категории. Если выбиралась категория, то в зависимости от значения
+     * флага isOnlineMode загружаем вопросы из удалённой БД (если true) либо загружаем
+     * вопросы из локальной БД (если false).
+     */
     private void getAndSetupQuestionsFromStorage() {
-        // Подгружаем вопросы по категории или по названию теста.
+        // Загружаем вопросы по категории или по названию теста.
         // В зависимости от способа перехода пользователя на Activity.
         if (Common.selectedTest != null) {
             dialog = Utils.showLoadingDialog(this);
@@ -188,6 +197,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         }
     }
 
+    /**
+     * Метод для получения вопросов из Cloud Firestore по имеющемуся
+     * списку с ID вопросов. Затем устанавливаем полученные вопросы.
+     *
+     * @param questionsIDLst Список, содержащий ID вопросов.
+     */
     private void getQuestionsByIDAndSet(List<Integer> questionsIDLst) {
         OnlineDBHelper.getInstance(context).getQuestionsByID(questionsIDLst, new QuestionCallBack() {
             @Override
@@ -293,7 +308,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     /**
      * Метода для обеспечения совпадения выбранных вариантов ответов пользователя
-     * с вариантами ответов на соотвествующих позициях в БД. Несовпадение может
+     * с вариантами ответов на соответствующих позициях в БД. Несовпадение может
      * возникнуть в случае перемешивания вариантов ответов при прохождении теста.
      */
     private List<CurrentQuestion> changeUserAnswerAfterShuffleAnswer() {
@@ -328,7 +343,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
 
     /**
      * Метод для генерирования списка, содержащего фрагменты с вопросами.
-     * Необходимо, чтобы потом отображать вопросы в viewPager.
+     * Необходим, чтобы потом отображать вопросы в viewPager.
      */
     private void generateFragmentList() {
         Common.fragmentsLst.clear();
@@ -365,6 +380,11 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
         Common.countDownTimer.start();
     }
 
+    /**
+     * Метод для добавления в общий список элементов, дающих информацию о
+     * состоянии каждого вопроса, то есть ответил ли пользователь на этот вопрос,
+     * а если ответил, то правильно или нет.
+     */
     private void addQuestionToCommonAnswerSheetAdapter() {
         if (Common.questionLst.size() == 0) {
             new MaterialStyledDialog.Builder(this)
@@ -384,7 +404,6 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
                 Common.answerSheetList.clear();
             }
             for (int i = 0; i < Common.questionLst.size(); i++) {
-                // Take index of question in List.
                 Common.answerSheetList.add(new CurrentQuestion(i, AnswerTypeEnum.NO_ANSWER));
             }
         }
@@ -393,7 +412,7 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
     /**
      * Метод для вывода формулировки вопроса и вариантов ответов на него.
      * Также метод отображает таймер, количество правильных/неправильных ответов.
-     * Вызывает методы для создания фрагментов
+     * Вызывает методы для создания фрагментов.
      */
     private void setupQuestion() {
         if (Common.questionLst.size() > 0) {

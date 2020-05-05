@@ -125,7 +125,7 @@ public class QuestionFragment extends Fragment {
     }
 
     /**
-     * Метод, который делает невидимыми нижние checkbox, если вариантов ответов
+     * Метод, который делает невидимыми нижние, если вариантов ответов
      * меньше максимально возможного количества (10 ответов). А также скрывает
      * элементы, которые необходимы для ответов на другие типы вопросов.
      */
@@ -222,6 +222,13 @@ public class QuestionFragment extends Fragment {
         rightAnswerTxt.setText(question.getCorrectAnswer());
     }
 
+    /**
+     * Метод для перемешивания вариантов ответов. В данном методе подменяется
+     * правильный ответ на вопрос с учётом перемешанных вариантов ответов.
+     * Чтобы можно было вернуть обратно, создаётся словарь переходов (замен).
+     *
+     * @return Список, содержащий ответы в перемешанном порядке.
+     */
     private List<String> getAndShuffleAnswer() {
         List<String> filledAnswers = new ArrayList<>();
         for (String ans : question.getAllAnswer()) {
@@ -278,8 +285,8 @@ public class QuestionFragment extends Fragment {
 
     /**
      * Устанавливает обработчик событий для нажатия на checkbox. Заносит в коллекцию
-     * выбранных, если элемент стал помечен. Иначе удаляет из коллекции соответствующий
-     * экземпляр checkbox.
+     * выбранных ответов, если элемент стал помечен. Иначе удаляет из коллекции
+     * соответствующий экземпляр checkbox.
      */
     private void setOnCheckedChangeListenerToCheckbox() {
         for (final CheckBox checkbox : allCheckbox) {
@@ -298,6 +305,11 @@ public class QuestionFragment extends Fragment {
         }
     }
 
+    /**
+     * Устанавливает обработчик событий для нажатия на кнопки из RadioGroup. Заносит в
+     * коллекцию выбранных ответов, если элемент стал помечен. Иначе удаляет из коллекции
+     * соответствующий экземпляр radioButton.
+     */
     private void setOnCheckedChangeListenerToRadioGroup() {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -467,7 +479,7 @@ public class QuestionFragment extends Fragment {
     }
 
     /**
-     * Выделяет правильный вариант ответа. Для этого меняет
+     * Метод для выделения правильного варианта ответа. Для этого меняет
      * цвет текста на зелёный и делает шрифт жирным, помечает
      * чекбокс.
      *
@@ -478,6 +490,12 @@ public class QuestionFragment extends Fragment {
         checkBox.setTextColor(Color.parseColor("#228B22"));
     }
 
+    /**
+     * Метод для выделения правильного варианта ответа. Для этого меняет
+     * цвет текста на зелёный и делает шрифт жирным, помечает radioButton.
+     *
+     * @param btn Кнопка с вариантом ответа, написание текста которого нужно изменить.
+     */
     private void changeTypefaceAndColorRadioBtn(RadioButton btn) {
         btn.setTypeface(null, Typeface.BOLD);
         btn.setTextColor(Color.parseColor("#228B22"));
@@ -502,7 +520,7 @@ public class QuestionFragment extends Fragment {
     }
 
     /**
-     * Сбрасывает все значения (вовзращает в начальное состояние).
+     * Сбрасывает все значения (возвращает в начальное состояние).
      */
     public void resetQuestion() {
         if (question.getTypeAnswer().equals(NumberAnswerEnum.ManyAnswers)) {
@@ -544,12 +562,13 @@ public class QuestionFragment extends Fragment {
     }
 
     /**
-     * Метод для отображения ответов пользователь с помощью выделения
-     * checkbox, которые отметил пользователь в качестве ответа.
+     * Метод для отображения ответов пользователь с помощью выделения checkbox
+     * либо radioButton, которые отметил пользователь в качестве ответа.
+     * В случае ответа в свободной форме отображается введённый пользователем текст.
      *
      * @param userAnswer Ответы пользователя.
      */
-    void setUserAnswer(String userAnswer) {
+    public void setUserAnswer(String userAnswer) {
         if (userAnswer == null || userAnswer.length() == 0
                 || userAnswer.toLowerCase().equals("текст ответа")) {
             return;

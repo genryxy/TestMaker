@@ -59,6 +59,12 @@ public class DBHelper extends SQLiteAssetHelper {
         return categories;
     }
 
+    /**
+     * Метод для получения вопросов из локальной БД по ID категории.
+     *
+     * @param categoryID ID категории.
+     * @return Список, содержащий не более 30 вопросов из указанной категории.
+     */
     public List<QuestionModel> getQuestionsByCategory(int categoryID) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -77,6 +83,12 @@ public class DBHelper extends SQLiteAssetHelper {
         return questions;
     }
 
+    /**
+     * Метод для получения вопросов из локальной БД по указанным индексам вопросов.
+     *
+     * @param questionIDLst Список с индексами вопросов.
+     * @return Список, содержащий вопросы с указанными индексами.
+     */
     public List<QuestionModel> getQuestionsByID(List<Integer> questionIDLst) {
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -96,6 +108,13 @@ public class DBHelper extends SQLiteAssetHelper {
         return questions;
     }
 
+    /**
+     * Метод для создания экземпляра класса QuestionModel на основе
+     * данных строки, на которую указывает курсор.
+     *
+     * @param cursor Ссылка на курсор в БД.
+     * @return Новый экземпляр класса.
+     */
     private QuestionModel createQuestion(Cursor cursor) {
         String answer;
         List<String> allAnswer = new ArrayList<>(QuestionModel.NUMBER_ANSWER);

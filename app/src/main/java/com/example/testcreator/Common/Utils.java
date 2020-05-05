@@ -33,6 +33,14 @@ public class Utils {
         Arrays.fill(selectedAnswer, false);
     }
 
+    /**
+     * Метод для получения расширения переданного файла.
+     *
+     * @param imgUri  Унифицированный идентификатор ресурса. Здесь хранится
+     *                идентификатор выбранной пользователем фотографии.
+     * @param context Контекст класса, из которого происходит вызов метода.
+     * @return Расширение файла.
+     */
     public static String getExtension(Uri imgUri, Context context) {
         ContentResolver resolver = context.getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
@@ -61,6 +69,12 @@ public class Utils {
         return resTime.toString();
     }
 
+    /**
+     * Метод для получения названия категории по ID категории.
+     *
+     * @param categoryID ID категории.
+     * @return Строковое название категории.
+     */
     public static String getNameCategoryByID(int categoryID) {
         for (int i = 0; i < Common.categoryLst.size(); i++) {
             if (Common.categoryLst.get(i).getId() == categoryID) {
@@ -70,6 +84,13 @@ public class Utils {
         return "";
     }
 
+    /**
+     * Метод для получения диалога, который будет показываться во время
+     * загрузки данных из базы данных.
+     *
+     * @param context Контекст класса, из которого происходит вызов метода.
+     * @return Диалог, который показывается во время загрузки.
+     */
     public static AlertDialog showLoadingDialog(Context context) {
         AlertDialog dialog = new SpotsDialog.Builder()
                 .setContext(context)
@@ -83,10 +104,23 @@ public class Utils {
         return dialog;
     }
 
+    /**
+     * Метод для получения результата пользователя. В результате указано количество
+     * правильных ответов пользователя относительно количества вопросов.
+     *
+     * @return Строка с результатом.
+     */
     public static String getFinalResult() {
         return String.format("%d/%d", Common.rightAnswerCount, Common.questionLst.size());
     }
 
+    /**
+     * Метод для получения результата пользователя. В результате указано количество
+     * набранных пользователем баллов относительно количества баллов,
+     * которые можно было получить.
+     *
+     * @return Строка с результатом.
+     */
     public static String getFinalPoint() {
         int totalPoint = 0;
         for (QuestionModel question : Common.questionLst) {

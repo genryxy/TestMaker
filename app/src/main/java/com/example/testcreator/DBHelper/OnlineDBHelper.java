@@ -80,6 +80,14 @@ public class OnlineDBHelper implements FireBaseConnections {
         this.db = FirebaseFirestore.getInstance();
     }
 
+    /**
+     * Метод для получения списка вопросов из Cloud Firestore по ID категории.
+     * Список вопросов состоит из ID вопросов.
+     *
+     * @param myCallBack Коллбэк для установки значений из коллекции.
+     * @param categoryID ID категории.
+     * @param dialog     Диалог, который выводится на экран во время загрузки.
+     */
     public void getQuestionsByCategory(final MyCallBack myCallBack, final int categoryID, final AlertDialog dialog) {
         categoryName = Utils.getNameCategoryByID(categoryID);
         db.collection("themes")
@@ -109,6 +117,14 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения списка вопросов из Cloud Firestore по названию теста.
+     * Список вопросов состоит из ID вопросов.
+     *
+     * @param myCallBack Коллбэк для установки значений из коллекции.
+     * @param nameTest   Название теста.
+     * @param dialog     Диалог, который выводится на экран во время загрузки.
+     */
     public void getQuestionsByTest(final MyCallBack myCallBack, final String nameTest, final AlertDialog dialog) {
         db.collection("tests")
                 .document(nameTest)
@@ -137,6 +153,15 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения списка вопросов из Cloud Firestore по ключу из
+     * документа с результатами. Список вопросов состоит из ID вопросов.
+     * В коллбэке кроме индексов вопросов устанавливаются ещё ответы пользователя.
+     *
+     * @param key         Ключ, по которому получают результат из словаря.
+     * @param resCallBack Коллбэк для установки значений из коллекции (вопросов + ответов пользователя).
+     * @param dialog      Диалог, который выводится на экран во время загрузки.
+     */
     public void getQuestionsByResult(final String key, final ResultCallBack resCallBack, final AlertDialog dialog) {
         final String keyName = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
 
@@ -166,6 +191,13 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения списка вопросов из Cloud Firestore по списку, состоящему из ID вопросов,
+     * которые нужно получить. Список вопросов состоит из экземпляров класса QuestionModel.
+     *
+     * @param questionsIDLst Список с ID вопросов.
+     * @param idCallBack     Коллбэк для установки значений из коллекции.
+     */
     public void getQuestionsByID(final List<Integer> questionsIDLst, final QuestionCallBack idCallBack) {
         db.collection("questions").document("questionsAll")
                 .get()
@@ -182,6 +214,11 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения названий всех категорий, имеющихся в БД.
+     *
+     * @param themesCallBack Коллбэк для установки значений из коллекции.
+     */
     public void getCategories(final ThemesCallBack themesCallBack) {
         db.collection("themes")
                 .document("categoryID")
@@ -202,6 +239,11 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения подробной информации о всех созданных тестах.
+     *
+     * @param infosCallBack Коллбэк для установки значений из коллекции.
+     */
     public void getTestInfos(final TestInfoCallBack infosCallBack) {
         db.collection("tests").document("testInfo")
                 .get()
@@ -220,6 +262,12 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для загрузки изображение в Cloud Storage.
+     *
+     * @param nameImage Название загружаемого изображения.
+     * @param imgUri    Уникальный идентификатор изображения.
+     */
     public void uploadImage(String nameImage, Uri imgUri) {
         StorageReference childRef = storageRef.child(nameImage);
         childRef.putFile(imgUri)
@@ -238,6 +286,14 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения изображения из Cloud Storage и загрузки
+     * в указанный элемент интерфейса ImageView.
+     *
+     * @param pathToImg   Путь до изображения в БД.
+     * @param img         Элемент интерфейса, в который будет помещена загруженная картинка.
+     * @param progressBar Диалог, который выводится на экран во время загрузки
+     */
     public void getImageByName(String pathToImg, final ImageView img, final ProgressBar progressBar) {
         storageRef.child(pathToImg).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -260,6 +316,10 @@ public class OnlineDBHelper implements FireBaseConnections {
         });
     }
 
+    /**
+     * Метод для получения названий тестов, которые уже имеются в БД. Полученные
+     * значения помещаются в Common.namesTestSet.
+     */
     public void putNamesTestToSet() {
         Common.namesTestSet.clear();
         db.collection("tests")
@@ -284,6 +344,15 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения всех результатов для одного пользователя. Ключ, по которому определяется
+     * пользователь, создаётся с помощью email авторизованного пользователя, а также уникального
+     * идентификатора, присваемого при регистрации.
+     * Затем создаётся адаптер и устанавливается для RecyclerView.
+     *
+     * @param resultDBRecycler RecyclerView со всем результатами одного пользователя.
+     * @param dialog           Диалог, который выводится на экран во время загрузки.
+     */
     public void getResultByUserKey(final RecyclerView resultDBRecycler, final AlertDialog dialog) {
         final String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
         DocumentReference docRef = db.collection("users").document(keyUser);
@@ -316,6 +385,14 @@ public class OnlineDBHelper implements FireBaseConnections {
                 });
     }
 
+    /**
+     * Метод для получения результатов всех пользователей для теста, имя которого указано.
+     * Затем создаётся адаптер и устанавливается для RecyclerView.
+     *
+     * @param nameTest          Название теста.
+     * @param resultAllRecycler RecyclerView с результатами всех пользователей за конкретный тест.
+     * @param dialog            Диалог, который выводится на экран во время загрузки.
+     */
     public void getResultByNameTest(final String nameTest, final RecyclerView resultAllRecycler, final AlertDialog dialog) {
         DocumentReference docRef = db.collection("results").document(nameTest);
         docRef.get()
@@ -349,7 +426,7 @@ public class OnlineDBHelper implements FireBaseConnections {
     }
 
     /**
-     * Метод для сохранения вопроса в БД по переданной ссылке.
+     * Метод для сохранения экземпляра вопроса в БД по переданной ссылке.
      *
      * @param docRef        Ссылка на документ в таблице, в который нужно сохранять.
      * @param questionModel Экземпляр класса QuestionModel. Включает в себя всё, что
@@ -395,7 +472,7 @@ public class OnlineDBHelper implements FireBaseConnections {
     }
 
     /**
-     * Метод для сохранения вопроса в БД по переданной ссылке.
+     * Метод для сохранения ID вопроса в БД по переданной ссылке.
      *
      * @param docRef     Ссылка на документ в таблице, в который нужно сохранять.
      * @param questionID ID добавляемого вопроса.
@@ -473,9 +550,12 @@ public class OnlineDBHelper implements FireBaseConnections {
 
     /**
      * Метод для сохранения результатов прохождения теста пользователем в БД.
+     * Сохранение происходит для отдельного пользователя, а также в документ
+     * конкретного теста.
      *
      * @param resultTest Класс для хранения результата за конкретный тест, пройденный пользователем.
-     * @param resultAll
+     * @param resultAll  Класс для хранения результата. Нужен для вывода результатов всех
+     *                   пользователей по указанному тесту.
      */
     public void saveResultDB(final ResultTest resultTest, final ResultAll resultAll) {
         String keyUser = authFrbs.getCurrentUser().getEmail() + authFrbs.getCurrentUser().getUid();
@@ -547,6 +627,11 @@ public class OnlineDBHelper implements FireBaseConnections {
         }
     }
 
+    /**
+     * Метод для сохранения новой категории в БД.
+     *
+     * @param newCategory Экземпляр класса новой категории.
+     */
     public void saveCategoryDB(final Category newCategory) {
         final DocumentReference docRef = db.collection("themes").document("categoryID");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
