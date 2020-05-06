@@ -280,7 +280,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        Log.w(TAG, "Error CountDownLatch", exception);
+                        Log.w(TAG, "Error upload image", exception);
                         Toast.makeText(context, "Не удалось загрузить картинку", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -308,7 +308,7 @@ public class OnlineDBHelper implements FireBaseConnections {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                Toast.makeText(context, "failure", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Не удалось загрузить изображение", Toast.LENGTH_SHORT).show();
                 if (progressBar != null) {
                     progressBar.setVisibility(View.GONE);
                 }
@@ -515,7 +515,8 @@ public class OnlineDBHelper implements FireBaseConnections {
      *                   теста. null - если нет картинки
      * @param categoryID Число, показывающее к какой категории относится созданный тест.
      */
-    public void saveTestInfoDB(final String name, final String pathToImg, final int categoryID) {
+    public void saveTestInfoDB(final String name, final String pathToImg, final int categoryID,
+                               final boolean isShuffleAnswerMode, final boolean isShuffleQuestion) {
         final DocumentReference docRef = db.collection("tests").document("testInfo");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -523,7 +524,7 @@ public class OnlineDBHelper implements FireBaseConnections {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     TestInfo testInfo = new TestInfo(name, categoryID, null, pathToImg,
-                            authFrbs.getCurrentUser().getEmail(), new Date());
+                            authFrbs.getCurrentUser().getEmail(), new Date(), isShuffleAnswerMode, isShuffleQuestion);
                     // Если ещё нет ни одного вопроса в тесте то создаём экземпляр класса QuestionFirebase
                     // и добавляем его. Иначе просто добавляем вопрос в существующую коллекцию.
                     if (document != null && document.exists()) {

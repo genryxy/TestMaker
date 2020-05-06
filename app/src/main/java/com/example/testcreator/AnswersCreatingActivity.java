@@ -43,6 +43,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
     private Button endCreatingTestBtn;
     private String typeAnswer;
     private String nameTest;
+    private String isShuffleAnswer;
+    private String isShuffleQuestion;
     private String nameImage;
     private int categoryID;
     private String questionText;
@@ -95,6 +97,7 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         builder.setMessage("Изменения не будут сохранены ");
         builder.setPositiveButton("Ок", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                Arrays.fill(Utils.selectedAnswer, false);
                 AnswersCreatingActivity.super.onBackPressed();
             }
         });
@@ -201,6 +204,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
         typeAnswer = prevIntent.getStringExtra("typeAnswer");
         questionText = prevIntent.getStringExtra("questionTextEdt");
         nameTest = prevIntent.getStringExtra("nameTestEdt");
+        isShuffleAnswer = prevIntent.getStringExtra("isShuffleAnswer");
+        isShuffleQuestion = prevIntent.getStringExtra("isShuffleQuestion");
         nameImage = prevIntent.getStringExtra("nameImage");
         categoryID = prevIntent.getIntExtra("categoryID", 1);
         questionPoint = prevIntent.getIntExtra("questionPoint", 1);
@@ -297,7 +302,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                     startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
                 }
                 saveQuestionToDB(rightAns);
-                OnlineDBHelper.getInstance(null).saveTestInfoDB(nameTest, nameImage, categoryID);
+                OnlineDBHelper.getInstance(null).saveTestInfoDB(nameTest, nameImage, categoryID,
+                        isShuffleAnswer.equals("true"), isShuffleQuestion.equals("true"));
                 Toast.makeText(AnswersCreatingActivity.this, "Тест создан", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AnswersCreatingActivity.this, MainActivity.class));
             }
@@ -331,6 +337,8 @@ public class AnswersCreatingActivity extends AppCompatActivity implements FireBa
                 Intent newIntent = new Intent(AnswersCreatingActivity.this, QuestionsCreatingActivity.class);
                 newIntent.putExtra("questionNumber", questionNumber + 1);
                 newIntent.putExtra("nameTestEdt", nameTest);
+                newIntent.putExtra("isShuffleAnswer", isShuffleAnswer);
+                newIntent.putExtra("isShuffleQuestion", isShuffleQuestion);
                 newIntent.putExtra("nameImage", nameImage);
                 newIntent.putExtra("categoryID", categoryID);
                 startActivity(newIntent);

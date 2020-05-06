@@ -75,7 +75,7 @@
                 android:id="@+id/rightAnswerTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="5dp"
                 android:text="@string/exampleResult"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -100,7 +100,7 @@
                 android:id="@+id/userPointTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="5dp"
                 android:text="@string/exampleResult"
                 android:textSize="20sp"
                 android:textStyle="bold" />

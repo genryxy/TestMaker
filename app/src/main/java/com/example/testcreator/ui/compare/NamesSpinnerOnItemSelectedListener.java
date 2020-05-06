@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,8 +29,12 @@ public class NamesSpinnerOnItemSelectedListener implements AdapterView.OnItemSel
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String nameTest = parent.getItemAtPosition(position).toString();
-        OnlineDBHelper.getInstance(context).getResultByNameTest(nameTest, resultAllRecycler, dialog);
+        if (Utils.hasConnection(context)) {
+            String nameTest = parent.getItemAtPosition(position).toString();
+            OnlineDBHelper.getInstance(context).getResultByNameTest(nameTest, resultAllRecycler, dialog);
+        } else {
+            Toast.makeText(context, "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -36,17 +37,20 @@ public class CompareFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_compare, container, false);
 
-        AlertDialog dialog = Utils.showLoadingDialog(getContext());
-        addSpinnerAdapter();
-        int spaceInPixel = 4;
-        RecyclerView resultAllDBRecycler = root.findViewById(R.id.resultAllDBRecycler);
-        resultAllDBRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
-        resultAllDBRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+        if (Utils.hasConnection(getContext())) {
+            AlertDialog dialog = Utils.showLoadingDialog(getContext());
+            addSpinnerAdapter();
+            int spaceInPixel = 4;
+            RecyclerView resultAllDBRecycler = root.findViewById(R.id.resultAllDBRecycler);
+            resultAllDBRecycler.addItemDecoration(new SpaceDecoration(spaceInPixel));
+            resultAllDBRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        nameTestSpinner = root.findViewById(R.id.nameTestSpinner);
-        nameTestSpinner.setOnItemSelectedListener(new NamesSpinnerOnItemSelectedListener(
-                getContext(), resultAllDBRecycler, dialog));
-
+            nameTestSpinner = root.findViewById(R.id.nameTestSpinner);
+            nameTestSpinner.setOnItemSelectedListener(new NamesSpinnerOnItemSelectedListener(
+                    getContext(), resultAllDBRecycler, dialog));
+        } else {
+            Toast.makeText(getContext(), "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
+        }
         return root;
     }
 

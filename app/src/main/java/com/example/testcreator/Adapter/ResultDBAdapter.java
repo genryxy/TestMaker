@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -82,28 +83,32 @@ public class ResultDBAdapter extends RecyclerView.Adapter<ResultDBAdapter.MyView
         @Override
         public void onClick(View v) {
             int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                ResultTest resultTest = resultTests.get(position);
-                // Чтобы понимать какие вопросы загружать
-                Common.selectedTest = resultTest.getNameTest();
-                Common.selectedCategory = resultTest.getCategoryID();
-                Common.keyGetTestByResult = String.valueOf(resultTest.getResultID());
+            if (Utils.hasConnection(context)) {
+                if (position != RecyclerView.NO_POSITION) {
+                    ResultTest resultTest = resultTests.get(position);
+                    // Чтобы понимать какие вопросы загружать
+                    Common.selectedTest = resultTest.getNameTest();
+                    Common.selectedCategory = resultTest.getCategoryID();
+                    Common.keyGetTestByResult = String.valueOf(resultTest.getResultID());
 
-                Common.fragmentsLst.clear();
-                Common.answerSheetList = resultTest.getAnswerSheetLst();
-                int rightAnswer = Integer.valueOf(resultTest.getFinalScore().split("/")[0]);
-                int wrongAnswer = Integer.valueOf(resultTest.getWrongAnswer());
-                Common.rightAnswerCount = rightAnswer;
-                Common.wrongAnswerCount = wrongAnswer;
-                Common.userPointCount = Integer.valueOf(resultTest.getFinalPoint().split("/")[0]);
-                Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
-                Common.timer = Integer.valueOf(resultTest.getDuration());
+                    Common.fragmentsLst.clear();
+                    Common.answerSheetList = resultTest.getAnswerSheetLst();
+                    int rightAnswer = Integer.valueOf(resultTest.getFinalScore().split("/")[0]);
+                    int wrongAnswer = Integer.valueOf(resultTest.getWrongAnswer());
+                    Common.rightAnswerCount = rightAnswer;
+                    Common.wrongAnswerCount = wrongAnswer;
+                    Common.userPointCount = Integer.valueOf(resultTest.getFinalPoint().split("/")[0]);
+                    Common.noAnswerCount = Common.questionLst.size() - (rightAnswer + wrongAnswer);
+                    Common.timer = Integer.valueOf(resultTest.getDuration());
 
-                Common.questionIDLst = resultTest.getQuestionsIDLst();
-                Common.isOnlineMode = resultTest.getIsOnlineMode();
-                Intent intent = new Intent(context, QuestionActivity.class);
-                intent.putExtra("isAnswerModeView", "true");
-                context.startActivity(intent);
+                    Common.questionIDLst = resultTest.getQuestionsIDLst();
+                    Common.isOnlineMode = resultTest.getIsOnlineMode();
+                    Intent intent = new Intent(context, QuestionActivity.class);
+                    intent.putExtra("isAnswerModeView", "true");
+                    context.startActivity(intent);
+                }
+            } else {
+                Toast.makeText(context, "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
             }
         }
     }

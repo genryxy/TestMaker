@@ -3,6 +3,8 @@ package com.example.testcreator.Common;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
@@ -127,5 +129,25 @@ public class Utils {
             totalPoint += question.getQuestionPoint();
         }
         return String.format("%d/%d", Common.userPointCount, totalPoint);
+    }
+
+    /**
+     * Метод для получения информации о наличии подключении к интернету.
+     *
+     * @param context Контекст страницы, с которой вызывается метод.
+     * @return true - есть подключение, false - нет подключения
+     */
+    public static boolean hasConnection(final Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        return wifiInfo != null && wifiInfo.isConnected();
     }
 }

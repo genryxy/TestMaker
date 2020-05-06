@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.testcreator.Common.Common;
+import com.example.testcreator.Common.Utils;
 import com.example.testcreator.Model.Category;
 import com.example.testcreator.QuestionActivity;
 import com.example.testcreator.R;
@@ -69,6 +71,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
+                        if (Common.isOnlineMode && !Utils.hasConnection(context)) {
+                            Toast.makeText(context, "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
                         final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
                         final CheckBox checkboxShuffleAnswer = shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);

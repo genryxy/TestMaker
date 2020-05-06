@@ -21,14 +21,12 @@ import com.google.firebase.auth.AuthResult;
 /**
  * Класс Activity, предназначенный для прохождения регистрации пользователем.
  */
-public class SignUpActivity extends AppCompatActivity implements FireBaseConnections
-{
+public class SignUpActivity extends AppCompatActivity implements FireBaseConnections {
     private EditText emailIdEdt;
     private EditText passwordEdt;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         emailIdEdt = findViewById(R.id.emailEdt);
@@ -36,40 +34,30 @@ public class SignUpActivity extends AppCompatActivity implements FireBaseConnect
         Button signUpBtn = findViewById(R.id.signUpBtn);
         TextView signInTxt = findViewById(R.id.signInTxt);
 
-        signUpBtn.setOnClickListener(new View.OnClickListener()
-        {
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 String email = emailIdEdt.getText().toString();
                 String password = passwordEdt.getText().toString();
-                if (email.isEmpty() & password.isEmpty())
-                {
+                if (email.isEmpty() & password.isEmpty()) {
                     emailIdEdt.setError("Пожалуйста, введите Email");
                     passwordEdt.setError("Пожалуйста, введите пароль");
                     emailIdEdt.requestFocus();
-                } else if (email.isEmpty())
-                {
+                } else if (email.isEmpty()) {
                     emailIdEdt.setError("Пожалуйста, введите Email");
                     emailIdEdt.requestFocus();
-                } else if (password.isEmpty() || email.length() < 6)
-                {
+                } else if (password.isEmpty() || password.length() < 6) {
                     passwordEdt.setError("Пожалуйста, введите пароль длиной не менее 6 символов");
                     passwordEdt.requestFocus();
-                } else
-                {
+                } else {
                     authFrbs.createUserWithEmailAndPassword(email, password).addOnCompleteListener(
-                            SignUpActivity.this, new OnCompleteListener<AuthResult>()
-                            {
+                            SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
-                                public void onComplete(@NonNull Task<AuthResult> task)
-                                {
-                                    if (!task.isSuccessful())
-                                    {
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (!task.isSuccessful()) {
                                         Toast.makeText(SignUpActivity.this,
                                                 "Не удалось зарегистрироваться! Попробуйте снова", Toast.LENGTH_SHORT).show();
-                                    } else
-                                    {
+                                    } else {
                                         startActivity(new Intent(SignUpActivity.this, MainActivity.class));
                                     }
                                 }
@@ -78,11 +66,9 @@ public class SignUpActivity extends AppCompatActivity implements FireBaseConnect
             }
         });
 
-        signInTxt.setOnClickListener(new View.OnClickListener()
-        {
+        signInTxt.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
             }
         });

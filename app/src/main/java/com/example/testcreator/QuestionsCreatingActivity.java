@@ -33,6 +33,8 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
 
     private String nameTest;
     private String nameImage;
+    private String isShuffleAnswer;
+    private String isShuffleQuestion;
     private int categoryID;
     private int questionPoint = 1;
     private int questionNumber = 1;
@@ -43,7 +45,7 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
     private Button startCreatingAnswersBtn;
     private ImageView imgViewQuestion;
     private Spinner questionPointSpinner;
-    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.OneAnswer;
+    private NumberAnswerEnum typeAnswer = NumberAnswerEnum.ManyAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +176,8 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
         Intent prevIntent = getIntent();
         nameTest = prevIntent.getStringExtra("nameTestEdt");
         nameImage = prevIntent.getStringExtra("nameImage");
+        isShuffleAnswer = prevIntent.getStringExtra("isShuffleAnswer");
+        isShuffleQuestion = prevIntent.getStringExtra("isShuffleQuestion");
         categoryID = prevIntent.getIntExtra("categoryID", 1);
     }
 
@@ -188,6 +192,8 @@ public class QuestionsCreatingActivity extends AppCompatActivity {
                 Intent newIntent = new Intent(QuestionsCreatingActivity.this, AnswersCreatingActivity.class);
                 newIntent.putExtra("nameTestEdt", nameTest);
                 newIntent.putExtra("nameImage", nameImage);
+                newIntent.putExtra("isShuffleQuestion", isShuffleQuestion);
+                newIntent.putExtra("isShuffleAnswer", isShuffleAnswer);
                 newIntent.putExtra("typeAnswer", typeAnswer.name());
                 newIntent.putExtra("questionTextEdt", questionTextEdt.getText().toString());
                 newIntent.putExtra("questionNumber", questionNumber);

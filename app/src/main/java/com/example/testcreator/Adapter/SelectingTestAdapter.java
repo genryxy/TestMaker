@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,43 +58,49 @@ public class SelectingTestAdapter extends RecyclerView.Adapter<SelectingTestAdap
 
         @Override
         public void onClick(View v) {
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
-                final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
-                final CheckBox checkboxShuffleAnswer = shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
+            if (Utils.hasConnection(context)) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    View shuffleLayout = View.inflate(context, R.layout.layout_shuffle, null);
+                    final CheckBox checkboxShuffle = shuffleLayout.findViewById(R.id.checkboxShuffle);
+                    final CheckBox checkboxShuffleAnswer = shuffleLayout.findViewById(R.id.checkboxShuffleAnswer);
+                    checkboxShuffle.setVisibility(View.GONE);
+                    checkboxShuffleAnswer.setVisibility(View.GONE);
 
-                TestInfo test = testInfos.get(position);
-                new MaterialStyledDialog.Builder(context)
-                        .setIcon(R.drawable.ic_question_answer_black_24dp)
-                        .setCustomView(shuffleLayout)
-                        .setDescription("Начать тест \"" + test.getName() + "\"?")
-                        .setNegativeText("Нет")
-                        .onNegative(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setPositiveText("Да")
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                Common.isShuffleQuestionMode = checkboxShuffle.isChecked();
-                                Common.isIsShuffleAnswerMode = checkboxShuffleAnswer.isChecked();
-                                Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
-                                Common.selectedTest = testInfos.get(getAdapterPosition()).getName();
-                                Common.fragmentsLst.clear();
-                                Common.answerSheetList.clear();
-                                Common.rightAnswerCount = 0;
-                                Common.userPointCount = 0;
-                                Common.wrongAnswerCount = 0;
-                                Intent intent = new Intent(context, QuestionActivity.class);
-                                context.startActivity(intent);
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
+                    TestInfo test = testInfos.get(position);
+                    new MaterialStyledDialog.Builder(context)
+                            .setIcon(R.drawable.ic_question_answer_black_24dp)
+                            .setCustomView(shuffleLayout)
+                            .setDescription("Начать тест \"" + test.getName() + "\"?")
+                            .setNegativeText("Нет")
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setPositiveText("Да")
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    Common.isShuffleQuestionMode = testInfos.get(getAdapterPosition()).isShuffleQuestion();
+                                    Common.isIsShuffleAnswerMode = testInfos.get(getAdapterPosition()).isShuffleAnswerMode();
+                                    Common.selectedCategory = testInfos.get(getAdapterPosition()).getCategoryID();
+                                    Common.selectedTest = testInfos.get(getAdapterPosition()).getName();
+                                    Common.fragmentsLst.clear();
+                                    Common.answerSheetList.clear();
+                                    Common.rightAnswerCount = 0;
+                                    Common.userPointCount = 0;
+                                    Common.wrongAnswerCount = 0;
+                                    Intent intent = new Intent(context, QuestionActivity.class);
+                                    context.startActivity(intent);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
+            } else {
+                Toast.makeText(context, "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
             }
         }
     }

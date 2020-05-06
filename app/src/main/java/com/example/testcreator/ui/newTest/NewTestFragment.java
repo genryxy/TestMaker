@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -49,6 +50,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
     private Button saveNameTestBtn;
     private Button inputNewCategoryBtn;
     private EditText nameTestEdt;
+    private CheckBox chckShuffleAnsInName;
+    private CheckBox chckShuffleQuestionInName;
     private ImageView imgViewLogo;
     private Uri imgUri;
     private String nameImage;
@@ -110,6 +113,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
         saveNameTestBtn = root.findViewById(R.id.saveNameTestBtn);
         inputNewCategoryBtn = root.findViewById(R.id.inputNewCategoryBtn);
         imgViewLogo = root.findViewById(R.id.imgViewLogo);
+        chckShuffleAnsInName = root.findViewById(R.id.chckShuffleAnsInName);
+        chckShuffleQuestionInName = root.findViewById(R.id.chckShuffleQuestionInName);
     }
 
     /**
@@ -145,6 +150,8 @@ public class NewTestFragment extends Fragment implements FireBaseConnections {
                     newIntent.putExtra("nameTestEdt", nameTestEdt.getText().toString());
                     newIntent.putExtra("categoryID", categoryID);
                     newIntent.putExtra("nameImage", nameImage);
+                    newIntent.putExtra("isShuffleAnswer", chckShuffleAnsInName.isChecked() ? "true" : "false");
+                    newIntent.putExtra("isShuffleQuestion", chckShuffleQuestionInName.isChecked() ? "true" : "false");
                     startActivity(newIntent);
                 }
             }

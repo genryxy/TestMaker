@@ -267,7 +267,12 @@ public class QuestionActivity extends AppCompatActivity implements FireBaseConne
             for (QuestionFragment frag : Common.fragmentsLst) {
                 frag.setWasAnswered(true);
             }
-            writeResultToDatabase();
+            if (Utils.hasConnection(this)) {
+                writeResultToDatabase();
+            } else {
+                Toast.makeText(this, "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
+                return;
+            }
             Common.timer = Common.TOTAL_TIME - timePlay;
             if (Common.countDownTimer != null) {
                 Common.countDownTimer.cancel();

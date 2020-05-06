@@ -39,24 +39,28 @@ public class SelectingTestFragment extends Fragment {
         Common.isIsShuffleAnswerMode = false;
         Common.isShuffleQuestionMode = false;
 
-        dialog = Utils.showLoadingDialog(getContext());
-        final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
-        testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        OnlineDBHelper.getInstance(getContext())
-                .getTestInfos(new TestInfoCallBack() {
-                    @Override
-                    public void setInfosToAdapter(List<TestInfo> testInfos) {
-                        if (testInfos == null) {
-                            testInfos = new ArrayList<>();
-                            Toast.makeText(getContext(), "Нет тестов в базе!", Toast.LENGTH_LONG).show();
+        if (Utils.hasConnection(getContext())) {
+            dialog = Utils.showLoadingDialog(getContext());
+            final RecyclerView testsRecycler = root.findViewById(R.id.selectingTestsRecycler);
+            testsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+            OnlineDBHelper.getInstance(getContext())
+                    .getTestInfos(new TestInfoCallBack() {
+                        @Override
+                        public void setInfosToAdapter(List<TestInfo> testInfos) {
+                            if (testInfos == null) {
+                                testInfos = new ArrayList<>();
+                                Toast.makeText(getContext(), "Нет тестов в базе!", Toast.LENGTH_LONG).show();
+                            }
+                            SelectingTestAdapter adapter = new SelectingTestAdapter(testInfos);
+                            testsRecycler.setAdapter(adapter);
+                            if (dialog.isShowing()) {
+                                dialog.dismiss();
+                            }
                         }
-                        SelectingTestAdapter adapter = new SelectingTestAdapter(testInfos);
-                        testsRecycler.setAdapter(adapter);
-                        if (dialog.isShowing()) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
+                    });
+        } else {
+            Toast.makeText(getContext(), "Нужно подключить интернет!", Toast.LENGTH_LONG).show();
+        }
 
         return root;
     }

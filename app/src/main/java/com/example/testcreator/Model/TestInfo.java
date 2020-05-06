@@ -12,16 +12,21 @@ public class TestInfo {
     private String pathToImg;
     private String creator;
     private Date dateCreation;
+    private boolean isShuffleAnswerMode;
+    private boolean isShuffleQuestion;
 
     public TestInfo() {}
 
-    public TestInfo(String name, int categoryID, String info, String pathToImg, String creator, Date dateCreation) {
+    public TestInfo(String name, int categoryID, String info, String pathToImg, String creator, Date dateCreation,
+                    boolean isShuffleAnswerMode, boolean isShuffleQuestion) {
         this.name = name;
         this.info = info;
         this.pathToImg = pathToImg;
         this.creator = creator;
         this.dateCreation = dateCreation;
         this.categoryID = categoryID;
+        this.isShuffleAnswerMode = isShuffleAnswerMode;
+        this.isShuffleQuestion = isShuffleQuestion;
     }
 
     public String getName() {
@@ -70,5 +75,21 @@ public class TestInfo {
 
     public void setCategoryID(int categoryID) {
         this.categoryID = categoryID;
+    }
+
+    public boolean isShuffleAnswerMode() {
+        return isShuffleAnswerMode;
+    }
+
+    public void setShuffleAnswerMode(boolean shuffleAnswerMode) {
+        this.isShuffleAnswerMode = shuffleAnswerMode;
+    }
+
+    public boolean isShuffleQuestion() {
+        return isShuffleQuestion;
+    }
+
+    public void setShuffleQuestion(boolean shuffleQuestion) {
+        isShuffleQuestion = shuffleQuestion;
     }
 }

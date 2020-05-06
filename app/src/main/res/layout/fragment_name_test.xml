@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -13,12 +14,11 @@
             android:id="@+id/nameTestTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:gravity="start"
+            android:text="@string/nameTest"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,10 +30,10 @@
             android:layout_marginTop="10dp"
             android:ems="10"
             android:gravity="start|top"
+            android:hint="@string/nameTest"
             android:inputType="textMultiLine"
             android:minWidth="300dp"
             android:minHeight="80dp"
-            android:hint="@string/nameTest"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nameTestTxt" />
@@ -44,6 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/continueCreating"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
@@ -56,6 +57,7 @@
             android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
             android:text="@string/inputNewCategory"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -64,10 +66,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginEnd="15dp"
             android:layout_marginTop="20dp"
             android:text="@string/theme"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn" />
 
@@ -77,53 +80,69 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="15dp"
-            android:maxWidth="200dp"
+            android:maxWidth="180dp"
             android:minHeight="35dp"
             android:popupBackground="#EDEDED"
             app:layout_constraintStart_toEndOf="@+id/textView3"
             app:layout_constraintTop_toBottomOf="@+id/saveNameTestBtn"
             tools:listitem="@layout/layout_spinner_item" />
 
-        <ScrollView
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/chckShuffleAnsInName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/shuffleAnswerMode"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2">
+            app:layout_constraintTop_toBottomOf="@+id/inputNewCategoryBtn" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <ImageView
-                    android:id="@+id/imgViewLogo"
-                    android:layout_width="283dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:clickable="true"
-                    android:contentDescription="@string/wallpaperTest"
-                    android:focusable="true"
-                    android:maxHeight="500dp"
-                    android:minHeight="100dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2"
-                    app:srcCompat="@android:drawable/ic_menu_camera" />
-            </LinearLayout>
-
-        </ScrollView>
+        <CheckBox
+            android:id="@+id/chckShuffleQuestionInName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/shuffleMode"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chckShuffleAnsInName" />
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="75dp"
+            android:layout_marginTop="35dp"
             android:text="@string/wallpaperTest"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/themesSpinner" />
+            app:layout_constraintTop_toBottomOf="@+id/chckShuffleQuestionInName" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+            <ImageView
+                android:id="@+id/imgViewLogo"
+                android:layout_width="283dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:clickable="true"
+                android:contentDescription="@string/wallpaperTest"
+                android:focusable="true"
+                android:maxHeight="500dp"
+                android:minHeight="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

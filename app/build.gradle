@@ -1,5 +1,6 @@
 //noinspection GradleCompatible
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -36,7 +37,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.3.1'
     implementation 'com.google.firebase:firebase-database:19.2.0'
-    implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.firebaseui:firebase-ui-storage:4.3.1'
     implementation 'com.android.support:recyclerview-v7:29.0.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
@@ -49,5 +50,3 @@ dependencies {
     implementation 'io.paperdb:paperdb:2.6'
     implementation 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
 }
-
-apply plugin: 'com.google.gms.google-services'
